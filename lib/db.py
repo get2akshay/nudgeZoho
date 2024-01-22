@@ -1,4 +1,5 @@
 import psycopg2
+from decimal import Decimal
 
 # connect to the PostgreSQL database
 # connect to the PostgreSQL database server
@@ -92,42 +93,19 @@ JOIN GyroData q2 ON q1.time = q2.time;"""
 
 def motionInSpecifiedTimePeriod(uuid):
     start_date, end_date = getTimeStamp();
-    return f"""WITH GyroData AS (
-    SELECT
+    return f"""SELECT
         ts/1000 AS time,
         str_v,
         (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
         (('x' || REPLACE(SUBSTRING(str_v FROM 10 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS y_axis,
         (('x' || REPLACE(SUBSTRING(str_v FROM 19 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS z_axis
     FROM
-        ts_kv_latest
+        ts_kv
     WHERE
         entity_id = '{uuid}'
         AND key = 53
         -- Add the following WHERE clause to filter by time range
-        AND ts/1000 >= UNIX_TIMESTAMP('{start_date}') AND ts/1000 <= UNIX_TIMESTAMP('{end_date}')
-)
-
-SELECT
-    q1.time,
-    CASE
-        WHEN q2.x_axis = 0 AND q2.y_axis = 0 AND q2.z_axis = 0 THEN NULL
-        ELSE q1.long_v
-    END AS Activity
-FROM
-    (
-        SELECT
-        ts/1000 AS time,
-        long_v
-        FROM
-        ts_kv_latest
-        WHERE
-        entity_id = '{uuid}'
-        AND key = 49
-        -- Add the following WHERE clause to filter by time range
-        AND ts/1000 >= UNIX_TIMESTAMP('{start_date}') AND ts/1000 <= UNIX_TIMESTAMP('{end_date}')
-    ) AS q1
-JOIN GyroData q2 ON q1.time = q2.time;
+        -- AND ts/1000 >= TO_TIMESTAMP('start_date', 'YYYY-MM-DD HH24:MI:SS') AND ts/1000 <= TO_TIMESTAMP('end_date', 'YYYY-MM-DD HH24:MI:SS')
 """
 def getuuid(mac):
     uuid = ""
@@ -152,14 +130,46 @@ def getxyz(mac):
         latest_xyz = d
     return latest_xyz
 
+def allMotinPointsInADay(uuid):
+    return f"""SELECT
+        ts/1000 AS time,
+        str_v,
+        (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
+        (('x' || REPLACE(SUBSTRING(str_v FROM 10 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS y_axis,
+        (('x' || REPLACE(SUBSTRING(str_v FROM 19 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS z_axis
+FROM
+        ts_kv
+    WHERE
+        entity_id = '{uuid}'
+        AND key = 53
+        AND ts BETWEEN extract(epoch from (CURRENT_DATE - INTERVAL '1 DAY')) * 1000 AND extract(epoch from CURRENT_TIMESTAMP) * 1000;
+"""
+
+def get_timestamp(tup):
+    # Check if the tuple has at least five elements
+    if len(tup) < 5:
+        print("Incorrect tupple {tup}")
+        return None # or raise an exception
+    # Extract the timestamp and the x, y, and z values
+    timestamp = tup[0]
+    x = float(tup[-3])
+    y = float(tup[-2])
+    z = float(tup[-1])
+    # Count how many of the x, y, and z values are non-zero
+    count = sum([1 for v in (x, y, z) if v != 0])
+    # If the count is greater than or equal to two, return the timestamp
+    if count >= 2:
+        return timestamp
+
+
 def getxyzSpecifictime(mac):
-    latest_xyz = ()
+    motion = []
     # fetch the result set as a list of tuples
     uuid = getuuid(mac)
-    data = query_db(motionInSpecifiedTimePeriod(uuid))
-    for d in data:
-        latest_xyz = d
-    return latest_xyz
+    data = query_db(allMotinPointsInADay(uuid))
+    for point in data:
+        motion.append(get_timestamp(point))
+    return tuple(x for x in motion if x is not None)
 
 def query_db(query):
     # Define the connection string

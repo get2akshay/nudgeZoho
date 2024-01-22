@@ -3,13 +3,14 @@ import requests
 from time import sleep
 from lib import db
 import yaml
+loggedInStatus = dict()
 access_token = ""
 refresh_token = ""
 expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.e2c8a274464cfa4467e76a6a98c26084.d70a7113a622272fa30b0e53b93f514f"
+code = "1000.a4c7809e1bce47bca542fd60d38c9dc1.2a4bb0069d14002ffe808ffef05884d6"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -106,6 +107,11 @@ employees = {"Rajesh Sharma": "00:8c:10:30:02:6f"}
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
 
+for mac in employees.values():
+    loggedInStatus[mac] = "checkOut"
+
+print(f"Start Status of Loggin {loggedInStatus}")
+
 #employees = {"Rajesh Sharma": "S2"}
 # motionDetect = db.getxyz('00:8c:10:30:02:6f')
 # from pdb import set_trace
@@ -114,16 +120,19 @@ while True:
     for name, mac in employees.items():
         print(f"Checking motion status for {name} assigned badge {mac}")
         try:
-            motionDetect = db.getxyz(mac)
-            #motionDetect = db.getxyz('00:8c:10:30:02:6f')
-            #motionDetect = (1, -80)
-            print(motionDetect)
-            if motionDetect[1] is not None: 
-                if timedelta(motionDetect[0],43200):
-                    checkinout("checkOut",mac,motionDetect[0])
-                else:
-                    checkinout("checkIn",mac, motionDetect[0])
+            #motionDetect = db.getxyz(mac)
+            motionDetect = sorted(db.getxyzSpecifictime(mac))
+            if "checkOut" in loggedInStatus[mac]:
+                checkinout("checkIn",mac,motionDetect[0])
+                loggedInStatus[mac] = "checkIn"
+            if timedelta(motionDetect[-1],600) and "checkIn" in loggedInStatus[mac]:
+                now = datetime.now()
+                checkinout("checkOut",mac,now)
+            
         except TypeError as t:
             print(f"Badge {mac} not found in DB for {name}, check again !")
+            continue
+        except IndexError as i:
+            print(f"No motion points for {mac}")
             continue
     sleep(10)
