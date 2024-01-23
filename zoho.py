@@ -10,7 +10,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.68904f7ca29ec4803138ef17d5558541.b3ab551291929d78f32ccbe077e0aec1"
+code = "1000.f52e44a5ccbf71d46f4876730ab63c5c.0465b7017d2b351d5177c44934f17e51"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -153,8 +153,8 @@ with open('staff.yaml', 'r') as file:
 
 #employees = {"Rajesh Sharma": "S2"}
 # motionDetect = db.getxyz('00:8c:10:30:02:6f')
-from pdb import set_trace
-set_trace()
+# from pdb import set_trace
+# set_trace()
 
 for name, mac in employees.items():
     print(f"Checking motion status for {name} assigned badge {mac}")
@@ -180,6 +180,7 @@ for name, mac in employees.items():
             print(f"The result key has {length} items.")
     except TypeError as e:
         print(f"The logindata is None: {e}")
+        continue
    
 
     
