@@ -40,21 +40,20 @@ def getTimeStamp():
 def get_mac_uuid(mac):
     return f"""SELECT
     most_common_entity_id
-    FROM (
+FROM (
     SELECT
         entity_id AS most_common_entity_id,
-        ROW_NUMBER() OVER (PARTITION BY str_v ORDER BY COUNT(*) DESC) AS Ron
+        ROW_NUMBER() OVER (PARTITION BY str_v ORDER BY COUNT(*) DESC) AS rn
     FROM
         ts_kv
     WHERE
         str_v SIMILAR TO '{mac}'
     GROUP BY
         str_v, entity_id
-    ) AS subquery
-    WHERE
-    Ron = 1
-    LIMIT 3;
-    """
+) AS subquery
+WHERE
+    rn = 1
+LIMIT 2;"""
 
 def firstMoveOfTheDay(uuid):
     return """SELECT
@@ -115,8 +114,7 @@ JOIN GyroData q2 ON q1.time = q2.time;"""
 def motionInSpecifiedTimePeriod(mac, start_date, end_date):
     # Define the SQL query with placeholders
     uuid = get_mac_uuid(mac)
-    sql = f"""
-    SELECT
+    sql = f"""SELECT
             ts/1000 AS time,
             str_v,
             (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
@@ -128,7 +126,7 @@ def motionInSpecifiedTimePeriod(mac, start_date, end_date):
             entity_id = '{uuid}'
             AND key = 53
             -- Add the following WHERE clause to filter by time range
-            AND ts/1000 >= TO_TIMESTAMP(%s, 'YYYY-MM-DD HH24:MI:SS') AND ts/1000 <= TO_TIMESTAMP(%s, 'YYYY-MM-DD HH24:MI:SS')
+            AND ts/1000 >= TO_TIMESTAMP(%s, 'YYYY-MM-DD HH24:MI:SS') AND ts/1000 <= TO_TIMESTAMP(%s, 'YYYY-MM-DD HH24:MI:SS');
     """
     return query_db(query=sql, start_date=start_date, end_date=end_date)
     
