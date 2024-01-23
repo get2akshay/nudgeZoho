@@ -113,7 +113,7 @@ JOIN GyroData q2 ON q1.time = q2.time;"""
 
 def motionInSpecifiedTimePeriod(mac, start_date, end_date):
     # Define the SQL query with placeholders
-    uuid = get_mac_uuid(mac)
+    uuid = getuuid(mac)
     sql = f"""SELECT
             ts/1000 AS time,
             str_v,
