@@ -113,11 +113,18 @@ def getStatusLogin(duration):
 
     # Check the status code and the content
     if response.status_code == 200:
-        # Print the JSON data
-        return response.json()
+        if response.content and response.headers["Content-Type"] == "application/json":
+            # Parse the JSON string and create a Python object
+            return json.loads(response.content)
+            # Do something with the data
+        else:
+            # Print an error message
+            print("The API response is empty or not a valid JSON string.")
     else:
         # Print the error message
         print(f"Error: {response.status_code} - {response.reason}")
+
+    
 
 
 def checkinout(status, employee, timestamp):
@@ -160,9 +167,8 @@ for name, mac in employees.items():
     timestamps = sorted(motionDetect)
     logindata = getStatusLogin(5)
     # Parse the JSON string and create a Python object
-    data = json.loads(logindata)
     # Access the result key from the Python object
-    result = data["response"]["result"]
+    result = logindata["response"]["result"]
     # Get the length of the result list
     length = len(result)
     # Check if the length is zero or not
