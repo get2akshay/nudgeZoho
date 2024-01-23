@@ -4,6 +4,7 @@ from time import sleep
 from lib import db
 import yaml
 import json
+from numpy as np
 access_token = ""
 refresh_token = ""
 expires_in = 0
@@ -171,7 +172,7 @@ for name, mac in employees.items():
     # Define the list of tuples
     filter_value = Decimal('0E-9')
     # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
-    filtered_list = [t for t in data if sum(x != filter_value for x in t[-3:]) >= 2]
+    filtered_list = [t for t in data if np.count_nonzero(t[-3:]) >= 2]
     # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
     timestamp_list = [t[0] for t in filtered_list]
     # Print the timestamp list
