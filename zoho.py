@@ -75,6 +75,33 @@ def timedelta(last_motion, seconds_delta):
     else:
         return False
 
+def getStatusLogin(duration):
+    """https://people.zoho.com/api/attendance/fetchLatestAttEntries?duration=5&dateTimeFormat=dd-MM-yyyy HH:mm:ss"""
+    # Define the Zoho API endpoint
+    generateToken()
+    print(f"Token is valid for {expires_in}")
+    url = "https://people.zoho.in/api/attendance/fetchLatestAttEntries"
+    # Define the query parameters
+    params = {
+        "duration": duration,
+        "dateTimeFormat": "dd-MM-yyyy HH:mm:ss"
+    }
+    # Define the authorization header
+    headers = {
+    "Authorization": f"Zoho-oauthtoken {access_token}"
+    }
+    # Send a GET request and get the response
+    response = requests.get(url, params=params, headers=headers)
+
+    # Check the status code and the content
+    if response.status_code == 200:
+        # Print the JSON data
+        return response.json()
+    else:
+        # Print the error message
+        print(f"Error: {response.status_code} - {response.reason}")
+
+
 def checkinout(status, employee, timestamp):
     # generate token
     generateToken()
@@ -121,6 +148,10 @@ for name, mac in employees.items():
     print(f"Checking motion status for {name} assigned badge {mac}")
     motionDetect = sorted(db.getxyzSpecifictime(mac))
     print(motionDetect)
+    timestamps = sorted(motionDetect)
+    getStatusLogin(5)
+    # checkinout("checkIn", name, timestamps[0])
+    
         
 
 """ while True:
