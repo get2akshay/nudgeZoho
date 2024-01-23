@@ -113,7 +113,7 @@ def getStatusLogin(duration):
 
     # Check the status code and the content
     if response.status_code == 200:
-            return json.loads(response.json)
+            return response.json()
             # Do something with the data
     else:
         # Print the error message
