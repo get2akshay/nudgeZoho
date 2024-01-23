@@ -10,7 +10,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.f52e44a5ccbf71d46f4876730ab63c5c.0465b7017d2b351d5177c44934f17e51"
+code = "1000.5153cbb75a61056333563acff60df9d2.3dc72e0b18a6eb58441c0cdfec2f99bb"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -181,6 +181,10 @@ for name, mac in employees.items():
     except TypeError as e:
         print(f"The logindata is None: {e}")
         continue
+    except IndexError as i:
+        print(f"No timestamp data for badge, so the error: {e}")
+        continue
+
    
 
     
