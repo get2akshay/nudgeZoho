@@ -158,13 +158,10 @@ with open('staff.yaml', 'r') as file:
 
 
 for name, mac in employees.items():
-    # Use the datetime.datetime class to call the today() method
-    start_date = datetime.datetime.today()
     # Use the date() method to get the date part of the datetime object
-    start_date = start_date.date()
-    # Combine the date with the minimum time
     start_date = datetime.datetime.combine(start_date, datetime.time.min).strftime("%Y-%m-%d %H:%M:%S")
     end_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"Getting Movement data from {start_date} to {end_date} for {name} with Badge {mac} !")
     data = db.motionInSpecifiedTimePeriod(mac, start_date, end_date)
     # Import the decimal module
     from decimal import Decimal
@@ -177,6 +174,8 @@ for name, mac in employees.items():
     # Print the timestamp list
     print(timestamp_list)
     try:
+        chekinTime = timestamp_list[0].strftime("%Y-%m-%d %H:%M:%S")
+        print(f"Earliest Motion found for {name} with {mac} was {chekinTime} !")
         loginStatus = checkinout("checkIn", mac, timestamp_list[0])
         print(loginStatus)
     except IndexError as i:
