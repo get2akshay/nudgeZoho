@@ -126,7 +126,7 @@ def motionInSpecifiedTimePeriod(mac, start_date, end_date):
             entity_id = '{uuid}'
             AND key = 53
             -- Add the following WHERE clause to filter by time range
-            AND ts/1000 >= TO_TIMESTAMP(%s, 'YYYY-MM-DD HH24:MI:SS') AND ts/1000 <= TO_TIMESTAMP(%s, 'YYYY-MM-DD HH24:MI:SS');
+            AND TO_TIMESTAMP(ts/1000) >= TO_TIMESTAMP(%s, 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP(ts/1000) <= TO_TIMESTAMP(%s, 'YYYY-MM-DD HH24:MI:SS');
     """
     return query_db(query=sql, start_date=start_date, end_date=end_date)
     
