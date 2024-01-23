@@ -164,7 +164,7 @@ for name, mac in employees.items():
     start_date = start_date.date()
     # Combine the date with the minimum time
     start_date = datetime.datetime.combine(start_date, datetime.time.min)
-    end_date = datetime.now()
+    end_date = datetime.datetime.now()
     data = db.motionInSpecifiedTimePeriod(mac, start_date, end_date)
 
 
