@@ -176,8 +176,13 @@ for name, mac in employees.items():
     timestamp_list = [t[0] for t in filtered_list]
     # Print the timestamp list
     print(timestamp_list)
-    loginStatus = checkinout("checkIn", mac, timestamp_list[0])
-    print(loginStatus)
+    try:
+        loginStatus = checkinout("checkIn", mac, timestamp_list[0])
+        print(loginStatus)
+    except IndexError as i:
+        print(f"No movement detected for {name} and badge {mac}")
+
+    
 
 
 
