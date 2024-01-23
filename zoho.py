@@ -179,7 +179,10 @@ for name, mac in employees.items():
     # Print the timestamp list
     print(timestamp_list)
     try:
-        chekinTime = timestamp_list[0].strftime("%Y-%m-%d %H:%M:%S")
+        # Create a datetime object from the epoch time
+        dt = datetime.datetime.fromtimestamp(timestamp_list[0])
+        # Format the datetime object using strftime
+        chekinTime = dt.strftime("%Y-%m-%d %H:%M:%S")
         print(f"Earliest Motion found for {name} with {mac} was {chekinTime} !")
         loginStatus = checkinout("checkIn", mac, timestamp_list[0])
         print(loginStatus)
