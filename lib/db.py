@@ -169,7 +169,7 @@ def getxyzSpecifictime(mac):
     data = query_db(allMotinPointsInADay(uuid))
     for point in data:
         motion.append(get_timestamp(point))
-    return tuple(x for x in motion if x is not None)
+    return tuple(set(tuple(x for x in motion if x is not None)))
 
 def query_db(query):
     # Define the connection string

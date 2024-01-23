@@ -3,6 +3,7 @@ import requests
 from time import sleep
 from lib import db
 import yaml
+import json
 loggedInStatus = dict()
 access_token = ""
 refresh_token = ""
@@ -59,6 +60,17 @@ def tokenRenew():
         expires_in = token_response.json()["expires_in"]
     except KeyError as k:
         print(f"Token renew failed with error {k}")
+
+def parseExistingCheckin(data):
+    # Load the JSON data from the string
+    # Access the checkin time stamp from the JSON data
+    checkin_time = data["response"]["result"][0]["entries"][0]["2020-06-06"]["singleRegEntries"]["checkInTime"]
+    # Parse the checkin time stamp to a datetime object
+    checkin_datetime = datetime.datetime.strptime(checkin_time, '%d-%b-%Y %H:%M:%S')
+    # Convert the datetime object to epoch time
+    checkin_epoch = checkin_datetime.timestamp()
+    # Print the epoch time as an integer
+    print(int(checkin_epoch))
 
 
 def timedelta(last_motion, seconds_delta):
@@ -149,10 +161,13 @@ for name, mac in employees.items():
     motionDetect = sorted(db.getxyzSpecifictime(mac))
     print(motionDetect)
     timestamps = sorted(motionDetect)
-    getStatusLogin(5)
+    logindata = getStatusLogin(5)
+    print(logindata)
+
     # checkinout("checkIn", name, timestamps[0])
     
-        
+
+
 
 """ while True:
     for name, mac in employees.items():
