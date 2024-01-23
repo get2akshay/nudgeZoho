@@ -153,9 +153,18 @@ with open('staff.yaml', 'r') as file:
 
 #employees = {"Rajesh Sharma": "S2"}
 # motionDetect = db.getxyz('00:8c:10:30:02:6f')
-# from pdb import set_trace
-# set_trace()
+from pdb import set_trace
+set_trace()
 
+
+for name, mac in employees.items():
+    # Define the start date and end date values as datetime objects
+    start_date = datetime.combine(datetime.date.today(), datetime.time.min) # Current date at midnight
+    end_date = datetime.now()
+    data = db.motionInSpecifiedTimePeriod(mac, start_date, end_date)
+
+
+""" 
 for name, mac in employees.items():
     print(f"Checking motion status for {name} assigned badge {mac}")
     motionDetect = sorted(db.getxyzSpecifictime(mac))
@@ -185,11 +194,7 @@ for name, mac in employees.items():
         print(f"No timestamp data for badge, so the error: {i}")
         continue
 
-   
-
-    
-    
-
+ """
 
 
 """ while True:

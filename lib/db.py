@@ -1,5 +1,6 @@
 import psycopg2
 from decimal import Decimal
+import datetime
 
 # connect to the PostgreSQL database
 # connect to the PostgreSQL database server
@@ -18,7 +19,6 @@ cur = conn.cursor()
 # Query to get MAC to TB UUID mapping
 
 def getTimeStamp():
-    import datetime
     import time
     # Get the current date as a datetime object
     today = datetime.date.today()
@@ -56,6 +56,27 @@ def get_mac_uuid(mac):
     LIMIT 3;
     """
 
+def firstMoveOfTheDay(uuid):
+    return """SELECT
+            t1.ts/1000 AS time,
+            t1.str_v,
+            (('x' || REPLACE(LEFT(t1.str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
+            (('x' || REPLACE(SUBSTRING(t1.str_v FROM 10 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS y_axis,
+            (('x' || REPLACE(SUBSTRING(t1.str_v FROM 19 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS z_axis
+    FROM
+            ts_kv t1
+        JOIN
+            (SELECT DATE (ts/1000) AS date, MIN (ts) AS min_ts
+            FROM ts_kv
+            WHERE entity_id = '{uuid}'
+            AND key = 53
+            GROUP BY DATE (ts/1000)) t2
+        ON t1.ts = t2.min_ts
+        WHERE
+            t1.entity_id = '{uuid}'
+            AND t1.key = 53
+    """
+
 def buildquery(uuid):
     # define the SQL query as a string
     return f"""WITH GyroData AS (
@@ -91,22 +112,27 @@ FROM
   ) AS q1
 JOIN GyroData q2 ON q1.time = q2.time;"""
 
-def motionInSpecifiedTimePeriod(uuid):
-    start_date, end_date = getTimeStamp();
-    return f"""SELECT
-        ts/1000 AS time,
-        str_v,
-        (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
-        (('x' || REPLACE(SUBSTRING(str_v FROM 10 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS y_axis,
-        (('x' || REPLACE(SUBSTRING(str_v FROM 19 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS z_axis
+def motionInSpecifiedTimePeriod(mac, start_date, end_date):
+    # Define the SQL query with placeholders
+    uuid = get_mac_uuid(mac)
+    sql = f"""
+    SELECT
+            ts/1000 AS time,
+            str_v,
+            (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
+            (('x' || REPLACE(SUBSTRING(str_v FROM 10 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS y_axis,
+            (('x' || REPLACE(SUBSTRING(str_v FROM 19 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS z_axis
     FROM
-        ts_kv
-    WHERE
-        entity_id = '{uuid}'
-        AND key = 53
-        -- Add the following WHERE clause to filter by time range
-        -- AND ts/1000 >= TO_TIMESTAMP('start_date', 'YYYY-MM-DD HH24:MI:SS') AND ts/1000 <= TO_TIMESTAMP('end_date', 'YYYY-MM-DD HH24:MI:SS')
-"""
+            ts_kv
+        WHERE
+            entity_id = '{uuid}'
+            AND key = 53
+            -- Add the following WHERE clause to filter by time range
+            AND ts/1000 >= TO_TIMESTAMP(%s, 'YYYY-MM-DD HH24:MI:SS') AND ts/1000 <= TO_TIMESTAMP(%s, 'YYYY-MM-DD HH24:MI:SS')
+    """
+    return query_db(query=sql, start_date=start_date, end_date=end_date)
+    
+
 def getuuid(mac):
     uuid = ""
     # execute the SQL query and pass the entity_id as a parameter
@@ -171,7 +197,7 @@ def getxyzSpecifictime(mac):
         motion.append(get_timestamp(point))
     return tuple(set(tuple(x for x in motion if x is not None)))
 
-def query_db(query):
+def query_db(query, start_date=None, end_date=None):
     # Define the connection string
     # create a cursor object
     # Connect to the database
@@ -193,7 +219,7 @@ def query_db(query):
     cursor = conn.cursor()
     # Execute the query
     try:
-        cursor.execute(query)
+        cursor.execute(query,(start_date, end_date))
     except psycopg2.Error as e:
         print(f"Error executing the query: {e}")
         return None
