@@ -47,7 +47,7 @@ FROM (
     FROM
         ts_kv
     WHERE
-        str_v SIMILAR TO "{mac}"
+        str_v SIMILAR TO '{mac}'
     GROUP BY
         str_v, entity_id
 ) AS subquery
@@ -146,10 +146,6 @@ def getuuid(mac):
     except TypeError as t:
         print("DB dod not give any data!")
         pass
-
-    
-    
-
 
 def getxyz(mac):
     latest_xyz = ()
