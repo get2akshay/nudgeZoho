@@ -153,8 +153,8 @@ with open('staff.yaml', 'r') as file:
 
 #employees = {"Rajesh Sharma": "S2"}
 # motionDetect = db.getxyz('00:8c:10:30:02:6f')
-# from pdb import set_trace
-# set_trace()
+from pdb import set_trace
+set_trace()
 
 for name, mac in employees.items():
     print(f"Checking motion status for {name} assigned badge {mac}")
