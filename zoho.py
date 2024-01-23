@@ -117,7 +117,7 @@ print(f"Start Status of Loggin {loggedInStatus}")
 # from pdb import set_trace
 # set_trace()
 
-for name, mac in employees,items():
+for name, mac in employees.items():
     print(f"Checking motion status for {name} assigned badge {mac}")
     motionDetect = sorted(db.getxyzSpecifictime(mac))
     print(motionDetect)
