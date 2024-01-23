@@ -10,7 +10,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.0945cc7814d37de3a4a3b23dddd1bd63.f3fa14a040cbb25f5fa06976cc6dc086"
+code = "1000.ce4b253141603034ba78a0904f889baf.74188cfb4237150fdd32ecb6f6ccd41b"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -168,17 +168,22 @@ for name, mac in employees.items():
     logindata = getStatusLogin(5)
     # Parse the JSON string and create a Python object
     # Access the result key from the Python object
-    result = logindata["response"]["result"]
-    # Get the length of the result list
-    length = len(result)
-    # Check if the length is zero or not
-    if length == 0:
-        # Print a message that the result key is empty
-        print("No checkin data found, continue to checkin!")
-        checkinout("checkIn", name, timestamps[0])
-    else:
-        # Print a message that the result key has content
-        print(f"The result key has {length} items.")
+    try:
+        result = logindata["response"]["result"]
+        # Do something with result
+         # Get the length of the result list
+        length = len(result)
+        # Check if the length is zero or not
+        if length == 0:
+            # Print a message that the result key is empty
+            print("No checkin data found, continue to checkin!")
+            checkinout("checkIn", name, timestamps[0])
+        else:
+            # Print a message that the result key has content
+            print(f"The result key has {length} items.")
+    except TypeError as e:
+        print(f"The logindata is None: {e}")
+   
 
     
     
