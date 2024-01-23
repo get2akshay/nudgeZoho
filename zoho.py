@@ -61,6 +61,13 @@ def tokenRenew():
     except KeyError as k:
         print(f"Token renew failed with error {k}")
 
+def dateFormat(timestamp):
+    # Create a datetime object from the epoch time stamp
+    date_time = datetime.datetime.fromtimestamp(timestamp)
+    # Format the datetime object as a string
+    return date_time.strftime("%d/%m/%Y %H:%M:%S")
+
+
 def parseExistingCheckin(data):
     # Load the JSON data from the string
     # Access the checkin time stamp from the JSON data
@@ -119,13 +126,9 @@ def checkinout(status, employee, timestamp):
     generateToken()
     print(f"Token is valid for {expires_in}")
     url = "https://people.zoho.in/people/api/attendance"
-    # get the current date and time
-    now = datetime.now()
-    # format the date and time as dd/MM/yyyy HH:mm:ss
-    date_time_str = now.strftime("%d/%m/%Y %H:%M:%S")
     params = {
     "dateFormat": "dd/MM/yyyy HH:mm:ss",
-    status : date_time_str,
+    status : dateFormat(timestamp),
     "empId": employee
     }
     print(params)
