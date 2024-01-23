@@ -159,6 +159,11 @@ with open('staff.yaml', 'r') as file:
 
 for name, mac in employees.items():
     # Use the date() method to get the date part of the datetime object
+    # Use the datetime.datetime class to call the today() method
+    start_date = datetime.datetime.today()
+    # Use the date() method to get the date part of the datetime object
+    start_date = start_date.date()
+    # Combine the date with the minimum time
     start_date = datetime.datetime.combine(start_date, datetime.time.min).strftime("%Y-%m-%d %H:%M:%S")
     end_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"Getting Movement data from {start_date} to {end_date} for {name} with Badge {mac} !")
