@@ -116,7 +116,14 @@ print(f"Start Status of Loggin {loggedInStatus}")
 # motionDetect = db.getxyz('00:8c:10:30:02:6f')
 # from pdb import set_trace
 # set_trace()
-while True:
+
+for name, mac in employees,items():
+    print(f"Checking motion status for {name} assigned badge {mac}")
+    motionDetect = sorted(db.getxyzSpecifictime(mac))
+    print(motionDetect)
+        
+
+""" while True:
     for name, mac in employees.items():
         print(f"Checking motion status for {name} assigned badge {mac}")
         try:
@@ -135,4 +142,4 @@ while True:
         except IndexError as i:
             print(f"No motion points for {mac}")
             continue
-    sleep(10)
+    sleep(10) """
