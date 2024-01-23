@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import requests
 from time import sleep
 from lib import db
@@ -62,7 +62,7 @@ def tokenRenew():
 
 def dateFormat(timestamp):
     # Create a datetime object from the epoch time stamp
-    date_time = datetime.fromtimestamp(timestamp)
+    date_time = datetime.datetime.fromtimestamp(timestamp)
     # Format the datetime object as a string
     return date_time.strftime("%d/%m/%Y %H:%M:%S")
 
@@ -81,9 +81,9 @@ def parseExistingCheckin(data):
 
 def timedelta(last_motion, seconds_delta):
     # get the current time as a datetime object
-    now = datetime.now()
+    now = datetime.datetime.now()
     # convert the epoch timestamp to a datetime object
-    epoch_datetime = datetime.fromtimestamp(last_motion)
+    epoch_datetime = datetime.datetime.fromtimestamp(last_motion)
     # calculate the difference between the current time and the epoch time as a timedelta object
     delta = now - epoch_datetime
     # check if the delta is greater than 10 minutes
@@ -158,8 +158,12 @@ set_trace()
 
 
 for name, mac in employees.items():
-    # Define the start date and end date values as datetime objects
-    start_date = datetime.combine(datetime.date.today(), datetime.time.min) # Current date at midnight
+    # Use the datetime.datetime class to call the today() method
+    start_date = datetime.datetime.today()
+    # Use the date() method to get the date part of the datetime object
+    start_date = start_date.date()
+    # Combine the date with the minimum time
+    start_date = datetime.datetime.combine(start_date, datetime.time.min)
     end_date = datetime.now()
     data = db.motionInSpecifiedTimePeriod(mac, start_date, end_date)
 
