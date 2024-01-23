@@ -113,13 +113,8 @@ def getStatusLogin(duration):
 
     # Check the status code and the content
     if response.status_code == 200:
-        if response.content and response.headers["Content-Type"] == "application/json":
-            # Parse the JSON string and create a Python object
-            return json.loads(response.content)
+            return json.loads(response.json)
             # Do something with the data
-        else:
-            # Print an error message
-            print("The API response is empty or not a valid JSON string.")
     else:
         # Print the error message
         print(f"Error: {response.status_code} - {response.reason}")
