@@ -3,8 +3,7 @@ import requests
 from time import sleep
 from lib import db
 import yaml
-import json
-from numpy as np
+import numpy as np
 access_token = ""
 refresh_token = ""
 expires_in = 0
@@ -177,6 +176,8 @@ for name, mac in employees.items():
     timestamp_list = [t[0] for t in filtered_list]
     # Print the timestamp list
     print(timestamp_list)
+    loginStatus = checkinout("checkIn", mac, timestamp_list[0])
+    print(loginStatus)
 
 
 
