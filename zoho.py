@@ -166,6 +166,17 @@ for name, mac in employees.items():
     start_date = datetime.datetime.combine(start_date, datetime.time.min).strftime("%Y-%m-%d %H:%M:%S")
     end_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     data = db.motionInSpecifiedTimePeriod(mac, start_date, end_date)
+    # Import the decimal module
+    from decimal import Decimal
+    # Define the list of tuples
+    filter_value = Decimal('0E-9')
+    # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
+    filtered_list = [t for t in data if sum(x != filter_value for x in t[-3:]) >= 2]
+    # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
+    timestamp_list = [t[0] for t in filtered_list]
+    # Print the timestamp list
+    print(timestamp_list)
+
 
 
 """ 
