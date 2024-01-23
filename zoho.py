@@ -10,7 +10,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.5153cbb75a61056333563acff60df9d2.3dc72e0b18a6eb58441c0cdfec2f99bb"
+code = "1000.36f075ca9d3ebe4c03e1960ac5f958ba.740a0496a6f618bc45d20f92941dea97"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -174,7 +174,7 @@ for name, mac in employees.items():
         if length == 0 and len(logindata) != 0:
             # Print a message that the result key is empty
             print("No checkin data found, continue to checkin!")
-            loginStatus = checkinout("checkIn", name, timestamps[0])
+            loginStatus = checkinout("checkIn", mac, timestamps[0])
         else:
             # Print a message that the result key has content
             print(f"The result key has {length} items.")
@@ -182,7 +182,7 @@ for name, mac in employees.items():
         print(f"The logindata is None: {e}")
         continue
     except IndexError as i:
-        print(f"No timestamp data for badge, so the error: {e}")
+        print(f"No timestamp data for badge, so the error: {i}")
         continue
 
    
