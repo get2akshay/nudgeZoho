@@ -4,7 +4,6 @@ from time import sleep
 from lib import db
 import yaml
 import json
-loggedInStatus = dict()
 access_token = ""
 refresh_token = ""
 expires_in = 0
@@ -149,11 +148,6 @@ employees = {"Rajesh Sharma": "00:8c:10:30:02:6f"}
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
 
-for mac in employees.values():
-    loggedInStatus[mac] = "checkOut"
-
-print(f"Start Status of Loggin {loggedInStatus}")
-
 #employees = {"Rajesh Sharma": "S2"}
 # motionDetect = db.getxyz('00:8c:10:30:02:6f')
 # from pdb import set_trace
@@ -179,8 +173,6 @@ for name, mac in employees.items():
     else:
         # Print a message that the result key has content
         print(f"The result key has {length} items.")
-
-    print(logindata)
 
     
     
