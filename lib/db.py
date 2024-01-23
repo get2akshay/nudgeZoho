@@ -47,7 +47,7 @@ FROM (
     FROM
         ts_kv
     WHERE
-        str_v SIMILAR TO '{mac}'
+        str_v SIMILAR TO "{mac}"
     GROUP BY
         str_v, entity_id
 ) AS subquery
