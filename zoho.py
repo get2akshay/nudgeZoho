@@ -10,7 +10,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.ce4b253141603034ba78a0904f889baf.74188cfb4237150fdd32ecb6f6ccd41b"
+code = "1000.0cf94d61ee650859792ab42bdb44b724.a66b27c87389e478d502f51dc5f1c327"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -147,10 +147,6 @@ def checkinout(status, employee, timestamp):
     # print the response status code and content
     print(response.status_code)
     print(response.content)
-
-
-employees = {"Rajesh Sharma": "00:8c:10:30:02:6f"}
-
 
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
