@@ -139,9 +139,14 @@ def checkinout(status, employee, timestamp):
     }
     # send a POST request and get the response
     response = requests.post(url, params=params, headers=headers)
-    # print the response status code and content
-    print(response.status_code)
-    print(response.content)
+    # Check the status code and the content
+    if response.status_code == 200:
+            return response.json()
+            # Do something with the data
+    else:
+        # Print the error message
+        print(f"Error: {response.status_code} - {response.reason}")
+
 
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
@@ -166,10 +171,10 @@ for name, mac in employees.items():
          # Get the length of the result list
         length = len(result)
         # Check if the length is zero or not
-        if length == 0:
+        if length == 0 and len(logindata) != 0:
             # Print a message that the result key is empty
             print("No checkin data found, continue to checkin!")
-            checkinout("checkIn", name, timestamps[0])
+            loginStatus = checkinout("checkIn", name, timestamps[0])
         else:
             # Print a message that the result key has content
             print(f"The result key has {length} items.")
