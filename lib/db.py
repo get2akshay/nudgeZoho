@@ -115,17 +115,16 @@ def motionInSpecifiedTimePeriod(mac, start_date, end_date):
     # Define the SQL query with placeholders
     uuid = getuuid(mac)
     sql = f"""SELECT
-            ts/1000 AS time,
-            str_v,
-            (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
-            (('x' || REPLACE(SUBSTRING(str_v FROM 10 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS y_axis,
-            (('x' || REPLACE(SUBSTRING(str_v FROM 19 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS z_axis
-    FROM
-            ts_kv
-        WHERE
-            entity_id = '{uuid}'
+                ts/1000 AS time,
+                str_v,
+                (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
+                (('x' || REPLACE(SUBSTRING(str_v FROM 10 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS y_axis,
+                (('x' || REPLACE(SUBSTRING(str_v FROM 19 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS z_axis
+            FROM
+                ts_kv
+            WHERE
+                entity_id = '{uuid}'
             AND key = 53
-            -- Add the following WHERE clause to filter by time range
             AND TO_TIMESTAMP(ts/1000) >= TO_TIMESTAMP(%s, 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP(ts/1000) <= TO_TIMESTAMP(%s, 'YYYY-MM-DD HH24:MI:SS');
     """
     return query_db(query=sql, start_date=start_date, end_date=end_date)
@@ -135,14 +134,21 @@ def getuuid(mac):
     uuid = ""
     # execute the SQL query and pass the entity_id as a parameter
     data = query_db(get_mac_uuid(mac))
-    for row in data:
+    try:
+        for row in data:
         #print(next(iter(set(row))))
-        uuid = next(iter(set(row)))
-    if not uuid:
-        print("MAC to UUID could not be fetched")
-    # fetch the result set as a list of tuples
-    # close the cursor and the connection
-    return uuid
+            uuid = next(iter(set(row)))
+        if not uuid:
+            print("MAC to UUID could not be fetched")
+        # fetch the result set as a list of tuples
+        # close the cursor and the connection
+        return uuid
+    except TypeError as t:
+        print("DB dod not give any data!")
+        pass
+
+    
+    
 
 
 def getxyz(mac):
