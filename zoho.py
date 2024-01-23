@@ -4,6 +4,8 @@ from time import sleep
 from lib import db
 import yaml
 import numpy as np
+# Import the decimal module
+from decimal import Decimal
 access_token = ""
 refresh_token = ""
 expires_in = 0
@@ -156,41 +158,93 @@ with open('staff.yaml', 'r') as file:
 # from pdb import set_trace
 # set_trace()
 
+def firstEntyCheckiIn():
+    for name, mac in employees.items():
+        # Use the date() method to get the date part of the datetime object
+        # Use the datetime.datetime class to call the today() method
+        start_date = datetime.datetime.today()
+        # Use the date() method to get the date part of the datetime object
+        start_date = start_date.date()
+        # Combine the date with the minimum time
+        start_date = datetime.datetime.combine(start_date, datetime.time.min).strftime("%Y-%m-%d %H:%M:%S")
+        end_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"Getting Movement data from {start_date} to {end_date} for {name} with Badge {mac} !")
+        data = db.motionInSpecifiedTimePeriod(mac, start_date, end_date)
+        # Define the list of tuples
+        filter_value = Decimal('0E-9')
+        # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
+        filtered_list = [t for t in data if np.count_nonzero(t[-3:]) >= 2]
+        # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
+        timestamp_list = [t[0] for t in filtered_list]
+        # Print the timestamp list
+        print(timestamp_list)
+        try:
+            # Create a datetime object from the epoch time
+            dt = datetime.datetime.fromtimestamp(timestamp_list[0])
+            # Format the datetime object using strftime
+            chekinTime = dt.strftime("%Y-%m-%d %H:%M:%S")
+            print(f"Earliest Motion found for {name} with {mac} was {chekinTime} !")
+            loginStatus = checkinout("checkIn", mac, timestamp_list[0])
+            print(loginStatus)
+        except IndexError as i:
+            print(f"No movement detected for {name} and badge {mac}")
 
-for name, mac in employees.items():
-    # Use the date() method to get the date part of the datetime object
-    # Use the datetime.datetime class to call the today() method
-    start_date = datetime.datetime.today()
-    # Use the date() method to get the date part of the datetime object
-    start_date = start_date.date()
-    # Combine the date with the minimum time
-    start_date = datetime.datetime.combine(start_date, datetime.time.min).strftime("%Y-%m-%d %H:%M:%S")
-    end_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"Getting Movement data from {start_date} to {end_date} for {name} with Badge {mac} !")
-    data = db.motionInSpecifiedTimePeriod(mac, start_date, end_date)
-    # Import the decimal module
-    from decimal import Decimal
-    # Define the list of tuples
-    filter_value = Decimal('0E-9')
-    # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
-    filtered_list = [t for t in data if np.count_nonzero(t[-3:]) >= 2]
-    # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
-    timestamp_list = [t[0] for t in filtered_list]
-    # Print the timestamp list
-    print(timestamp_list)
-    try:
-        # Create a datetime object from the epoch time
-        dt = datetime.datetime.fromtimestamp(timestamp_list[0])
-        # Format the datetime object using strftime
-        chekinTime = dt.strftime("%Y-%m-%d %H:%M:%S")
-        print(f"Earliest Motion found for {name} with {mac} was {chekinTime} !")
-        loginStatus = checkinout("checkIn", mac, timestamp_list[0])
-        print(loginStatus)
-    except IndexError as i:
-        print(f"No movement detected for {name} and badge {mac}")
+def lastMotionCheck():
+    for name, mac in employees.items():
+        # Use the date() method to get the date part of the datetime object
+        # Get the current datetime object
+        current_time = datetime.datetime.now()
+        # Subtract one day from the current date
+        previous_date = current_time.date() - datetime.timedelta(days=1)
+        # Combine the previous date with the minimum time (00:00:00)
+        start_time = datetime.datetime.combine(previous_date, datetime.time.min)
+        # Format the start time using strftime
+        start_time = start_time.strftime("%Y-%m-%d %H:%M:%S")
+        # Print the start time
+        print(start_time)
+        end_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"Getting Movement data from {start_time} to {end_date} for {name} with Badge {mac} !")
+        data = db.motionInSpecifiedTimePeriod(mac, start_time, end_date)
+        # Define the list of tuples
+        filter_value = Decimal('0E-9')
+        # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
+        filtered_list = [t for t in data if np.count_nonzero(t[-3:]) >= 2]
+        # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
+        timestamp_list = [t[0] for t in filtered_list]
+        # Print the timestamp list
+        print(timestamp_list)
+        try:
+            # Create a datetime object from the epoch time
+            dt = datetime.datetime.fromtimestamp(timestamp_list[-1])
+            # Format the datetime object using strftime
+            chekioutTime = dt.strftime("%Y-%m-%d %H:%M:%S")
+            print(f"Last Motion found for {name} with {mac} was {chekioutTime} !")
+            loginStatus = checkinout("checkOut", mac, timestamp_list[-1])
+            print(loginStatus)
+        except IndexError as i:
+            print(f"No movement detected for {name} and badge {mac}")
 
-    
 
+
+# Define the time range
+checkout_check_start_time = datetime.time(5, 0, 0) # 0500 hours
+checkout_check_end_time = datetime.time(5, 30, 0) # 0530 hours
+
+# Start the loop
+while True:
+    # Get the current time
+    current_time = datetime.datetime.now().time()
+
+    # Check if the current time is within the time range
+    if checkout_check_start_time <= current_time <= checkout_check_end_time:
+        # Run the first function
+        lastMotionCheck()
+    else:
+        # Run the second function
+        firstEntyCheckiIn()
+
+    # Pause the loop for 10 seconds
+    sleep(10)
 
 
 """ 
