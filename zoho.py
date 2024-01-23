@@ -10,7 +10,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.dd750ec5bc676b96213d7645a1e27ef6.01d262b4119a6d5933a88fd2caac964c"
+code = "1000.6038f00975edb6d92098d183149197a9.1e9fe288f697e1295bf5914623f04f5c"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -157,6 +157,7 @@ for name, mac in employees.items():
     print(motionDetect)
     timestamps = sorted(motionDetect)
     logindata = getStatusLogin(5)
+    print(logindata)
     # Parse the JSON string and create a Python object
     # Access the result key from the Python object
     try:
