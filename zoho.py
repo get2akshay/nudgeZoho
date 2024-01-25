@@ -12,7 +12,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.2559b9155c89f1bbcc064b8a61a4d4e6.c6f1b23569e0315cf087f29905aa116a"
+code = "1000.9f5a60db8e8b8da5a9aeab73784f26f9.15bdc09441cd2c046c136eaeffc0e607"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -248,10 +248,15 @@ def old_data(name, mac):
             # Calculate the checkout time by subtracting 30 seconds
             checkout_time = ts - datetime.timedelta(seconds=30)
             try:
+                # Create a datetime object from the epoch time
+                dt = datetime.datetime.fromtimestamp(checkout_time)
+                ci = datetime.datetime.fromtimestamp(ts)
+                # Format the datetime object using strftime
+                co = dt.strftime("%Y-%m-%d %H:%M:%S")
                 # Call the checkinout function with the appropriate arguments
-                loginStatus = checkinout("checkIn", mac, ts.strftime("%Y-%m-%d %H:%M:%S"))
+                loginStatus = checkinout("checkIn", mac, ts)
                 print(f"Making checkIn for OLd time stamps {loginStatus}")
-                loginStatus = checkinout("checkOut", mac, checkout_time.strftime("%Y-%m-%d %H:%M:%S"))
+                loginStatus = checkinout("checkOut", mac, checkout_time)
                 print(f"Making checkOut for OLd time stamps {loginStatus}")
             except IndexError as i:
                 print(f"No movement detected for {name} and badge {mac}")
