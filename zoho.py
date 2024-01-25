@@ -12,7 +12,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.1354e641ff66aa3ee9179fd3695e7a73.35f7e96ae9f1562a77d751124981225a"
+code = "1000.ca1fb767c2328c933b75f16dfc5fbef4.0849298e7f2b0db5652d528c311b1012"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -121,9 +121,6 @@ def getStatusLogin(duration):
         # Print the error message
         print(f"Error: {response.status_code} - {response.reason}")
 
-    
-
-
 def checkinout(status, employee, timestamp):
     # generate token
     generateToken()
@@ -158,20 +155,22 @@ with open('staff.yaml', 'r') as file:
 # from pdb import set_trace
 # set_trace()
 
-def firstEntyCheckiIn():
+def firstEntyCheckiIn(start_date=None, end_date=None):
     for name, mac in employees.items():
         # Use the date() method to get the date part of the datetime object
         # Use the datetime.datetime class to call the today() method
-        start_date = datetime.datetime.today()
+        start_time = datetime.datetime.today()
         # Use the date() method to get the date part of the datetime object
-        start_date = start_date.date()
+        start_time = start_time.date()
         # Combine the date with the minimum time
-        start_date = datetime.datetime.combine(start_date, datetime.time.min).strftime("%Y-%m-%d %H:%M:%S")
-        end_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"Getting Movement data from {start_date} to {end_date} for {name} with Badge {mac} !")
-        data = db.motionInSpecifiedTimePeriod(mac, start_date, end_date)
-        # Define the list of tuples
-        filter_value = Decimal('0E-9')
+        if start_date is not None:
+            start_time = start_date
+        start_time = datetime.datetime.combine(start_time, datetime.time.min).strftime("%Y-%m-%d %H:%M:%S")
+        end_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        if end_date is not None:
+            end_time = end_date.strftime("%Y-%m-%d %H:%M:%S")
+        print(f"Getting Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
+        data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
         # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
         filtered_list = [t for t in data if np.count_nonzero(t[-3:]) >= 2]
         # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
@@ -189,7 +188,7 @@ def firstEntyCheckiIn():
         except IndexError as i:
             print(f"No movement detected for {name} and badge {mac}")
 
-def lastMotionCheck():
+def lastMotionCheck(start_date=None, end_date=None):
     for name, mac in employees.items():
         # Use the date() method to get the date part of the datetime object
         # Get the current datetime object
@@ -197,14 +196,18 @@ def lastMotionCheck():
         # Subtract one day from the current date
         previous_date = current_time.date() - datetime.timedelta(days=1)
         # Combine the previous date with the minimum time (00:00:00)
+        if start_date is not None:
+            previous_date = start_date
         start_time = datetime.datetime.combine(previous_date, datetime.time.min)
         # Format the start time using strftime
         start_time = start_time.strftime("%Y-%m-%d %H:%M:%S")
         # Print the start time
         print(start_time)
-        end_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"Getting Movement data from {start_time} to {end_date} for {name} with Badge {mac} !")
-        data = db.motionInSpecifiedTimePeriod(mac, start_time, end_date)
+        end_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        if end_date is not None:
+            end_time = end_date.strftime("%Y-%m-%d %H:%M:%S")
+        print(f"Getting Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
+        data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
         # Define the list of tuples
         filter_value = Decimal('0E-9')
         # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
@@ -224,8 +227,6 @@ def lastMotionCheck():
         except IndexError as i:
             print(f"No movement detected for {name} and badge {mac}")
 
-
-
 # Define the time range
 checkout_check_start_time = datetime.time(5, 0, 0) # 0500 hours
 checkout_check_end_time = datetime.time(5, 30, 0) # 0530 hours
@@ -242,61 +243,12 @@ while True:
     else:
         # Run the second function
         firstEntyCheckiIn()
-
     # Pause the loop for 10 seconds
+    
+    # Define the start date as a datetime object
+    start_date = datetime.datetime.strptime("2023-12-04", "%Y-%m-%d")
+    # Define the end date as a datetime object by adding 30 days to the start date
+    end_date = start_date + datetime.timedelta(days=30)
+    firstEntyCheckiIn(start_date=start_date, end_date=end_date)
+    lastMotionCheck(start_date=start_date, end_date=end_date)
     sleep(10)
-
-
-""" 
-for name, mac in employees.items():
-    print(f"Checking motion status for {name} assigned badge {mac}")
-    motionDetect = sorted(db.getxyzSpecifictime(mac))
-    print(motionDetect)
-    timestamps = sorted(motionDetect)
-    logindata = getStatusLogin(5)
-    print(logindata)
-    # Parse the JSON string and create a Python object
-    # Access the result key from the Python object
-    try:
-        result = logindata["response"]["result"]
-        # Do something with result
-         # Get the length of the result list
-        length = len(result)
-        # Check if the length is zero or not
-        if length == 0 and len(logindata) != 0:
-            # Print a message that the result key is empty
-            print("No checkin data found, continue to checkin!")
-            loginStatus = checkinout("checkIn", mac, timestamps[0])
-        else:
-            # Print a message that the result key has content
-            print(f"The result key has {length} items.")
-    except TypeError as e:
-        print(f"The logindata is None: {e}")
-        continue
-    except IndexError as i:
-        print(f"No timestamp data for badge, so the error: {i}")
-        continue
-
- """
-
-
-""" while True:
-    for name, mac in employees.items():
-        print(f"Checking motion status for {name} assigned badge {mac}")
-        try:
-            #motionDetect = db.getxyz(mac)
-            motionDetect = sorted(db.getxyzSpecifictime(mac))
-            if "checkOut" in loggedInStatus[mac]:
-                checkinout("checkIn",mac,motionDetect[0])
-                loggedInStatus[mac] = "checkIn"
-            if timedelta(motionDetect[-1],600) and "checkIn" in loggedInStatus[mac]:
-                now = datetime.now()
-                checkinout("checkOut",mac,now)
-            
-        except TypeError as t:
-            print(f"Badge {mac} not found in DB for {name}, check again !")
-            continue
-        except IndexError as i:
-            print(f"No motion points for {mac}")
-            continue
-    sleep(10) """
