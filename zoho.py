@@ -231,9 +231,9 @@ def lastMotionCheck(name, mac, start_date=None, end_date=None):
 
 def old_data(name, mac):
     # Define the start date as a datetime object
-    start_time = datetime(2023, 12, 4, 0, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
+    start_time = datetime.datetime(2023, 12, 4, 0, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
     # Define the end date as a datetime object by adding 30 days to the start date
-    end_time = datetime(2024, 1, 1, 2, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
+    end_time = datetime.datetime(2024, 1, 1, 2, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
     print(f"Getting Old Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
     data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
     if data is not None:
