@@ -12,7 +12,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.20de4ce968759f7d676ab605a787cb2e.9a230da6bd5625dd2b3617f89efa6431"
+code = "1000.2a6f8f26b70245b4b71d13ea503e669a.7b9d98684c691cf2541c4d2574aa942d"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -155,107 +155,147 @@ with open('staff.yaml', 'r') as file:
 # from pdb import set_trace
 # set_trace()
 
-def firstEntyCheckiIn(start_date=None, end_date=None):
-    for name, mac in employees.items():
-        # Use the date() method to get the date part of the datetime object
-        # Use the datetime.datetime class to call the today() method
-        start_time = datetime.datetime.today()
-        # Use the date() method to get the date part of the datetime object
-        start_time = start_time.date()
-        # Combine the date with the minimum time
-        if start_date is not None:
-            start_time = start_date
-        start_time = datetime.datetime.combine(start_time, datetime.time.min).strftime("%Y-%m-%d %H:%M:%S")
-        end_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        if end_date is not None:
-            end_time = end_date.strftime("%Y-%m-%d %H:%M:%S")
-        print(f"Getting Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
-        data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
-        if data is None:
-            continue
-        else:
-            # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
-            filtered_list = [t for t in data if np.count_nonzero(t[-3:]) >= 2]
-            # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
-            timestamp_list = [t[0] for t in filtered_list]
-            # Print the timestamp list
-            print(timestamp_list)
-            try:
-                # Create a datetime object from the epoch time
-                dt = datetime.datetime.fromtimestamp(timestamp_list[0])
-                # Format the datetime object using strftime
-                chekinTime = dt.strftime("%Y-%m-%d %H:%M:%S")
-                print(f"Earliest Motion found for {name} with {mac} was {chekinTime} !")
-                loginStatus = checkinout("checkIn", mac, timestamp_list[0])
-                print(loginStatus)
-            except IndexError as i:
-                print(f"No movement detected for {name} and badge {mac}")
+def firstEntyCheckiIn(name, mac, start_date=None, end_date=None):
+    # Use the date() method to get the date part of the datetime object
+    # Use the datetime.datetime class to call the today() method
+    start_time = datetime.datetime.today()
+    # Use the date() method to get the date part of the datetime object
+    start_time = start_time.date()
+    # Combine the date with the minimum time
+    if start_date is not None:
+        start_time = start_date
+    start_time = datetime.datetime.combine(start_time, datetime.time.min).strftime("%Y-%m-%d %H:%M:%S")
+    end_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if end_date is not None:
+        end_time = end_date.strftime("%Y-%m-%d %H:%M:%S")
+    print(f"Getting Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
+    data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
+    if data is None:
+        # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
+        filtered_list = [t for t in data if np.count_nonzero(t[-3:]) >= 2]
+        # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
+        timestamp_list = [t[0] for t in filtered_list]
+        # Print the timestamp list
+        print(timestamp_list)
+        try:
+            # Create a datetime object from the epoch time
+            dt = datetime.datetime.fromtimestamp(timestamp_list[0])
+            # Format the datetime object using strftime
+            chekinTime = dt.strftime("%Y-%m-%d %H:%M:%S")
+            print(f"Earliest Motion found for {name} with {mac} was {chekinTime} !")
+            loginStatus = checkinout("checkIn", mac, timestamp_list[0])
+            print(loginStatus)
+        except IndexError as i:
+            print(f"No movement detected for {name} and badge {mac}")
     
 
-def lastMotionCheck(start_date=None, end_date=None):
-    for name, mac in employees.items():
-        # Use the date() method to get the date part of the datetime object
-        # Get the current datetime object
-        current_time = datetime.datetime.now()
-        # Subtract one day from the current date
-        previous_date = current_time.date() - datetime.timedelta(days=1)
-        # Combine the previous date with the minimum time (00:00:00)
-        if start_date is not None:
-            previous_date = start_date
-        start_time = datetime.datetime.combine(previous_date, datetime.time.min)
-        # Format the start time using strftime
-        start_time = start_time.strftime("%Y-%m-%d %H:%M:%S")
-        # Print the start time
-        print(start_time)
-        end_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        if end_date is not None:
-            end_time = end_date.strftime("%Y-%m-%d %H:%M:%S")
-        print(f"Getting Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
-        data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
-        # Define the list of tuples
-        # filter_value = Decimal('0E-9')
-        if data is None:
-            continue
-        else:
-            # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
-            filtered_list = [t for t in data if np.count_nonzero(t[-3:]) >= 2]
-            # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
-            timestamp_list = [t[0] for t in filtered_list]
-            # Print the timestamp list
-            print(timestamp_list)
+def lastMotionCheck(name, mac, start_date=None, end_date=None):
+    # Use the date() method to get the date part of the datetime object
+    # Get the current datetime object
+    current_time = datetime.datetime.now()
+    # Subtract one day from the current date
+    previous_date = current_time.date() - datetime.timedelta(days=1)
+    # Combine the previous date with the minimum time (00:00:00)
+    if start_date is not None:
+        previous_date = start_date
+    start_time = datetime.datetime.combine(previous_date, datetime.time.min)
+    # Format the start time using strftime
+    start_time = start_time.strftime("%Y-%m-%d %H:%M:%S")
+    # Print the start time
+    print(start_time)
+    end_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if end_date is not None:
+        end_time = end_date.strftime("%Y-%m-%d %H:%M:%S")
+    print(f"Getting Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
+    data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
+    # Define the list of tuples
+    # filter_value = Decimal('0E-9')
+    if data is not None:
+        # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
+        filtered_list = [t for t in data if np.count_nonzero(t[-3:]) >= 2]
+        # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
+        timestamp_list = [t[0] for t in filtered_list]
+        # Print the timestamp list
+        print(timestamp_list)
+        try:
+            # Create a datetime object from the epoch time
+            dt = datetime.datetime.fromtimestamp(timestamp_list[-1])
+            # Format the datetime object using strftime
+            chekioutTime = dt.strftime("%Y-%m-%d %H:%M:%S")
+            print(f"Last Motion found for {name} with {mac} was {chekioutTime} !")
+            loginStatus = checkinout("checkOut", mac, timestamp_list[-1])
+            print(loginStatus)
+        except IndexError as i:
+            print(f"No movement detected for {name} and badge {mac}")
+        
+
+def old_data(name, mac):
+     # Define the start date as a datetime object
+    start_time = datetime.datetime.strptime("2023-12-04", "%Y-%m-%d")
+    # Define the end date as a datetime object by adding 30 days to the start date
+    end_time = datetime.datetime.strptime("2023-12-31", "%Y-%m-%d")
+    print(f"Getting Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
+    data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
+    if data is not None:
+        # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
+        filtered_list = [t for t in data if np.count_nonzero(t[-3:]) >= 2]
+        # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
+        timestamp_list = [t[0] for t in filtered_list]
+        # Print the timestamp list
+        print(timestamp_list)
+        # Loop through the list of datetime objects
+        for index, ts in enumerate(timestamp_list):
+            # Calculate the checkout time by subtracting 30 seconds
+            checkout_time = ts - datetime.timedelta(seconds=30)
             try:
-                # Create a datetime object from the epoch time
-                dt = datetime.datetime.fromtimestamp(timestamp_list[-1])
-                # Format the datetime object using strftime
-                chekioutTime = dt.strftime("%Y-%m-%d %H:%M:%S")
-                print(f"Last Motion found for {name} with {mac} was {chekioutTime} !")
-                loginStatus = checkinout("checkOut", mac, timestamp_list[-1])
-                print(loginStatus)
+                # Call the checkinout function with the appropriate arguments
+                loginStatus = checkinout("checkIn", mac, ts.strftime("%Y-%m-%d %H:%M:%S"))
+                print(f"Making checkIn for OLd time stamps {loginStatus}")
+                loginStatus = checkinout("checkOut", mac, checkout_time.strftime("%Y-%m-%d %H:%M:%S"))
+                print(f"Making checkOut for OLd time stamps {loginStatus}")
             except IndexError as i:
                 print(f"No movement detected for {name} and badge {mac}")
 
 # Define the time range
 checkout_check_start_time = datetime.time(5, 0, 0) # 0500 hours
 checkout_check_end_time = datetime.time(5, 30, 0) # 0530 hours
-
 # Start the loop
+count = 0
 while True:
     # Get the current time
     current_time = datetime.datetime.now().time()
-
-    # Check if the current time is within the time range
-    if checkout_check_start_time <= current_time <= checkout_check_end_time:
+    for name, mac in employees.items():
+         # Check if the current time is within the time range
+        if checkout_check_start_time <= current_time <= checkout_check_end_time:
         # Run the first function
-        lastMotionCheck()
-    else:
+            lastMotionCheck(name, mac)
+        else:
         # Run the second function
-        firstEntyCheckiIn()
-    # Pause the loop for 10 seconds
-    
-    # Define the start date as a datetime object
-    start_date = datetime.datetime.strptime("2023-12-04", "%Y-%m-%d")
-    # Define the end date as a datetime object by adding 30 days to the start date
-    end_date = start_date + datetime.timedelta(days=30)
-    firstEntyCheckiIn(start_date=start_date, end_date=end_date)
-    lastMotionCheck(start_date=start_date, end_date=end_date)
-    sleep(10)
+            firstEntyCheckiIn(name, mac)
+        #Settle old data
+        if count < 3:
+            old_data(name, mac)
+            count+=1
+        # Pause the loop for 10 seconds
+        sleep(10)
+
+
+
+
+
+
+
+
+# Convert the tuple of timestamps into a list of datetime objects
+timestamp_list = [datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S") for ts in timestamp_tuple]
+
+# Sort the list of datetime objects in ascending order
+timestamp_list.sort()
+
+# Loop through the list of datetime objects
+for index, ts in enumerate(timestamp_list):
+    # Calculate the checkout time by subtracting 30 seconds
+    checkout_time = ts - datetime.timedelta(seconds=30)
+    # Call the checkinout function with the appropriate arguments
+    checkinout("checkIn", mac, ts.strftime("%Y-%m-%d %H:%M:%S"))
+    checkinout("checkOut", mac, checkout_time.strftime("%Y-%m-%d %H:%M:%S"))
