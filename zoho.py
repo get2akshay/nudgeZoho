@@ -12,7 +12,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.b3443c7e55a6fcddd4242f4d6531d8b1.d4b33b3cf9225fa630c8d7d9d759a98d"
+code = "1000.869b8b9407344645ec117101e749d79a.16cdf4646138d13fe7555e62f0543991"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -230,11 +230,11 @@ def lastMotionCheck(name, mac, start_date=None, end_date=None):
         
 
 def old_data(name, mac):
-     # Define the start date as a datetime object
+    # Define the start date as a datetime object
     start_time = datetime.datetime.strptime("2023-12-04", "%Y-%m-%d")
     # Define the end date as a datetime object by adding 30 days to the start date
     end_time = datetime.datetime.strptime("2023-12-31", "%Y-%m-%d")
-    print(f"Getting Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
+    print(f"Getting Old Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
     data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
     if data is not None:
         # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
@@ -268,10 +268,12 @@ while True:
          # Check if the current time is within the time range
         if checkout_check_start_time <= current_time <= checkout_check_end_time:
         # Run the first function
-            lastMotionCheck(name, mac)
+            #lastMotionCheck(name, mac)
+            pass
         else:
         # Run the second function
-            firstEntyCheckiIn(name, mac)
+            #firstEntyCheckiIn(name, mac)
+            pass
         #Settle old data
         if count < 3:
             old_data(name, mac)
