@@ -114,6 +114,9 @@ JOIN GyroData q2 ON q1.time = q2.time;"""
 def motionInSpecifiedTimePeriod(mac, start_date, end_date):
     # Define the SQL query with placeholders
     uuid = getuuid(mac)
+    if uuid is None:
+        print(f"DB returend empty UUID value for {mac} during time period {start_date} to {end_date}")
+        return None
     sql = f"""SELECT
                 ts/1000 AS time,
                 str_v,
@@ -127,11 +130,7 @@ def motionInSpecifiedTimePeriod(mac, start_date, end_date):
             AND key = 53
             AND TO_TIMESTAMP(ts/1000) >= TO_TIMESTAMP(%s, 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP(ts/1000) <= TO_TIMESTAMP(%s, 'YYYY-MM-DD HH24:MI:SS');
     """
-    try:
-        return query_db(query=sql, start_date=start_date, end_date=end_date)
-    except TypeError as t:
-        print(f"DB returend empty table values for {mac} during time period {start_date} to {end_date}")
-        pass
+    return query_db(query=sql, start_date=start_date, end_date=end_date)
 
      
     
