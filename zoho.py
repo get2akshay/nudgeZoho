@@ -170,7 +170,7 @@ def firstEntyCheckiIn(name, mac, start_date=None, end_date=None):
         end_time = end_date.strftime("%Y-%m-%d %H:%M:%S")
     print(f"Getting Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
     data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
-    if data is None:
+    if data is not None:
         # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
         filtered_list = [t for t in data if np.count_nonzero(t[-3:]) >= 2]
         # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
@@ -278,24 +278,3 @@ while True:
             count+=1
         # Pause the loop for 10 seconds
         sleep(10)
-
-
-
-
-
-
-
-
-# Convert the tuple of timestamps into a list of datetime objects
-timestamp_list = [datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S") for ts in timestamp_tuple]
-
-# Sort the list of datetime objects in ascending order
-timestamp_list.sort()
-
-# Loop through the list of datetime objects
-for index, ts in enumerate(timestamp_list):
-    # Calculate the checkout time by subtracting 30 seconds
-    checkout_time = ts - datetime.timedelta(seconds=30)
-    # Call the checkinout function with the appropriate arguments
-    checkinout("checkIn", mac, ts.strftime("%Y-%m-%d %H:%M:%S"))
-    checkinout("checkOut", mac, checkout_time.strftime("%Y-%m-%d %H:%M:%S"))
