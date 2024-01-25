@@ -12,7 +12,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.04fdf893efb3c2d2c3c0637dc6ef74a1.f12db24f3f973fcfded7b9a563507656"
+code = "1000.731588cd5db4bea6148978de540c9988.d7f1dda80897c2862fded52bc2cdf34b"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -231,9 +231,9 @@ def lastMotionCheck(name, mac, start_date=None, end_date=None):
 
 def old_data(name, mac):
     # Define the start date as a datetime object
-    start_time = datetime.datetime.strptime("2023-12-04", "%Y-%m-%d")
+    start_time = datetime(2023, 12, 4, 0, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
     # Define the end date as a datetime object by adding 30 days to the start date
-    end_time = datetime.datetime.strptime("2023-12-31", "%Y-%m-%d")
+    end_time = datetime(2024, 1, 1, 2, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
     print(f"Getting Old Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
     data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
     if data is not None:
