@@ -246,7 +246,7 @@ def old_data(name, mac):
         # Loop through the list of datetime objects
         for index, ts in enumerate(timestamp_list):
             # Calculate the checkout time by subtracting 30 seconds
-            checkout_time = ts - datetime.datetime.timedelta(seconds=30)
+            checkout_time = ts - 30
             try:
                 # Create a datetime object from the epoch time
                 dt = datetime.datetime.fromtimestamp(checkout_time)
