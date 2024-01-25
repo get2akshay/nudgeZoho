@@ -124,14 +124,14 @@ def getStatusLogin(duration):
 def checkinout(status, employee, timestamp):
     # generate token
     generateToken()
-    print(f"Token is valid for {expires_in}")
+    # print(f"Token is valid for {expires_in}")
     url = "https://people.zoho.in/people/api/attendance"
     params = {
     "dateFormat": "dd/MM/yyyy HH:mm:ss",
     status : dateFormat(timestamp),
     "empId": employee
     }
-    print(params)
+    # print(params)
     # set the authorization header with your Zoho OAuth token
     headers = {
     "Authorization": f"Zoho-oauthtoken {access_token}"
