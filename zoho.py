@@ -12,7 +12,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.27faf6efb18ad66e60d09843eb362a36.5009149bbebe3513b0691e9fe042e42c"
+code = "1000.c5d2d16a58c89e21c81452c719c9bc75.79aa52aa8d9ebf9b924c46c157fdb826"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -252,10 +252,6 @@ def old_data(name, mac):
         # Loop through the list of timestamps
         for index, ts in enumerate(timestamp_list):
             # Convert the current and next timestamps to datetime objects
-            # Calculate the time difference in seconds
-            time_diff = (timestamp_list[index + 1] - timestamp_list[index])
-            # Print the time difference
-            print(f"The time difference between {current_time} and {timestamp_list[index]} is {time_diff} seconds.")
             # Call the function with the appropriate arguments
             if index == 0:
                 # First checkin with the earliest timestamp
@@ -263,6 +259,10 @@ def old_data(name, mac):
             else:
                 # Checkout and checkin with the subsequent timestamps
                 try:
+                    # Calculate the time difference in seconds
+                    time_diff = (timestamp_list[index + 1] - timestamp_list[index])
+                    # Print the time difference
+                    print(f"The time difference between {timestamp_list[index + 1]} and {timestamp_list[index]} is {time_diff} seconds.")
                     # Check if the time difference is more than 1800 seconds
                     if time_diff > missingTime:
                         # Call the checkout function
