@@ -12,7 +12,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.cda2225b618fa8afb4f0e25fe06314d4.920d83b7511bef343213d6b66597f74d"
+code = "1000.b572fdace904ba1c7dd6fce0d648fbc7.7b580574782a486bee7131426ecf414d"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -242,21 +242,30 @@ def old_data(name, mac):
         # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
         timestamp_list = [t[0] for t in filtered_list]
         # Print the timestamp list
+        timestamp_list.sort()
         print(timestamp_list)
-        # Loop through the list of datetime objects
+        # Loop through the list of timestamps
         for index, ts in enumerate(timestamp_list):
             # Calculate the checkout time by subtracting 30 seconds
             checkout_time = ts - 30
-            try:
+            # Call the function with the appropriate arguments
+            if index == 0:
+                # First checkin with the earliest timestamp
+                loginStatus = checkinout("checkIn", mac, ts)
+            else:
+                # Checkout and checkin with the subsequent timestamps
+                try:
                 # Create a datetime object from the epoch time
                 # Format the datetime object using strftime
                 # Call the checkinout function with the appropriate arguments
-                loginStatus = checkinout("checkIn", mac, ts)
-                print(f"Making checkIn for OLd time stamps {loginStatus}")
-                loginStatus = checkinout("checkOut", mac, checkout_time)
-                print(f"Making checkOut for OLd time stamps {loginStatus}")
-            except IndexError as i:
-                print(f"No movement detected for {name} and badge {mac}")
+                    loginStatus = checkinout("checkOut", mac, checkout_time)
+                    print(f"Making checkOut for OLd time stamp {loginStatus}")
+                    loginStatus = checkinout("checkIn", mac, ts)
+                    print(f"Making checkIn for OLd time stamps {loginStatus}")
+                except IndexError as i:
+                    print(f"No movement detected for {name} and badge {mac}")
+                    # Loop through the list of datetime objects
+            
 
 # Define the time range
 checkout_check_start_time = datetime.time(5, 0, 0) # 0500 hours
@@ -270,15 +279,15 @@ while True:
          # Check if the current time is within the time range
         if checkout_check_start_time <= current_time <= checkout_check_end_time:
         # Run the first function
-            lastMotionCheck(name, mac)
-            # pass
+            # lastMotionCheck(name, mac)
+            pass
         else:
         # Run the second function
-            firstEntyCheckiIn(name, mac)
-            # pass
+            # firstEntyCheckiIn(name, mac)
+            pass
         #Settle old data
         if count < 3:
-            # old_data(name, mac)
+            old_data(name, mac)
             count+=1
         # Pause the loop for 10 seconds
         sleep(10)
