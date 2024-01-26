@@ -242,7 +242,7 @@ def old_data(name, mac):
         # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
         timestamp_list = [t[0] for t in filtered_list]
         # Print the timestamp list
-        timestamp_list.sort()
+        list(set(timestamp_list.sort()))
         print(timestamp_list)
         # Loop through the list of timestamps
         for index, ts in enumerate(timestamp_list):
