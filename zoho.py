@@ -12,7 +12,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.6d2bd950bc3f0720d852b977aaad9435.8335525d28001a05ed453d94e7f9a281"
+code = "1000.cda2225b618fa8afb4f0e25fe06314d4.920d83b7511bef343213d6b66597f74d"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -249,10 +249,7 @@ def old_data(name, mac):
             checkout_time = ts - 30
             try:
                 # Create a datetime object from the epoch time
-                dt = datetime.datetime.fromtimestamp(checkout_time)
-                ci = datetime.datetime.fromtimestamp(ts)
                 # Format the datetime object using strftime
-                co = dt.strftime("%Y-%m-%d %H:%M:%S")
                 # Call the checkinout function with the appropriate arguments
                 loginStatus = checkinout("checkIn", mac, ts)
                 print(f"Making checkIn for OLd time stamps {loginStatus}")
@@ -273,15 +270,15 @@ while True:
          # Check if the current time is within the time range
         if checkout_check_start_time <= current_time <= checkout_check_end_time:
         # Run the first function
-            #lastMotionCheck(name, mac)
-            pass
+            lastMotionCheck(name, mac)
+            # pass
         else:
         # Run the second function
-            #firstEntyCheckiIn(name, mac)
-            pass
+            firstEntyCheckiIn(name, mac)
+            # pass
         #Settle old data
         if count < 3:
-            old_data(name, mac)
+            # old_data(name, mac)
             count+=1
         # Pause the loop for 10 seconds
         sleep(10)
