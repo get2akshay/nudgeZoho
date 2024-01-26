@@ -12,7 +12,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.b572fdace904ba1c7dd6fce0d648fbc7.7b580574782a486bee7131426ecf414d"
+code = "1000.2b9eb7cbb6e7b072c9630a71d0ffb50f.4951dc0c0995c2699e8e55ea88c12cd4"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -242,7 +242,10 @@ def old_data(name, mac):
         # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
         timestamp_list = [t[0] for t in filtered_list]
         # Print the timestamp list
-        list(set(timestamp_list.sort()))
+        try:
+            list(set(timestamp_list.sort()))
+        except TypeError as t:
+            print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !")
         print(timestamp_list)
         # Loop through the list of timestamps
         for index, ts in enumerate(timestamp_list):
