@@ -12,7 +12,7 @@ expires_in = 0
 clientId = "1000.PPKI153U5EWZGDF9Z3LAQXKI3OA8GH"
 clientSecret = "1a77f2b194027d1b35f0f73494c90b8965138d0307"
 # 1000.39c2ea305b1b4f4fc8169850bdcd3b8c.cd63686c26bca7701cc6d9faa6ccce29
-code = "1000.2b9eb7cbb6e7b072c9630a71d0ffb50f.4951dc0c0995c2699e8e55ea88c12cd4"
+code = "1000.8136f9c2efddab45ea2dd966523f77fc.882aaa2370b3cbe4e0436a427ce6a0d0"
 # set the request URL and parameters for token
 token_url = "https://accounts.zoho.in/oauth/v2/token"
 
@@ -230,10 +230,12 @@ def lastMotionCheck(name, mac, start_date=None, end_date=None):
         
 
 def old_data(name, mac):
+    #Missing time 
+    missingTime = 1800
     # Define the start date as a datetime object
-    start_time = datetime.datetime(2023, 12, 4, 0, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
+    start_time = datetime.datetime(2023, 12, 1, 9, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
     # Define the end date as a datetime object by adding 30 days to the start date
-    end_time = datetime.datetime(2024, 1, 1, 2, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
+    end_time = datetime.datetime(2023, 12, 2, 2, 5, 0).strftime("%Y-%m-%d %H:%M:%S")
     print(f"Getting Old Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
     data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
     if data is not None:
@@ -249,22 +251,31 @@ def old_data(name, mac):
         print(timestamp_list)
         # Loop through the list of timestamps
         for index, ts in enumerate(timestamp_list):
-            # Calculate the checkout time by subtracting 30 seconds
-            checkout_time = ts - 30
+            # Convert the current and next timestamps to datetime objects
+            current_time = datetime.datetime.fromtimestamp(timestamp_list[index])
+            next_time = datetime.datetime.fromtimestamp(timestamp_list[index + 1])
+            # Calculate the time difference in seconds
+            time_diff = (next_time - current_time).total_seconds()
+            # Print the time difference
+            print(f"The time difference between {current_time} and {next_time} is {time_diff} seconds.")
             # Call the function with the appropriate arguments
             if index == 0:
                 # First checkin with the earliest timestamp
-                loginStatus = checkinout("checkIn", mac, ts)
+                loginStatus = checkinout("checkIn", mac, current_time)
             else:
                 # Checkout and checkin with the subsequent timestamps
                 try:
-                # Create a datetime object from the epoch time
-                # Format the datetime object using strftime
-                # Call the checkinout function with the appropriate arguments
-                    loginStatus = checkinout("checkOut", mac, checkout_time)
-                    print(f"Making checkOut for OLd time stamp {loginStatus}")
+                    # Check if the time difference is more than 1800 seconds
+                    if time_diff > missingTime:
+                        # Call the checkout function
+                        loginStatus = checkinout("checkOut", mac, current_time + missingTime)
+                        print(f"Making checkOut for OLd time stamp {loginStatus}")
+                    # Call the checkinout function with the appropriate arguments
                     loginStatus = checkinout("checkIn", mac, ts)
                     print(f"Making checkIn for OLd time stamps {loginStatus}")
+                    if index == len(timestamp_list) - 1:
+                        # this is the last index loop
+                        loginStatus = checkinout("checkOut", mac, current_time + missingTime)
                 except IndexError as i:
                     print(f"No movement detected for {name} and badge {mac}")
                     # Loop through the list of datetime objects
@@ -294,3 +305,4 @@ while True:
             count+=1
         # Pause the loop for 10 seconds
         sleep(10)
+  
