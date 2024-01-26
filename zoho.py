@@ -252,30 +252,28 @@ def old_data(name, mac):
         # Loop through the list of timestamps
         for index, ts in enumerate(timestamp_list):
             # Convert the current and next timestamps to datetime objects
-            current_time = datetime.datetime.fromtimestamp(timestamp_list[index])
-            next_time = datetime.datetime.fromtimestamp(timestamp_list[index + 1])
             # Calculate the time difference in seconds
-            time_diff = (next_time - current_time).total_seconds()
+            time_diff = (timestamp_list[index + 1] - timestamp_list[index]).total_seconds()
             # Print the time difference
-            print(f"The time difference between {current_time} and {next_time} is {time_diff} seconds.")
+            print(f"The time difference between {current_time} and {timestamp_list[index]} is {time_diff} seconds.")
             # Call the function with the appropriate arguments
             if index == 0:
                 # First checkin with the earliest timestamp
-                loginStatus = checkinout("checkIn", mac, current_time)
+                loginStatus = checkinout("checkIn", mac, timestamp_list[index])
             else:
                 # Checkout and checkin with the subsequent timestamps
                 try:
                     # Check if the time difference is more than 1800 seconds
                     if time_diff > missingTime:
                         # Call the checkout function
-                        loginStatus = checkinout("checkOut", mac, current_time + missingTime)
+                        loginStatus = checkinout("checkOut", mac, timestamp_list[index] + missingTime)
                         print(f"Making checkOut for OLd time stamp {loginStatus}")
                     # Call the checkinout function with the appropriate arguments
                     loginStatus = checkinout("checkIn", mac, ts)
                     print(f"Making checkIn for OLd time stamps {loginStatus}")
                     if index == len(timestamp_list) - 1:
                         # this is the last index loop
-                        loginStatus = checkinout("checkOut", mac, current_time + missingTime)
+                        loginStatus = checkinout("checkOut", mac, timestamp_list[index] + missingTime)
                 except IndexError as i:
                     print(f"No movement detected for {name} and badge {mac}")
                     # Loop through the list of datetime objects
