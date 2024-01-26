@@ -253,7 +253,7 @@ def old_data(name, mac):
         for index, ts in enumerate(timestamp_list):
             # Convert the current and next timestamps to datetime objects
             # Calculate the time difference in seconds
-            time_diff = (timestamp_list[index + 1] - timestamp_list[index]).total_seconds()
+            time_diff = (timestamp_list[index + 1] - timestamp_list[index])
             # Print the time difference
             print(f"The time difference between {current_time} and {timestamp_list[index]} is {time_diff} seconds.")
             # Call the function with the appropriate arguments
