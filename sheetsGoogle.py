@@ -139,12 +139,11 @@ record = workHourRecord("Rajesh", "00:8c:10:30:02:6f", 2023, 12, 1, 9, 15)
 c = 0
 m = 0
 missingSeconds = 1800
-records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1], "Missing": [{"From": None, "To": None}]}  # Initialize the key
+records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1]}  # Initialize the key
 while c < len(record) - 1:
     delta = record[c + 1] - record[c]
     if delta > missingSeconds:
         print("Not the first check-in!")
-        records["Missing"].append({"From": record[c], "To": record[c + 1]})
     elif delta < missingSeconds and records["FirstMoveOfTheDay"] is None:
         records["FirstMoveOfTheDay"] = record[c]
     else:
