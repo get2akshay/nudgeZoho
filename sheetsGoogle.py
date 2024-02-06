@@ -127,8 +127,8 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
             print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !")
 
 
-def prepRecords(name, mac, missingSeconds):
-    record = sorted(workHourRecord(name, mac, 2023, 12, 1, 9, 15))
+def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
+    record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
     c = 0
     m = 0
     records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1]}  # Initialize the key
@@ -149,14 +149,18 @@ with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
 
 missingSeconds = 1800
-for name, mac in employees.items():
-    records = prepRecords(name, mac, missingSeconds)
-    # Example usage
-    checkin = records['FirstMoveOfTheDay']
-    checkout = records["LastMoveOfTheDay"]
-    hours = (checkout - checkin) / 3600
-    data_to_add = [name, mac, dateFormat(checkin), dateFormat(checkout), hours]  # Provide the data to be added to each column
-    addData(data_to_add)
+c = 1
+while c <= 31:
+    for name, mac in employees.items():
+        records = prepRecords(name, mac, missingSeconds, 2023, 12, c, 9, 30)
+        # Example usage
+        checkin = records['FirstMoveOfTheDay']
+        checkout = records["LastMoveOfTheDay"]
+        hours = (checkout - checkin) / 3600
+        data_to_add = [name, mac, dateFormat(checkin), dateFormat(checkout), hours]  # Provide the data to be added to each column
+        addData(data_to_add)
+    c += 1
+
 
 
 
