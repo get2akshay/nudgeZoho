@@ -123,10 +123,9 @@ for name, mac in employees.items():
         # Print the timestamp list
         try:
             uniqueMoves = remove_duplicates_dict(timestamp_list)
-             print(uniqueMoves)
+            print(uniqueMoves)
         except TypeError as t:
-            print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !")
-       
+            print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !") 
     sleep(10)
 
 
@@ -137,12 +136,4 @@ for name, mac in employees.items():
 # hours = (checkout - checkin) / 3600
 # data_to_add = ['Akshay', '00:22:33:44:55:66', dateFormat(checkin), dateFormat(checkout), hours]  # Provide the data to be added to each column
 # addData(data_to_add)
-    
-
-
-
-
-
-my_list = [1701421225, 1701421225, 1701421240, 1701421240, 1701421254]
-print(remove_duplicates_dict(my_list))
 
