@@ -88,7 +88,7 @@ def dateFormat(timestamp):
     # Create a datetime object from the epoch time stamp
     date_time = datetime.datetime.fromtimestamp(timestamp)
     # Format the datetime object as a string
-    return date_time.strftime("%d/%m/%Y %H:%M:%S")
+    return date_time.strftime("%m/%d/%Y %H:%M:%S")
 
 def remove_duplicates_dict(input_list):
     my_dict = defaultdict(int)
