@@ -99,16 +99,6 @@ def remove_duplicates_dict(input_list):
             input_list.remove(num)
     return input_list
 
-def filter_timestamps(timestamps):
-    filtered_timestamps = []
-    for timestamp in timestamps:
-        # Convert the timestamp string to a datetime object
-        dt = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
-        # Check if the time is between 10:00 AM and 03:00 AM
-        if 10 <= dt.hour < 3:
-            filtered_timestamps.append(timestamp)
-    return tuple(filtered_timestamps)
-
 
 
 with open('staff.yaml', 'r') as file:
@@ -140,14 +130,14 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
         try:
             unique = list(set(timestamp_list))
             # print("The list after removing duplicates:", unique)
-            filter_timestamps(unique)
+            return unique
         except TypeError as t:
             print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !")
 
 
 record = workHourRecord("Rajesh", "00:8c:10:30:02:6f", 2023, 12, 1, 9, 15)
-for r in record:
-    print(r)
+for r,i in enumerate(record):
+    print(r[i + 1] - r[i])
     
 
 
