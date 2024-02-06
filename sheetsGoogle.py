@@ -146,7 +146,7 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
 
 
 record = workHourRecord("Rajesh", "00:8c:10:30:02:6f", 2023, 12, 1, 9, 15)
-for r, i in enumerate(record):
+for r in record:
     print(r)
     
 
