@@ -153,10 +153,10 @@ while c < len(record) - 1:
 print(records)
 
 # Example usage
-checkin = records['FirstMoveOfTheDay']
-checkout = records["LastMoveOfTheDay"]
-hours = (checkout - checkin) / 3600
-data_to_add = ['Rajesh', '889988', dateFormat(checkin), dateFormat(checkout), hours]  # Provide the data to be added to each column
-addData(data_to_add)
+# checkin = records['FirstMoveOfTheDay']
+# checkout = records["LastMoveOfTheDay"]
+# hours = (checkout - checkin) / 3600
+# data_to_add = ['Rajesh', '889988', dateFormat(checkin), dateFormat(checkout), hours]  # Provide the data to be added to each column
+# addData(data_to_add)
 
 
