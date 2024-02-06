@@ -145,7 +145,7 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
             print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !")
 
 
-workHourRecord("Rajesh", "00:8c:10:30:02:6f", 2023, 12, 1, 9, 15)
+record = workHourRecord("Rajesh", "00:8c:10:30:02:6f", 2023, 12, 1, 9, 15)
 
 # Example usage
 # checkin = 1707212710
