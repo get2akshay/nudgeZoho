@@ -130,7 +130,7 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
         try:
             unique = list(set(timestamp_list))
             # print("The list after removing duplicates:", unique)
-            return unique.sort()
+            return unique
         except TypeError as t:
             print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !")
 
