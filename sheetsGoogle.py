@@ -122,8 +122,8 @@ for name, mac in employees.items():
         timestamp_list = [t[0] for t in filtered_list]
         # Print the timestamp list
         try:
-            unique_timestamps = [x for x in timestamp_list if timestamp_list.count(x) == 1]
-            print("The list after removing duplicates:", unique_timestamps)
+            unique = list(set(timestamp_list)).sort()
+            print("The list after removing duplicates:", unique)
         except TypeError as t:
             print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !") 
     sleep(10)
