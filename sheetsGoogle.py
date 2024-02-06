@@ -8,6 +8,7 @@ from lib import db
 import numpy as np
 import yaml
 from time import sleep
+from collections import defaultdict
 #Sheet to update
 spreadsheet_id = '1ipzQMruFXD0RMp2enGecLraYxDSIVxQXg1Pa4TPMxno'
 NEW_SHEET_NAME = "tid"
@@ -89,6 +90,15 @@ def dateFormat(timestamp):
     # Format the datetime object as a string
     return date_time.strftime("%d/%m/%Y %H:%M:%S")
 
+def remove_duplicates_dict(input_list):
+    my_dict = defaultdict(int)
+    for num in input_list:
+        if my_dict[num] == 0:
+            my_dict[num] = 1
+        else:
+            input_list.remove(num)
+    return input_list
+
 
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
@@ -112,10 +122,11 @@ for name, mac in employees.items():
         timestamp_list = [t[0] for t in filtered_list]
         # Print the timestamp list
         try:
-            list(set(timestamp_list.sort()))
+            uniqueMoves = remove_duplicates_dict(timestamp_list)
+             print(uniqueMoves)
         except TypeError as t:
             print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !")
-        print(timestamp_list)
+       
     sleep(10)
 
 
@@ -126,3 +137,12 @@ for name, mac in employees.items():
 # hours = (checkout - checkin) / 3600
 # data_to_add = ['Akshay', '00:22:33:44:55:66', dateFormat(checkin), dateFormat(checkout), hours]  # Provide the data to be added to each column
 # addData(data_to_add)
+    
+
+
+
+
+
+my_list = [1701421225, 1701421225, 1701421240, 1701421240, 1701421254]
+print(remove_duplicates_dict(my_list))
+
