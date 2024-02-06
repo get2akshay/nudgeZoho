@@ -303,4 +303,3 @@ while True:
             count+=1
         # Pause the loop for 10 seconds
         sleep(10)
-  
