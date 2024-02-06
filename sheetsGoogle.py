@@ -130,28 +130,34 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
         try:
             unique = list(set(timestamp_list))
             # print("The list after removing duplicates:", unique)
-            return unique
+            return unique.sort()
         except TypeError as t:
             print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !")
 
 
 record = workHourRecord("Rajesh", "00:8c:10:30:02:6f", 2023, 12, 1, 9, 15)
-for r,i in enumerate(record):
-    delta = (r[i + 1] - r[i])
-    if delta > 1800:
-        print("Not the first checkin!")
+c = 0
+m = 0
+missingSeconds = 1800
+records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1], "Missing": [{"From": None, "To": None}]}  # Initialize the key
+while c < len(record) - 1:
+    delta = record[c + 1] - record[c]
+    if delta > missingSeconds:
+        print("Not the first check-in!")
+        records["Missing"].append({"From": record[c], "To": record[c + 1]})
+    elif delta < missingSeconds and records["FirstMoveOfTheDay"] is None:
+        records["FirstMoveOfTheDay"] = record[c]
     else:
-        print("Mark {i} as first checkin time {r}")
-
-    
-    
-
+         records[f"Move{m}"] = record[c]
+         m += 1
+    c += 1
+print(records)
 
 # Example usage
-# checkin = 1707212710
-# checkout = 1707322710
-# hours = (checkout - checkin) / 3600
-# data_to_add = ['Akshay', '00:22:33:44:55:66', dateFormat(checkin), dateFormat(checkout), hours]  # Provide the data to be added to each column
-# addData(data_to_add)
+checkin = records['FirstMoveOfTheDay']
+checkout = records{"LastMoveOfTheDay"}
+hours = (checkout - checkin) / 3600
+data_to_add = ['Rajesh', '889988', dateFormat(checkin), dateFormat(checkout), hours]  # Provide the data to be added to each column
+addData(data_to_add)
 
 
