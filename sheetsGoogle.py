@@ -99,6 +99,17 @@ def remove_duplicates_dict(input_list):
             input_list.remove(num)
     return input_list
 
+def filter_timestamps(timestamps):
+    filtered_timestamps = []
+    for timestamp in timestamps:
+        # Convert the timestamp string to a datetime object
+        dt = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+        # Check if the time is between 10:00 AM and 03:00 AM
+        if 10 <= dt.hour < 3:
+            filtered_timestamps.append(timestamp)
+    return tuple(filtered_timestamps)
+
+
 
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
@@ -107,12 +118,15 @@ checkout_check_start_time = datetime.time(5, 0, 0) # 0500 hours
 checkout_check_end_time = datetime.time(5, 30, 0) # 0530 hours
 
 for name, mac in employees.items():
+    pass
+
+def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
     #Missing time 
     missingTime = 1800
     # Define the start date as a datetime object
-    start_time = datetime.datetime(2023, 12, 1, 9, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
+    start_time = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
     # Define the end date as a datetime object by adding 30 days to the start date
-    end_time = datetime.datetime(2023, 12, 31, 2, 5, 0).strftime("%Y-%m-%d %H:%M:%S")
+    end_time = datetime.datetime(YYYY, MM, DD+1, HH + shift_hours, 30, 0).strftime("%Y-%m-%d %H:%M:%S")
     print(f"Getting Old Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
     data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
     if data is not None:
@@ -124,9 +138,10 @@ for name, mac in employees.items():
         try:
             unique = list(set(timestamp_list))
             print("The list after removing duplicates:", unique)
+            filter_timestamps(unique)
         except TypeError as t:
-            print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !") 
-    sleep(10)
+            print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !")
+
 
 
 
@@ -136,4 +151,5 @@ for name, mac in employees.items():
 # hours = (checkout - checkin) / 3600
 # data_to_add = ['Akshay', '00:22:33:44:55:66', dateFormat(checkin), dateFormat(checkout), hours]  # Provide the data to be added to each column
 # addData(data_to_add)
+
 
