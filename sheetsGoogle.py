@@ -174,7 +174,15 @@ while c <= 31:
         checkin = records['FirstMoveOfTheDay']
         checkout = records["LastMoveOfTheDay"]
         hours = (checkout - checkin) / 3600
-        data_to_add = [name, mac, dateFormat(checkin), dateFormat(checkout), hours]  # Provide the data to be added to each column
+        if hours == 0:
+            status = "Off"
+        elif hours <= 5:
+            status = "HD"
+        elif hours > 5:
+            status = "FD"
+        elif hours > 10:
+            status = "OT"
+        data_to_add = [name, mac, dateFormat(checkin), dateFormat(checkout), hours, status]  # Provide the data to be added to each column
         addData(data_to_add)
     c += 1 #Increment for each day
 
