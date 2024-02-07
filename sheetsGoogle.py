@@ -18,6 +18,11 @@ credentials = service_account.Credentials.from_service_account_file(credentials_
 # Create a service object for Google Sheets API
 service = build('sheets', 'v4', credentials=credentials)
 
+def monthReturn(number):
+    months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    return months[number - 1]
+    
+
 
 def get_last_row_date_day(name):
     try:
@@ -193,36 +198,38 @@ with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
 
 
-missingSeconds = 1800
-c = 1
-while c <= 31:
-    for name, mac in employees.items():
-        # Get Data filled date
-        last_day_number = get_last_row_date_day(name)
-        if last_day_number:
-            print(f"Last row date day number: {last_day_number}")
-        else:
-            print("Error retrieving data.")
-        records = prepRecords(name, mac, missingSeconds, 2023, 12, c, 9, 30)
-        # Example usage
-        checkin = records['FirstMoveOfTheDay']
-        checkout = records["LastMoveOfTheDay"]
-        if checkin is None or checkout is None:
-            hours = 0
-        hours = (checkout - checkin) / 3600
-        if hours == 0:
-            status = "OFF"
-        elif 0 < hours < 3:
-            status = "UH"
-        elif 3 < hours < 6:
-            status = "HD"
-        elif 6 < hours < 9:
-            status = "FD"
-        elif 9 < hours < 12:
-            status = "OT"
-        data_to_add = [name, mac, dateFormat(checkin), dateFormat(checkout), hours, status]  # Provide the data to be added to each column
-        addData(data_to_add)
-    c += 1 #Increment for each day work calc
+def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800):
+    while c <= 31:
+        for name, mac in employees.items():
+            # Get Data filled date
+            last_day_number = get_last_row_date_day(name)
+            if last_day_number:
+                print(f"Last row date day number: {last_day_number}")
+            else:
+                print("Error retrieving data.")
+            records = prepRecords(name, mac, missingSeconds, YYYY, MM, start_day, H, m)
+            # Example usage
+            checkin = records['FirstMoveOfTheDay']
+            checkout = records["LastMoveOfTheDay"]
+            if checkin is None or checkout is None:
+                hours = 0
+            hours = (checkout - checkin) / 3600
+            if hours == 0:
+                status = "OFF"
+            elif 0 < hours < 3:
+                status = "UH"
+            elif 3 < hours < 6:
+                status = "HD"
+            elif 6 < hours < 9:
+                status = "FD"
+            elif 9 < hours < 12:
+                status = "OT"
+            data_to_add = [name, mac, dateFormat(checkin), dateFormat(checkout), hours, status, monthReturn[MM]]  # Provide the data to be added to each column
+            addData(data_to_add)
+        start_day += 1 #Increment for each day work calc
+
+
+processData(2023, 12, 1, 8, 30, 1800)
 
 
 
