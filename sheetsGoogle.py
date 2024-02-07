@@ -193,18 +193,16 @@ with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
 
 
-# Get Data filled date
-last_day_number = get_last_row_date_day()
-if last_day_number:
-    print(f"Last row date day number: {last_day_number}")
-else:
-    print("Error retrieving data.")
-
-
 missingSeconds = 1800
 c = 1
 while c <= 31:
     for name, mac in employees.items():
+        # Get Data filled date
+        last_day_number = get_last_row_date_day(name)
+        if last_day_number:
+            print(f"Last row date day number: {last_day_number}")
+        else:
+            print("Error retrieving data.")
         records = prepRecords(name, mac, missingSeconds, 2023, 12, c, 9, 30)
         # Example usage
         checkin = records['FirstMoveOfTheDay']
