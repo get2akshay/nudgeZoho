@@ -140,15 +140,18 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
 
 
 def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
+    records = {"FirstMoveOfTheDay": None}
     record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
-    if record is None:
+    c = 0
+    m = 0
+    try:
+        records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1]}  # Initialize the key
+    except IndexError as i:
         datetime_str = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
         records['FirstMoveOfTheDay'] = datetime_to_epoch(datetime_str)
         records['LastMoveOfTheDay'] = datetime_to_epoch(datetime_str)
         return record
-    c = 0
-    m = 0
-    records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1]}  # Initialize the key
+
     while c < len(record) - 1:
         delta = record[c + 1] - record[c]
         if delta > missingSeconds:
