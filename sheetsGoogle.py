@@ -178,6 +178,7 @@ def prepRecords(name, mac, YYYY, MM, DD, HH, MS, missingSeconds):
     if len(record) == 0:
         datetime_str = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
         records['FirstMoveOfTheDay'] = datetime_to_epoch(datetime_str)
+        datetime_str = datetime.datetime(YYYY, MM, DD+1, 3, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
         records['LastMoveOfTheDay'] = datetime_to_epoch(datetime_str)
         return records
     c = 0
@@ -192,7 +193,7 @@ def prepRecords(name, mac, YYYY, MM, DD, HH, MS, missingSeconds):
             records[f"Move{m}"] = record[c]
             m += 1
         c += 1
-        if c >= (len(record) - 1):
+        if c == (len(record) - 1):
             records = {"LastMoveOfTheDay": record[c]}  # Initialize the key
     return records
 
