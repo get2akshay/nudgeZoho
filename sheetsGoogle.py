@@ -154,6 +154,7 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
     end_time = datetime.datetime(YYYY, MM, DD, 3, 30, 0).strftime("%Y-%m-%d %H:%M:%S")
     print(f"Getting Old Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
     data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
+    pdb.set_trace()
     if data is not None:
         # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
         filtered_list = [t for t in data if np.count_nonzero(t[-3:]) >= 2]
@@ -173,7 +174,6 @@ def prepRecords(name, mac, YYYY, MM, DD, HH, MS, missingSeconds):
     records = {}
     records.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})
     record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
-    pdb.set_trace()
     if len(record) == 0:
         datetime_str = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
         records.update({"FirstMoveOfTheDay": datetime_to_epoch(datetime_str)})
