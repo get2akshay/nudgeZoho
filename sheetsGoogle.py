@@ -239,6 +239,8 @@ def processData(YYYY=2023, MM=12, DD=1, HH=9, shift_hours=12, missingSeconds=180
             elif 6 < hours < 9:
                 status = "FD"
             elif 9 < hours < 12:
+                status = "FDP"
+            elif 12 < hours < 14:
                 status = "OT"
             data_to_add = [name, mac, month, dateFormat(checkin), dateFormat(checkout), hours, status]  # Provide the data to be added to each column
             addData(data_to_add)
