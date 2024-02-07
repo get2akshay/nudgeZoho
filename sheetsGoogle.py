@@ -173,6 +173,7 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
 def prepRecords(name, mac, YYYY, MM, DD, HH, MS, missingSeconds):
     records = {}
     # record = []
+    pdb.set_trace()
     records.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})
     record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
     if len(record) == 0:
