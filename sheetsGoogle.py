@@ -166,16 +166,14 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
             return unique
         except TypeError as t:
             print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !")
-            pass
-    return unique
+            return unique
 
 
 def prepRecords(name, mac, YYYY, MM, DD, HH, MS, missingSeconds):
     records = {}
-    # record = []
-    pdb.set_trace()
     records.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})
     record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
+    pdb.set_trace()
     if len(record) == 0:
         datetime_str = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
         records.update({"FirstMoveOfTheDay": datetime_to_epoch(datetime_str)})
