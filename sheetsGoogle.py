@@ -205,6 +205,7 @@ with open('staff.yaml', 'r') as file:
 
 
 def processData(YYYY=2023, MM=12, DD=1, HH=9, shift_hours=12, missingSeconds=1800, days_in_month=30):
+    start_day = DD
     while start_day <= days_in_month:
         for name, mac in employees.items():
             day_move = {}
