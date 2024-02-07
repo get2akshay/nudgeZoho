@@ -228,6 +228,7 @@ def processData(YYYY=2023, MM=12, start_day=1, HH=9, m=30, missingSeconds=1800, 
                 hours = 0
             else:
                 hours = (checkout - checkin) / 3600
+            status = "OFF"
             if hours == 0:
                 status = "OFF"
             elif 0 < hours < 3:
