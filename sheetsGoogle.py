@@ -21,8 +21,6 @@ service = build('sheets', 'v4', credentials=credentials)
 def monthReturn(number):
     months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     return months[number - 1]
-    
-
 
 def get_last_row_date_day(name):
     try:
@@ -231,10 +229,6 @@ def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800, d
         start_day += 1 #Increment for each day work calc
 
 processData(2023, 12, 1, 8, 30, 1800, 31)
-
-
-
-
 
 
 
