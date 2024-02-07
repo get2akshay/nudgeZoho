@@ -143,8 +143,6 @@ def remove_duplicates_dict(input_list):
 
 
 def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
-    #Missing time 
-    missingTime = 1800
     unique = []
     # Define the start date as a datetime object
     start_time = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
@@ -211,7 +209,9 @@ def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800, d
                 print(f"Last row date day number: {last_day_number}")
             else:
                 print("Error retrieving data.")
+
             records = prepRecords(name, mac, missingSeconds, YYYY, MM, start_day, H, m)
+            # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
             # Month
             month = monthReturn(MM)
             # Example usage
@@ -236,7 +236,7 @@ def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800, d
             addData(data_to_add)
         start_day += 1 #Increment for each day work calc
 
-processData(2024, 1, 1, 8, 30, 1800, 31)
+processData(2023, 12, 1, 8, 30, 1800, 31)
 
 
 
