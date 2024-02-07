@@ -135,7 +135,7 @@ def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
     while c < len(record) - 1:
         delta = record[c + 1] - record[c]
         if delta > missingSeconds:
-            print("Not the first check-in!")
+            records[f"Missing{c}"] = {"From": record[c], "To": record[c + 1]}
         elif delta < missingSeconds and records["FirstMoveOfTheDay"] is None:
             records["FirstMoveOfTheDay"] = record[c]
         else:
