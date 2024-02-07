@@ -194,7 +194,7 @@ def prepRecords(name, mac, YYYY, MM, DD, HH, shift_hours, missingSeconds):
             if c == (len(record) - 1):
                 records = {"LastMoveOfTheDay": record[c]}  # Initialize the key
         if records.get("FirstMoveOfTheDay") is None:
-            records.update({"FirstMoveOfTheDay": record[0]})
+            return records.update({"FirstMoveOfTheDay": record[0]})
         else:
             return records
 
