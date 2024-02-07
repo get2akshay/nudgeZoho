@@ -22,7 +22,7 @@ service = build('sheets', 'v4', credentials=credentials)
 
 def datetime_to_epoch(datetime_str):
     try:
-        dt = datetime.datetime.strptime(datetime_str, "%Y-%m-%d %H")
+        dt = datetime.datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S")
         epoch_time = int(dt.timestamp())
         return epoch_time
     except ValueError:
@@ -140,7 +140,6 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
 
 
 def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
-    records = {"FirstMoveOfTheDay": None}
     record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
     c = 0
     m = 0
