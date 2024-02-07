@@ -248,7 +248,7 @@ def processData(YYYY=2023, MM=12, DD=1, HH=9, shift_hours=12, missingSeconds=180
 
 
 
-processData(YYYY=2023, MM=12, DD=1, HH=8, shift_hours=12, missingSeconds=1800, days_in_month=31)
+processData(YYYY=2024, MM=1, DD=1, HH=8, shift_hours=12, missingSeconds=1800, days_in_month=31)
 
 
 
