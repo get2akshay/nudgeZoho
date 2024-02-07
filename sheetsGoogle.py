@@ -211,9 +211,11 @@ def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800, d
             # Example usage
             checkin = records['FirstMoveOfTheDay']
             checkout = records["LastMoveOfTheDay"]
+            hours = 0
             if checkin is None or checkout is None:
                 hours = 0
-            hours = (checkout - checkin) / 3600
+            else:
+                hours = (checkout - checkin) / 3600
             if hours == 0:
                 status = "OFF"
             elif 0 < hours < 3:
