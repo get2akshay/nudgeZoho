@@ -172,7 +172,7 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
 
 def prepRecords(name, mac, YYYY, MM, DD, HH, MS, missingSeconds):
     records = {}
-    record = []
+    # record = []
     records.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})
     record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
     if len(record) == 0:
@@ -181,24 +181,25 @@ def prepRecords(name, mac, YYYY, MM, DD, HH, MS, missingSeconds):
         datetime_str = datetime.datetime(YYYY, MM, DD+1, 3, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
         records.update({"LastMoveOfTheDay": datetime_to_epoch(datetime_str)})
         return records
-    c = 0
-    m = 0
-    while c < len(record) - 1:
-        delta = record[c + 1] - record[c]
-        if delta > missingSeconds:
-            records.update({"From": record[c], "To": record[c + 1]}) 
-        elif delta < missingSeconds and records.get("FirstMoveOfTheDay") is None:
-            records.update({"FirstMoveOfTheDay": record[c]})
-        else:
-            records[f"Move{m}"] = record[c]
-            m += 1
-        c += 1
-        if c == (len(record) - 1):
-            records = {"LastMoveOfTheDay": record[c]}  # Initialize the key
-    if records.get("FirstMoveOfTheDay") is None:
-        records.update({"FirstMoveOfTheDay": record[0]})
     else:
-        return records
+        c = 0
+        m = 0
+        while c < len(record) - 1:
+            delta = record[c + 1] - record[c]
+            if delta > missingSeconds:
+                records.update({"From": record[c], "To": record[c + 1]}) 
+            elif delta < missingSeconds and records.get("FirstMoveOfTheDay") is None:
+                records.update({"FirstMoveOfTheDay": record[c]})
+            else:
+                records[f"Move{m}"] = record[c]
+                m += 1
+            c += 1
+            if c == (len(record) - 1):
+                records = {"LastMoveOfTheDay": record[c]}  # Initialize the key
+        if records.get("FirstMoveOfTheDay") is None:
+            records.update({"FirstMoveOfTheDay": record[0]})
+        else:
+            return records
 
 
 with open('staff.yaml', 'r') as file:
