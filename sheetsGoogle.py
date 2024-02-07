@@ -207,22 +207,21 @@ with open('staff.yaml', 'r') as file:
 def processData(YYYY=2023, MM=12, start_day=1, HH=9, m=30, missingSeconds=1800, days_in_month=30):
     while start_day <= days_in_month:
         for name, mac in employees.items():
-            records = {}
-            records.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})  # Initialize the key
+            day_move = {}
+            day_move.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})  # Initialize the key
             # Get Data filled date
             last_day_number = get_last_row_date_day(name)
             if last_day_number:
                 print(f"Last row date day number: {last_day_number}")
             else:
                 print("Error retrieving data.")
-            pdb.set_trace()
-            records.update(prepRecords(name, mac, YYYY, MM, start_day, HH, m, missingSeconds))
+            day_move.update(prepRecords(name, mac, YYYY, MM, start_day, HH, m, missingSeconds))
             # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
             # Month
             month = monthReturn(MM)
             # Example usage
-            checkin = records.get("FirstMoveOfTheDay")
-            checkout = records.get("LastMoveOfTheDay")
+            checkin = day_move.get("FirstMoveOfTheDay")
+            checkout = day_move.get("LastMoveOfTheDay")
             hours = 0
             if checkin is None or checkout is None:
                 hours = 0
