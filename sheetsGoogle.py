@@ -217,7 +217,7 @@ def processData(YYYY=2023, MM=12, DD=1, HH=9, shift_hours=12, missingSeconds=180
                 print(f"Last row date day number: {last_day_number}")
             else:
                 print("Error retrieving data.")
-            day_move.update(prepRecords(name, mac, YYYY, MM, DD, HH, shift_hours, missingSeconds))
+            day_move.update(prepRecords(name, mac, YYYY, MM, start_day, HH, shift_hours, missingSeconds))
             # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
             # Month
             month = monthReturn(MM)
