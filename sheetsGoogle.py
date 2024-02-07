@@ -218,8 +218,8 @@ def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800, d
             # Month
             month = monthReturn(MM)
             # Example usage
-            checkin = records['FirstMoveOfTheDay']
-            checkout = records["LastMoveOfTheDay"]
+            checkout = records.get("FirstMoveOfTheDay")
+            checkout = records.get("LastMoveOfTheDay")
             hours = 0
             if checkin is None or checkout is None:
                 hours = 0
