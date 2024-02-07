@@ -184,7 +184,7 @@ def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
         pass
     c = 0
     m = 0
-    records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1]}  # Initialize the key
+    #records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1]}  # Initialize the key
     while c < len(record) - 1:
         delta = record[c + 1] - record[c]
         if delta > missingSeconds:
@@ -195,6 +195,8 @@ def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
             records[f"Move{m}"] = record[c]
             m += 1
         c += 1
+        if c >= (len(record) - 1):
+            records = {"LastMoveOfTheDay": record[c]}  # Initialize the key
     return records
 
 
