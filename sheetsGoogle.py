@@ -205,6 +205,7 @@ with open('staff.yaml', 'r') as file:
 
 
 def processData(YYYY=2023, MM=12, start_day=1, HH=9, m=30, missingSeconds=1800, days_in_month=30):
+    records = {}
     records.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})  # Initialize the key
     while start_day <= days_in_month:
         for name, mac in employees.items():
