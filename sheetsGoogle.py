@@ -228,7 +228,7 @@ def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800, d
             addData(data_to_add)
         start_day += 1 #Increment for each day work calc
 
-processData(2023, 12, 1, 8, 30, 1800, 31)
+processData(2024, 1, 1, 8, 30, 1800, 31)
 
 
 
