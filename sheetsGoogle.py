@@ -168,7 +168,7 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
     return unique
 
 
-def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
+def prepRecords(name, mac, YYYY, MM, DD, HH, MS, missingSeconds):
     record = []
     records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None}
     record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
@@ -179,7 +179,6 @@ def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
         return records
     c = 0
     m = 0
-    records = {"FirstMoveOfTheDay": None}  # Initialize the key
     while c < len(record) - 1:
         delta = record[c + 1] - record[c]
         if delta > missingSeconds:
@@ -236,7 +235,7 @@ def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800, d
             addData(data_to_add)
         start_day += 1 #Increment for each day work calc
 
-processData(2023, 12, 1, 8, 30, 1800, 31)
+processData(YYYY=2023, MM=12, start_day=1, H=8, m=30, missingSeconds=1800, days_in_month=31)
 
 
 
