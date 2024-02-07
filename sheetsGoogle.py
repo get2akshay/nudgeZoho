@@ -172,12 +172,16 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
 def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
     record = []
     records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None}
-    record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
-    if len(record) == 0:
-        datetime_str = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
-        records['FirstMoveOfTheDay'] = datetime_to_epoch(datetime_str)
-        records['LastMoveOfTheDay'] = datetime_to_epoch(datetime_str)
-        return records
+    try:
+        record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
+        if len(record) == 0:
+            datetime_str = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
+            records['FirstMoveOfTheDay'] = datetime_to_epoch(datetime_str)
+            records['LastMoveOfTheDay'] = datetime_to_epoch(datetime_str)
+            return records
+    except TypeError as t:
+        print(f"No record was found for {name} on {YYY} {MM} {DD}")
+        pass
     c = 0
     m = 0
     records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1]}  # Initialize the key
