@@ -216,7 +216,7 @@ def processData(YYYY=2023, MM=12, start_day=1, HH=9, m=30, missingSeconds=1800, 
             else:
                 print("Error retrieving data.")
             pdb.set_trace()
-            records = prepRecords(name, mac, YYYY, MM, start_day, HH, m, missingSeconds)
+            records.update(prepRecords(name, mac, YYYY, MM, start_day, HH, m, missingSeconds))
             # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
             # Month
             month = monthReturn(MM)
