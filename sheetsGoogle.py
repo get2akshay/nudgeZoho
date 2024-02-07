@@ -180,7 +180,7 @@ def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
             records['LastMoveOfTheDay'] = datetime_to_epoch(datetime_str)
             return records
     except TypeError as t:
-        print(f"No record was found for {name} on {YYY} {MM} {DD}")
+        print(f"No record was found for {name} on {YYYY} {MM} {DD}")
         pass
     c = 0
     m = 0
