@@ -220,7 +220,7 @@ while c <= 31:
             status = "OT"
         data_to_add = [name, mac, dateFormat(checkin), dateFormat(checkout), hours, status]  # Provide the data to be added to each column
         addData(data_to_add)
-    c += 1 #Increment for each day
+    c += 1 #Increment for each day work calc
 
 
 
