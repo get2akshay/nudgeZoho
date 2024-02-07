@@ -172,29 +172,32 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
 
 def prepRecords(name, mac, YYYY, MM, DD, HH, MS, missingSeconds):
     record = []
-    records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None}
+    records.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})
     record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
     if len(record) == 0:
         datetime_str = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
-        records['FirstMoveOfTheDay'] = datetime_to_epoch(datetime_str)
+        records.update({"FirstMoveOfTheDay": datetime_to_epoch(datetime_str)})
         datetime_str = datetime.datetime(YYYY, MM, DD+1, 3, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
-        records['LastMoveOfTheDay'] = datetime_to_epoch(datetime_str)
+        records.update({"LastMoveOfTheDay": datetime_to_epoch(datetime_str)})
         return records
     c = 0
     m = 0
     while c < len(record) - 1:
         delta = record[c + 1] - record[c]
         if delta > missingSeconds:
-            records[f"Missing{c}"] = {"From": record[c], "To": record[c + 1]}
-        elif delta < missingSeconds and records["FirstMoveOfTheDay"] is None:
-            records["FirstMoveOfTheDay"] = record[c]
+            records.update({"From": record[c], "To": record[c + 1]}) 
+        elif delta < missingSeconds and records.get("FirstMoveOfTheDay") is None:
+            records.update({"FirstMoveOfTheDay": record[c]})
         else:
-            records[f"Move{m}"] = record[c]
+            records.update({f"Move{m}": record[c]})
             m += 1
         c += 1
         if c == (len(record) - 1):
             records = {"LastMoveOfTheDay": record[c]}  # Initialize the key
-    return records
+    if records.get("FirstMoveOfTheDay") is None:
+        records.update({"FirstMoveOfTheDay": record[0]})
+    else:
+        return records
 
 
 with open('staff.yaml', 'r') as file:
@@ -240,7 +243,7 @@ def processData(YYYY=2023, MM=12, start_day=1, HH=9, m=30, missingSeconds=1800, 
 
 
 
-processData(YYYY=2023, MM=12, start_day=1, HH=8, m=30, missingSeconds=1800, days_in_month=31)
+processData(YYYY=2023, MM=12, start_day=1, HH=8, m=0, missingSeconds=1800, days_in_month=31)
 
 
 
