@@ -194,9 +194,11 @@ def prepRecords(name, mac, YYYY, MM, DD, HH, shift_hours, missingSeconds):
             if c == (len(record) - 1):
                 records = {"LastMoveOfTheDay": record[c]}  # Initialize the key
         if records.get("FirstMoveOfTheDay") is None:
-            return records.update({"FirstMoveOfTheDay": record[0]})
-        else:
-            return records
+            records.update({"FirstMoveOfTheDay": record[0]})
+        elif records.get("LastMoveOfTheDay") is None:
+            records.update({"LastMoveOfTheDay": record[-1]})
+        return records
+
 
 
 with open('staff.yaml', 'r') as file:
