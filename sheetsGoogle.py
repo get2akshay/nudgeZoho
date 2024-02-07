@@ -209,7 +209,7 @@ def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800, d
                 print("Error retrieving data.")
             records = prepRecords(name, mac, missingSeconds, YYYY, MM, start_day, H, m)
             # Month
-            month = monthReturn[MM]
+            month = monthReturn(MM)
             # Example usage
             checkin = records['FirstMoveOfTheDay']
             checkout = records["LastMoveOfTheDay"]
