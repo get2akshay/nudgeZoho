@@ -153,7 +153,6 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
         DD = DD + 1
     end_time = datetime.datetime(YYYY, MM, DD, 3, 30, 0).strftime("%Y-%m-%d %H:%M:%S")
     print(f"Getting Old Movement data from {start_time} to {end_time} for {name} with Badge {mac} !")
-    pdb.set_trace()
     data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
     if data is not None:
         # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
@@ -212,7 +211,7 @@ def processData(YYYY=2023, MM=12, start_day=1, HH=9, m=30, missingSeconds=1800, 
                 print(f"Last row date day number: {last_day_number}")
             else:
                 print("Error retrieving data.")
-
+            pdb.set_trace()
             records = prepRecords(name, mac, YYYY, MM, start_day, HH, m, missingSeconds)
             # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
             # Month
