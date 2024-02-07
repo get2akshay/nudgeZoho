@@ -18,6 +18,16 @@ credentials = service_account.Credentials.from_service_account_file(credentials_
 # Create a service object for Google Sheets API
 service = build('sheets', 'v4', credentials=credentials)
 
+
+
+def datetime_to_epoch(datetime_str):
+    try:
+        dt = datetime.datetime.strptime(datetime_str, "%Y-%m-%d %H")
+        epoch_time = int(dt.timestamp())
+        return epoch_time
+    except ValueError:
+        return None
+
 def checkSheet(sheet_name):
     # Check if the sheet exists
     try:
@@ -125,18 +135,20 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
             return unique
         except TypeError as t:
             print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !")
+            pass
+    return None
 
 
 def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
     record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
+    if record is None:
+        datetime_str = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
+        records['FirstMoveOfTheDay'] = datetime_to_epoch(datetime_str)
+        records['LastMoveOfTheDay'] = datetime_to_epoch(datetime_str)
+        return record
     c = 0
     m = 0
-    try:
-        records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1]}  # Initialize the key
-    except IndexError as i:
-        print(f"No record was found for period {DD/MM/YYYY}")
-        records["Abscent"] = "Abscent"
-        pass
+    records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1]}  # Initialize the key
     while c < len(record) - 1:
         delta = record[c + 1] - record[c]
         if delta > missingSeconds:
@@ -164,3 +176,6 @@ while c <= 31:
         hours = (checkout - checkin) / 3600
         data_to_add = [name, mac, dateFormat(checkin), dateFormat(checkout), hours]  # Provide the data to be added to each column
         addData(data_to_add)
+
+
+
