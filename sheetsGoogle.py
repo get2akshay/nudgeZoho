@@ -198,8 +198,8 @@ with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
 
 
-def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800):
-    while c <= 31:
+def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800, days_in_month=30):
+    while start_day <= days_in_month:
         for name, mac in employees.items():
             # Get Data filled date
             last_day_number = get_last_row_date_day(name)
@@ -229,7 +229,7 @@ def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800):
         start_day += 1 #Increment for each day work calc
 
 
-processData(2023, 12, 1, 8, 30, 1800)
+processData(2023, 12, 1, 8, 30, 1800, 31)
 
 
 
