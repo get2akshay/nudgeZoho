@@ -169,10 +169,10 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
             return unique
 
 
-def prepRecords(name, mac, YYYY, MM, DD, HH, MS, missingSeconds):
+def prepRecords(name, mac, YYYY, MM, DD, HH, shift_hours, missingSeconds):
     records = {}
     records.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})
-    record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
+    record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours))
     if len(record) == 0:
         datetime_str = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
         records.update({"FirstMoveOfTheDay": datetime_to_epoch(datetime_str)})
@@ -181,7 +181,7 @@ def prepRecords(name, mac, YYYY, MM, DD, HH, MS, missingSeconds):
         return records
     else:
         c = 0
-        m = 0
+        k = 0
         while c < len(record) - 1:
             delta = record[c + 1] - record[c]
             if delta > missingSeconds:
@@ -189,8 +189,8 @@ def prepRecords(name, mac, YYYY, MM, DD, HH, MS, missingSeconds):
             elif delta < missingSeconds and records.get("FirstMoveOfTheDay") is None:
                 records.update({"FirstMoveOfTheDay": record[c]})
             else:
-                records[f"Move{m}"] = record[c]
-                m += 1
+                records[f"Move{k}"] = record[c]
+                k += 1
             c += 1
             if c == (len(record) - 1):
                 records = {"LastMoveOfTheDay": record[c]}  # Initialize the key
@@ -204,7 +204,7 @@ with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
 
 
-def processData(YYYY=2023, MM=12, start_day=1, HH=9, m=30, missingSeconds=1800, days_in_month=30):
+def processData(YYYY=2023, MM=12, DD=1, HH=9, shift_hours=12, missingSeconds=1800, days_in_month=30):
     while start_day <= days_in_month:
         for name, mac in employees.items():
             day_move = {}
@@ -215,7 +215,7 @@ def processData(YYYY=2023, MM=12, start_day=1, HH=9, m=30, missingSeconds=1800, 
                 print(f"Last row date day number: {last_day_number}")
             else:
                 print("Error retrieving data.")
-            day_move.update(prepRecords(name, mac, YYYY, MM, start_day, HH, m, missingSeconds))
+            day_move.update(prepRecords(name, mac, YYYY, MM, DD, HH, shift_hours, missingSeconds))
             # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
             # Month
             month = monthReturn(MM)
@@ -244,7 +244,7 @@ def processData(YYYY=2023, MM=12, start_day=1, HH=9, m=30, missingSeconds=1800, 
 
 
 
-processData(YYYY=2023, MM=12, start_day=1, HH=8, m=0, missingSeconds=1800, days_in_month=31)
+processData(YYYY=2023, MM=12, DD=1, HH=8, shift_hours=12, missingSeconds=1800, days_in_month=31)
 
 
 
