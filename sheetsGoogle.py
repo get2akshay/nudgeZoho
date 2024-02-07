@@ -207,14 +207,18 @@ while c <= 31:
         # Example usage
         checkin = records['FirstMoveOfTheDay']
         checkout = records["LastMoveOfTheDay"]
+        if checkin is None or checkout is None:
+            hours = 0
         hours = (checkout - checkin) / 3600
         if hours == 0:
-            status = "Off"
-        elif hours <= 5:
+            status = "OFF"
+        elif 0 < hours < 3:
+            status = "UH"
+        elif 3 < hours < 6:
             status = "HD"
-        elif hours > 5:
+        elif 6 < hours < 9:
             status = "FD"
-        elif hours > 10:
+        elif 9 < hours < 12:
             status = "OT"
         data_to_add = [name, mac, dateFormat(checkin), dateFormat(checkout), hours, status]  # Provide the data to be added to each column
         addData(data_to_add)
