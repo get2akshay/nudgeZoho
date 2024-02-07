@@ -189,7 +189,7 @@ def prepRecords(name, mac, YYYY, MM, DD, HH, MS, missingSeconds):
         elif delta < missingSeconds and records.get("FirstMoveOfTheDay") is None:
             records.update({"FirstMoveOfTheDay": record[c]})
         else:
-            records.update({f"Move{m}": record[c]})
+            records[f"Move{m}"] = record[c]
             m += 1
         c += 1
         if c == (len(record) - 1):
