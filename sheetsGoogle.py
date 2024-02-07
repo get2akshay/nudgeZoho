@@ -19,6 +19,31 @@ credentials = service_account.Credentials.from_service_account_file(credentials_
 service = build('sheets', 'v4', credentials=credentials)
 
 
+def get_last_row_date_day(name):
+    try:
+        # Specify the range to read (column D)
+        range_name = f"{name}!D:D"
+        result = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_name).execute()
+        values = result.get('values', [])
+
+        if not values:
+            print('No data found.')
+            return None
+
+        # Get the last row entry (assuming the data is sorted by date)
+        last_row_entry = values[-1][0]
+
+        # Parse the date string
+        date_str = last_row_entry.split()[0]  # Assuming the format is "12/05/2023 0:21:28"
+        date_obj = datetime.datetime.strptime(date_str, '%m/%d/%Y')
+
+        # Get the day number
+        day_number = date_obj.day
+        return day_number
+
+    except Exception as e:
+        print(f"Error reading data: {e}")
+        return None
 
 def datetime_to_epoch(datetime_str):
     try:
@@ -141,12 +166,13 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
 
 def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
     record = []
+    records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None}
     record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
     if len(record) == 0:
         datetime_str = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
         records['FirstMoveOfTheDay'] = datetime_to_epoch(datetime_str)
         records['LastMoveOfTheDay'] = datetime_to_epoch(datetime_str)
-        return record
+        return records
     c = 0
     m = 0
     records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1]}  # Initialize the key
@@ -165,6 +191,15 @@ def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
 
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
+
+
+# Get Data filled date
+last_day_number = get_last_row_date_day()
+if last_day_number:
+    print(f"Last row date day number: {last_day_number}")
+else:
+    print("Error retrieving data.")
+
 
 missingSeconds = 1800
 c = 1
@@ -186,5 +221,13 @@ while c <= 31:
         data_to_add = [name, mac, dateFormat(checkin), dateFormat(checkout), hours, status]  # Provide the data to be added to each column
         addData(data_to_add)
     c += 1 #Increment for each day
+
+
+
+
+
+
+
+
 
 
