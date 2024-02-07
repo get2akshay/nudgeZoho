@@ -123,6 +123,8 @@ def addData(data):
 
 
 def dateFormat(timestamp):
+    if timestamp is None:
+        return None
     # Create a datetime object from the epoch time stamp
     date_time = datetime.datetime.fromtimestamp(timestamp)
     # Format the datetime object as a string
