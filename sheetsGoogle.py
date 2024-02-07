@@ -208,6 +208,8 @@ def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800, d
             else:
                 print("Error retrieving data.")
             records = prepRecords(name, mac, missingSeconds, YYYY, MM, start_day, H, m)
+            # Month
+            month = monthReturn[MM]
             # Example usage
             checkin = records['FirstMoveOfTheDay']
             checkout = records["LastMoveOfTheDay"]
@@ -224,7 +226,7 @@ def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800, d
                 status = "FD"
             elif 9 < hours < 12:
                 status = "OT"
-            data_to_add = [name, mac, dateFormat(checkin), dateFormat(checkout), hours, status, monthReturn[MM]]  # Provide the data to be added to each column
+            data_to_add = [name, mac, dateFormat(checkin), dateFormat(checkout), hours, status, month]  # Provide the data to be added to each column
             addData(data_to_add)
         start_day += 1 #Increment for each day work calc
 
