@@ -235,6 +235,9 @@ def processData(YYYY=2023, MM=12, start_day=1, HH=9, m=30, missingSeconds=1800, 
             addData(data_to_add)
         start_day += 1 #Increment for each day work calc
 
+import pdb
+pdb.set_trace()
+
 processData(YYYY=2023, MM=12, start_day=1, HH=8, m=30, missingSeconds=1800, days_in_month=31)
 
 
