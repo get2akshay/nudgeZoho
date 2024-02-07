@@ -198,7 +198,7 @@ with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
 
 
-def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800, days_in_month=30):
+def processData(YYYY=2023, MM=12, start_day=1, HH=9, m=30, missingSeconds=1800, days_in_month=30):
     records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None}  # Initialize the key
     while start_day <= days_in_month:
         for name, mac in employees.items():
@@ -209,7 +209,7 @@ def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800, d
             else:
                 print("Error retrieving data.")
 
-            records = prepRecords(name, mac, missingSeconds, YYYY, MM, start_day, H, m)
+            records = prepRecords(name, mac, YYYY, MM, start_day, HH, m, missingSeconds)
             # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
             # Month
             month = monthReturn(MM)
@@ -235,7 +235,7 @@ def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800, d
             addData(data_to_add)
         start_day += 1 #Increment for each day work calc
 
-processData(YYYY=2023, MM=12, start_day=1, H=8, m=30, missingSeconds=1800, days_in_month=31)
+processData(YYYY=2023, MM=12, start_day=1, HH=8, m=30, missingSeconds=1800, days_in_month=31)
 
 
 
