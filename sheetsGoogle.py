@@ -184,7 +184,7 @@ def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
         pass
     c = 0
     m = 0
-    #records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1]}  # Initialize the key
+    records = {"FirstMoveOfTheDay": None}  # Initialize the key
     while c < len(record) - 1:
         delta = record[c + 1] - record[c]
         if delta > missingSeconds:
@@ -205,6 +205,7 @@ with open('staff.yaml', 'r') as file:
 
 
 def processData(YYYY=2023, MM=12, start_day=1, H=9, m=30, missingSeconds=1800, days_in_month=30):
+    records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None}  # Initialize the key
     while start_day <= days_in_month:
         for name, mac in employees.items():
             # Get Data filled date
