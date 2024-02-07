@@ -135,6 +135,7 @@ def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
         records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1]}  # Initialize the key
     except IndexError as i:
         print(f"No record was found for period {DD/MM/YYYY}")
+        records["Abscent"] = "Abscent"
         pass
     while c < len(record) - 1:
         delta = record[c + 1] - record[c]
