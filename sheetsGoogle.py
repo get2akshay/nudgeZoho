@@ -145,6 +145,7 @@ def remove_duplicates_dict(input_list):
 def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
     #Missing time 
     missingTime = 1800
+    unique = []
     # Define the start date as a datetime object
     start_time = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
     # Define the end date as a datetime object by adding 30 days to the start date
@@ -166,22 +167,18 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
         except TypeError as t:
             print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !")
             pass
-    return None
+    return unique
 
 
 def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
     record = []
     records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None}
-    try:
-        record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
-        if len(record) == 0:
-            datetime_str = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
-            records['FirstMoveOfTheDay'] = datetime_to_epoch(datetime_str)
-            records['LastMoveOfTheDay'] = datetime_to_epoch(datetime_str)
-            return records
-    except TypeError as t:
-        print(f"No record was found for {name} on {YYYY} {MM} {DD}")
-        pass
+    record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
+    if len(record) == 0:
+        datetime_str = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
+        records['FirstMoveOfTheDay'] = datetime_to_epoch(datetime_str)
+        records['LastMoveOfTheDay'] = datetime_to_epoch(datetime_str)
+        return records
     c = 0
     m = 0
     records = {"FirstMoveOfTheDay": None}  # Initialize the key
