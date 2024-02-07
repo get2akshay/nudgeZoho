@@ -131,7 +131,11 @@ def prepRecords(name, mac, missingSeconds, YYYY, MM, DD, HH, MS):
     record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, MS))
     c = 0
     m = 0
-    records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1]}  # Initialize the key
+    try:
+        records = {"FirstMoveOfTheDay": None, "LastMoveOfTheDay": record[-1]}  # Initialize the key
+    except IndexError as i:
+        print(f"No record was found for period {DD/MM/YYYY}")
+        pass
     while c < len(record) - 1:
         delta = record[c + 1] - record[c]
         if delta > missingSeconds:
@@ -159,9 +163,3 @@ while c <= 31:
         hours = (checkout - checkin) / 3600
         data_to_add = [name, mac, dateFormat(checkin), dateFormat(checkout), hours]  # Provide the data to be added to each column
         addData(data_to_add)
-    c += 1
-
-
-
-
-
