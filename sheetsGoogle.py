@@ -86,7 +86,6 @@ def checkSheet(sheet_name):
         print(f"Error: {e}")
     return False
 
-
 def addData(data):
     sheet_name = data[0]
     # Find the sheet ID
@@ -123,7 +122,6 @@ def addData(data):
     ).execute()
     print(f"Added data to '{sheet_name}' in row {next_row}.")
 
-
 def dateFormat(timestamp):
     if timestamp is None:
         return None
@@ -140,9 +138,6 @@ def remove_duplicates_dict(input_list):
         else:
             input_list.remove(num)
     return input_list
-
-
-
 
 def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
     unique = []
@@ -166,7 +161,6 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
         except TypeError as t:
             print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !")
             return unique
-
 
 def prepRecords(name, mac, YYYY, MM, DD, HH, shift_hours, missingSeconds):
     records = {}
@@ -201,11 +195,8 @@ def prepRecords(name, mac, YYYY, MM, DD, HH, shift_hours, missingSeconds):
             records.update({"LastMoveOfTheDay": record[-1]})
         return records
 
-
-
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
-
 
 def processData(YYYY=2023, MM=12, DD=1, HH=9, shift_hours=12, missingSeconds=1800, days_in_month=30):
     start_day = DD
@@ -248,12 +239,4 @@ def processData(YYYY=2023, MM=12, DD=1, HH=9, shift_hours=12, missingSeconds=180
             addData(data_to_add)
         start_day += 1 #Increment for each day work calc
 
-
-
 processData(YYYY=2024, MM=1, DD=1, HH=8, shift_hours=12, missingSeconds=1800, days_in_month=31)
-
-
-
-
-
-
