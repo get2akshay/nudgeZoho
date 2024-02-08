@@ -187,15 +187,17 @@ def prepRecords(name, mac, YYYY, MM, DD, HH, shift_hours, missingSeconds):
                 records.update({"From": record[c], "To": record[c + 1]}) 
             elif delta < missingSeconds and records.get("FirstMoveOfTheDay") is None:
                 records.update({"FirstMoveOfTheDay": record[c]})
+                print("Got first checkin time!")
             else:
                 records[f"Move{k}"] = record[c]
                 k += 1
-            c += 1
-            if c == (len(record) - 1):
+            
+            if c >= (len(record) - 1):
                 records = {"LastMoveOfTheDay": record[c]}  # Initialize the key
+            c += 1
         if records.get("FirstMoveOfTheDay") is None:
             records.update({"FirstMoveOfTheDay": record[0]})
-        elif records.get("LastMoveOfTheDay") is None:
+        if records.get("LastMoveOfTheDay") is None:
             records.update({"LastMoveOfTheDay": record[-1]})
         return records
 
