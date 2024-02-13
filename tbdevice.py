@@ -30,7 +30,7 @@ def job(anchors):
         s = deviceStatus(d)
         print(f"Anchor {d} is {s}")
         if not s:
-            if d is "Entry" or d is "EastWall" or d is "Kitchen Entry":
+            if d is "Entry" == d is "EastWall" == d is "Kitchen Entry":
                 output, error = command.ssh_command("admin", "tiddly@1234567", "ls -lrt")
                 print('Output:', output)
                 if error:
@@ -53,4 +53,3 @@ while True:
         run_job_every_30_min()
     schedule.run_pending()
     time.sleep(1)
-
