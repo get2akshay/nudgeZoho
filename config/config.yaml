@@ -1,6 +1,6 @@
 server_public:
-  host: https://b7d7-103-234-158-46.ngrok-free.app
-  port: 80
+  host: 192.168.0.108
+  port: 8080
   username: tenant@thingsboard.org
   password: akshay911
 
