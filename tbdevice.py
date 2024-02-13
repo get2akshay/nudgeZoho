@@ -30,7 +30,7 @@ def job(anchors):
         s = deviceStatus(d)
         print(f"Anchor {d} is {s}")
         if not s:
-            if d == "Entry" or d == "EastWall" == d is "Kitchen Entry":
+            if d in "Entry" or d in "EastWall" or d == "Kitchen Entry":
                 output, error = command.ssh_command("admin", "tiddly@1234567", "ls -lrt")
                 print('Output:', output)
                 if error:
