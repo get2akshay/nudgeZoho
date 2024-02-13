@@ -48,9 +48,9 @@ def run_job_every_30_min(anchors):
 while True:
     current_time = datetime.now().hour
     if current_time >= 8 and current_time <= 1:
-        run_job_every_5_min()
+        run_job_every_5_min(anchors)
     else:
-        run_job_every_30_min()
+        run_job_every_30_min(anchors)
     schedule.run_pending()
     time.sleep(1)
 
