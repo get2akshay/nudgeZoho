@@ -1,4 +1,4 @@
-from lib import tb
+from lib import tb, command
 # /api/tenant/devices?deviceName=Entry
 
 
@@ -26,6 +26,17 @@ def deviceStatus(device):
             return False
         
 anchors = ["Entry", "InsideKitchin", "EastWall", "Kitchen Entry"]
-for d in anchors:
-    s = deviceStatus(d)
-    print(f"Anchor {d} is {s}")
+while True:
+    for d in anchors:
+        s = deviceStatus(d)
+        print(f"Anchor {d} is {s}")
+        if not s:
+            if d is "Entry" or d is "EastWall" or d is "Kitchen Entry":
+                outpur, error = command.ssh_command("admin", "tiddly@1234567", "ls -lrt")
+                print('Output:', output)
+                if error:
+                    print('Error:', error)
+            else:
+                print("Kitchen Anchor down!")
+
+
