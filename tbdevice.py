@@ -3,5 +3,5 @@ from lib import tb
 
 api = f"/api/tenant/devices?deviceName=Entry"
 
-t = tb.jwttoken(api)
+t = tb.jwttoken()
 print(t)
