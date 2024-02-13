@@ -78,7 +78,7 @@ def rest_get(api):
     # print(params)
     if JWT_TOKEN:
         headers["X-Authorization"] = f"Bearer {JWT_TOKEN}"
-    response = requests.get(api, headers=headers, params=params)
+    response = requests.get(f"{base_url}{api}", headers=headers, params=params)
     # Check if the request was successful (HTTP status code 200).
     if response.status_code == 200:
         # Parse the JSON response.
