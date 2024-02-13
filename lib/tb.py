@@ -56,6 +56,8 @@ headers = {
 # Generate fresh JWT token
 def jwttoken():
     """curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"username":"tenant@thingsboard.org", "password":"tenant"}' 'http://THINGSBOARD_URL/api/auth/login'"""
+    token = {}
+    token.update({"token": ""})
     params = {
         "username": username,
         "password": password,
@@ -64,9 +66,10 @@ def jwttoken():
     if response.status_code == 200:
         # Parse the JSON response.
         token = response.json()
-        return token["token"]
+        return token.get("token")
     else:
         print(f"Failed to fetch JWT Token! Status code: {response.status_code}")
+        return token.get("token")
 
 #Get method
 def rest_get(api):
@@ -74,7 +77,7 @@ def rest_get(api):
     # print(params)
     if JWT_TOKEN:
         headers["X-Authorization"] = f"Bearer {JWT_TOKEN}"
-    response = requests.get(get_url, headers=headers, params=params)
+    response = requests.get(api, headers=headers, params=params)
     # Check if the request was successful (HTTP status code 200).
     if response.status_code == 200:
         # Parse the JSON response.
@@ -90,7 +93,7 @@ def rest_post(api, payload):
     JWT_TOKEN = jwttoken()
     if JWT_TOKEN:
         headers["X-Authorization"] = f"Bearer {JWT_TOKEN}"
-    response = requests.post(post_url, headers=headers, json=payload)
+    response = requests.post(api, headers=headers, json=payload)
     # Check if the request was successful (HTTP status code 200).
     if response.status_code == 200:
         logging.info("Time series data sent successfully.")
