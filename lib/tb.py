@@ -72,11 +72,12 @@ def jwttoken():
     else:
         print(f"Failed to fetch JWT Token! Status code: {response.status_code}")
 
-JWT_TOKEN = jwttoken()
-
 #Get method
 def rest_get(get_url):
+    JWT_TOKEN = jwttoken()
     # print(params)
+    if JWT_TOKEN:
+        headers["X-Authorization"] = f"Bearer {JWT_TOKEN}"
     response = requests.get(get_url, headers=headers, params=params)
     # Check if the request was successful (HTTP status code 200).
     if response.status_code == 200:
@@ -90,6 +91,7 @@ def rest_get(get_url):
 #Get method
 def rest_post(post_url, payload):
     # Add the access token to the headers if it's required.
+    JWT_TOKEN = jwttoken()
     if JWT_TOKEN:
         headers["X-Authorization"] = f"Bearer {JWT_TOKEN}"
     response = requests.post(post_url, headers=headers, json=payload)
