@@ -75,7 +75,7 @@ def jwttoken():
 #Get method
 def rest_get(api, params):
     JWT_TOKEN = jwttoken()
-    print(JWT_TOKEN)
+    #print(JWT_TOKEN)
     telemetry_data = {}
     headers.update({
     "X-Authorization":  f"Bearer {JWT_TOKEN}",
