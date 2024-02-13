@@ -2,14 +2,14 @@ server_public:
   host: 192.168.0.108
   port: 8080
   username: tenant@thingsboard.org
-  password: akshay911
+  password: tenant
 
 tenants:
   tidly:
     edge: 192.168.0.108
     port: 8080
     username: tenant@thingsboard.org
-    password: akshay911
+    password: tenant
     anchors:
       kitchen: edcca8e0-5d00-11ee-9c57-339635acbaee
       entry: 46b94ad0-5cf7-11ee-9c57-339635acbaee

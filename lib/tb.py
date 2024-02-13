@@ -74,6 +74,7 @@ def jwttoken():
 #Get method
 def rest_get(api):
     JWT_TOKEN = jwttoken()
+    telemetry_data = {}
     # print(params)
     if JWT_TOKEN:
         headers["X-Authorization"] = f"Bearer {JWT_TOKEN}"
@@ -86,6 +87,7 @@ def rest_get(api):
         return telemetry_data
     else:
         logging.debug(f"Failed to fetch telemetry data. Status code: {response.status_code}")
+        return telemetry_data
 
 #Get method
 def rest_post(api, payload):

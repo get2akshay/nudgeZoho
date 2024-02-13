@@ -3,5 +3,8 @@ from lib import tb
 
 api = f"/api/tenant/devices?deviceName=Entry"
 
-t = tb.jwttoken()
-print(t)
+t = tb.rest_get(api)
+if not t:
+    print(f"API {api} resulted Empty json!")
+else:
+    print(t)
