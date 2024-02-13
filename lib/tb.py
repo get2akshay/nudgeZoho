@@ -73,8 +73,7 @@ def jwttoken():
         return token.get("token")
 
 #Get method
-def rest_get(api):
-    set_trace()
+def rest_get(api, params):
     JWT_TOKEN = jwttoken()
     print(JWT_TOKEN)
     telemetry_data = {}
@@ -84,7 +83,7 @@ def rest_get(api):
     # print(params)
     # if JWT_TOKEN:
         # headers["X-Authorization"] = f"Bearer {JWT_TOKEN}"
-    response = requests.get(f"{base_url}{api}", headers=headers)
+    response = requests.get(f"{base_url}{api}", headers=headers, params=params)
     # Check if the request was successful (HTTP status code 200).
     if response.status_code == 200:
         # Parse the JSON response.
