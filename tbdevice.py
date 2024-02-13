@@ -26,8 +26,7 @@ def deviceStatus(device):
             return False
         
 anchors = ["Entry", "InsideKitchin", "EastWall", "Kitchen Entry"]
-while True:
-    for d in anchors:
+for d in anchors:
         s = deviceStatus(d)
         print(f"Anchor {d} is {s}")
         if not s:
@@ -38,5 +37,5 @@ while True:
                     print('Error:', error)
             else:
                 print("Kitchen Anchor down!")
-
+    
 
