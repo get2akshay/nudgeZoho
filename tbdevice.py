@@ -13,12 +13,11 @@ if not t:
 else:
     id = t.get("id").get("id")
     print(id)
-    api = "api/device/info"
-    params = {}
-    params.update({"deviceId" : id})
-    t = tb.rest_get(api,params)
-    print(t)
-
+    api = f"api/device/info/{id}"
+    # params = {}
+    # params.update({"deviceId" : id})
+    s = tb.rest_get(api, params)
+    print(s.get("active"))
 
 """{
   "id": {
