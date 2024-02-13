@@ -4,6 +4,7 @@ import os
 import yaml
 import logging
 params = dict()
+from pdb import set_trace
 # Get the current working directory
 current_directory = os.getcwd()
 # Construct the absolute path to the YAML file in the parent directory
@@ -73,6 +74,7 @@ def jwttoken():
 
 #Get method
 def rest_get(api):
+    set_trace()
     JWT_TOKEN = jwttoken()
     print(JWT_TOKEN)
     telemetry_data = {}
