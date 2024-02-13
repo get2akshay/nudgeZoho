@@ -1,11 +1,9 @@
 import requests
 from datetime import datetime, timedelta
 import os
-from time import sleep
 import yaml
 import logging
 params = dict()
-import pdb
 # Get the current working directory
 current_directory = os.getcwd()
 # Construct the absolute path to the YAML file in the parent directory
@@ -45,8 +43,6 @@ print(f"Database Port: {port}")
 print(f"Database Username: {username}")
 print(f"Database Password: {password}")
 
-
-pdb.set_trace()
 #ThingsBoard
 http = "http://"
 webSocket = "ws://"
