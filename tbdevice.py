@@ -17,10 +17,7 @@ else:
     params = {}
     params.update({"deviceId" : id})
     t = tb.rest_get(api,params)
-    if t.get("active") is not None and t.get("active") is True:
-        print("Active")
-    else:
-        print("Inactive")
+    print(t)
 
 
 """{
