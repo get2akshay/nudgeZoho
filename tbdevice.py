@@ -47,7 +47,7 @@ def run_job_every_30_min(anchors):
 
 while True:
     current_time = datetime.now().hour
-    if current_time >= 8 and current_time <= 1:
+    if current_time >= 8 and current_time <= 23:
         run_job_every_5_min(anchors)
     else:
         run_job_every_30_min(anchors)
