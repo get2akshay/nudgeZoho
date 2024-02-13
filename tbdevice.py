@@ -1,15 +1,14 @@
 from lib import tb
 # /api/tenant/devices?deviceName=Entry
 
-api = f"api/tenant/devices"
+
 # api = "api/device/types"
 # api = "api/device/info"
 
-anchors = ["Entry", "InsideKitchen", "EastWall", "KitchenEntry"]
-params = {}
 
 
 def deviceStatus(device):
+    api = f"api/tenant/devices"
     params["deviceName"] = device
     t = tb.rest_get(api,params)
     if not t:
@@ -24,7 +23,8 @@ def deviceStatus(device):
             return True
         else:
             return False
-
+        
+anchors = ["Entry", "InsideKitchen", "EastWall", "KitchenEntry"]
 for d in anchors:
     s = deviceStatus(d)
     print(f"Anchor {d} is {s}")
