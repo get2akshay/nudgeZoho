@@ -1,9 +1,7 @@
 from lib import tb, command
-# /api/tenant/devices?deviceName=Entry
-
-
-# api = "api/device/types"
-# api = "api/device/info"
+import schedule
+import time
+from datetime import datetime
 
 
 
@@ -26,16 +24,33 @@ def deviceStatus(device):
             return False
         
 anchors = ["Entry", "InsideKitchin", "EastWall", "Kitchen Entry"]
-for d in anchors:
+
+def job(anchors):
+    for d in anchors:
         s = deviceStatus(d)
         print(f"Anchor {d} is {s}")
         if not s:
             if d is "Entry" or d is "EastWall" or d is "Kitchen Entry":
-                outpur, error = command.ssh_command("admin", "tiddly@1234567", "ls -lrt")
+                output, error = command.ssh_command("admin", "tiddly@1234567", "ls -lrt")
                 print('Output:', output)
                 if error:
                     print('Error:', error)
             else:
                 print("Kitchen Anchor down!")
-    
+
+def run_job_every_5_min(anchors):
+    schedule.every(5).minutes.do(job, anchors)
+
+def run_job_every_30_min(anchors):
+    my_list = ['item1', 'item2', 'item3']  # replace with your list
+    schedule.every(30).minutes.do(job, anchors)
+
+while True:
+    current_time = datetime.now().time()
+    if current_time >= time(8, 0) and current_time <= time(12, 0):
+        run_job_every_5_min()
+    else:
+        run_job_every_30_min()
+    schedule.run_pending()
+    time.sleep(1)
 
