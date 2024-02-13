@@ -9,6 +9,7 @@ from lib import tb
 
 def deviceStatus(device):
     api = f"api/tenant/devices"
+    params = {}
     params["deviceName"] = device
     t = tb.rest_get(api,params)
     if not t:
