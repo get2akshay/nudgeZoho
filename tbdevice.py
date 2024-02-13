@@ -25,7 +25,7 @@ def deviceStatus(device):
         else:
             return False
         
-anchors = ["Entry", "InsideKitchen", "EastWall", "KitchenEntry"]
+anchors = ["Entry", "InsideKitchin", "EastWall", "	Kitchen Entry"]
 for d in anchors:
     s = deviceStatus(d)
     print(f"Anchor {d} is {s}")
