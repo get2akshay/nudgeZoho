@@ -73,7 +73,7 @@ def jwttoken():
         print(f"Failed to fetch JWT Token! Status code: {response.status_code}")
 
 #Get method
-def rest_get(get_url):
+def rest_get(api):
     JWT_TOKEN = jwttoken()
     # print(params)
     if JWT_TOKEN:
@@ -89,7 +89,7 @@ def rest_get(get_url):
         logging.debug(f"Failed to fetch telemetry data. Status code: {response.status_code}")
 
 #Get method
-def rest_post(post_url, payload):
+def rest_post(api, payload):
     # Add the access token to the headers if it's required.
     JWT_TOKEN = jwttoken()
     if JWT_TOKEN:
