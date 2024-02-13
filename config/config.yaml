@@ -1,13 +1,13 @@
 server_public:
-  host: 192.168.0.108
-  port: 8080
+  host: f457-103-234-158-46.ngrok-free.app
+  port: 80
   username: tenant@thingsboard.org
   password: tenant
 
 tenants:
   tidly:
     edge: 192.168.0.108
-    port: 8080
+    port: 80
     username: tenant@thingsboard.org
     password: tenant
     anchors:

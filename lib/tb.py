@@ -50,9 +50,9 @@ base_url = f"{http}{edge}:{edge_port}/"
 get_url = f"{base_url}api/plugins/telemetry/DEVICE/1747e250-5a29-11ee-b96b-53725f09012e/values/timeseries"
 # http://65.20.78.99:8080/api/plugins/telemetry/ASSET/7db05ee0-5d0e-11ee-b96b-53725f09012e/timeseries/ANY?scope=ANY
 post_url = f"{base_url}api/plugins/telemetry/DEVICE/2196e090-5dd4-11ee-9c57-339635acbaee/timeseries/ANY?scope=ANY"
-headers = {
-    "Content-Type": "application/json",
-}
+
+headers = {"accept": "application/json"}
+
 # Generate fresh JWT token
 def jwttoken():
     """curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"username":"tenant@thingsboard.org", "password":"tenant"}' 'http://THINGSBOARD_URL/api/auth/login'"""
@@ -74,11 +74,15 @@ def jwttoken():
 #Get method
 def rest_get(api):
     JWT_TOKEN = jwttoken()
+    print(JWT_TOKEN)
     telemetry_data = {}
+    headers.update({
+    "X-Authorization":  f"Bearer {JWT_TOKEN}",
+    })
     # print(params)
-    if JWT_TOKEN:
-        headers["X-Authorization"] = f"Bearer {JWT_TOKEN}"
-    response = requests.get(f"{base_url}{api}", headers=headers, params=params)
+    # if JWT_TOKEN:
+        # headers["X-Authorization"] = f"Bearer {JWT_TOKEN}"
+    response = requests.get(f"{base_url}{api}", headers=headers)
     # Check if the request was successful (HTTP status code 200).
     if response.status_code == 200:
         # Parse the JSON response.
