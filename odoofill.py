@@ -14,7 +14,7 @@ def run_daily(func, mac, YYYY, MM, DD, HH):
         # Place your code here
         day = start_date.day
         year = start_date.year
-        month = start_date.year
+        month = start_date.month
         hour = start_date.hour
         func(mac, year, month, day, hour)
         # Increment the day by one
