@@ -90,8 +90,6 @@ for i in range(len(timestamp_list)):
         print(f"Final checkout time: {dt}")
         odoo.mark_attendance('check_out', mac, epoch_to_datetime(timestamp_list[i]))
 
-
-
 # odoo.mark_attendance('check_out', mac, epoch_to_datetime(max(timestamp_list)))
 exit
 
