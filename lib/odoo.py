@@ -103,12 +103,12 @@ def checkout(identification_id, checkout_time):
     checkin_times = attendance.execute_kw(db, uid, password,
         'hr.attendance', 'read',
         [attendance_ids, ['check_in']])
-    # Loop through the records and check the time difference
     for record in checkin_times:
         # Convert the checkin time to a datetime object
         checkin_time = datetime.strptime(record['check_in'], '%Y-%m-%d %H:%M:%S')
+        print(checkin_time)
         # If the time difference is more than 30 minutes, set the check out time to the current time
-        attendance.execute_kw(db, uid, password,
-                'hr.attendance', 'write',
-                [[record['id']], {'check_out': checkout_time}])
+        # attendance.execute_kw(db, uid, password,
+                # 'hr.attendance', 'write',
+                # [[record['id']], {'check_out': checkout_time}])
             
