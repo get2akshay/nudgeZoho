@@ -66,9 +66,28 @@ checkOutExistingCheckin(mac)
 timestamp_list = []
 timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)
 timestamp_list.sort()
-print(f"Will checkin for time {dateFormatOdoo(min(timestamp_list))}")
-odoo.mark_attendance('check_in', mac, epoch_to_datetime(min(timestamp_list)))
-print(f"Will checkin for time {dateFormatOdoo(max(timestamp_list))}")
+# odoo.mark_attendance('check_in', mac, epoch_to_datetime(min(timestamp_list)))
+# Loop through the list and compare each timestamp with the previous one
+for i in range(len(timestamp_list)):
+    # Convert the timestamp to a datetime object
+    dt = datetime.datetime.fromtimestamp(timestamp_list[i])
+    # If it is the first timestamp, print the start time
+    if i == 0:
+        print(f"Start time: {dt}")
+    # Otherwise, calculate the time difference with the previous timestamp
+    else:
+        # Convert the previous timestamp to a datetime object
+        prev_dt = datetime.datetime.fromtimestamp(timestamp_list[i-1])
+        # Calculate the time delta in minutes
+        delta = (dt - prev_dt) / datetime.timedelta(minutes=1)
+        # Print the time delta
+        print(f"Time delta: {delta} minutes")
+    # If it is the last timestamp, print the final checkout time
+    if i == len(timestamp_list) - 1:
+        print(f"Final checkout time: {dt}")
+
+
+
 odoo.mark_attendance('check_out', mac, epoch_to_datetime(max(timestamp_list)))
 
 exit
