@@ -55,18 +55,23 @@ timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)
 for i in range(len(timestamp_list)):
     print(timestamp_list[i])
     delta = 0
+    kvs = {}
     kvs = odoo.verify_existing_checkin(mac)
-    for atdid, checkin in kvs.items():
-        timestamp_obj = datetime.datetime.strptime(checkin, '%Y-%m-%d %H:%M:%S')
-        timestamp_epoch = int(time.mktime(timestamp_obj.timetuple()))
-        print(f"Current checked In Time {checkin} and its Epoch {timestamp_epoch}")
-        delta = (timestamp_list[i] - timestamp_epoch) / 60
-        print(f"Difference between Live Checkin and latest move {delta} !")
-    if i == len(timestamp_list) - 1:
-        finalcheckout = dateFormatOdoo(timestamp_list[i])
-        print(f"Final checkout time: {finalcheckout}")
-        odoo.checkout(mac, finalcheckout)
-    
+    if not kvs:
+        if i == 0:
+            odoo.mark_attendance('check_in', mac, epoch_to_datetime(min(timestamp_list)))
+    else:
+        for atdid, checkin in kvs.items():
+            timestamp_obj = datetime.datetime.strptime(checkin, '%Y-%m-%d %H:%M:%S')
+            timestamp_epoch = int(time.mktime(timestamp_obj.timetuple()))
+            print(f"Current checked In Time {checkin} and its Epoch {timestamp_epoch}")
+            delta = (timestamp_list[i] - timestamp_epoch) / 60
+            print(f"Difference between Live Checkin and latest move {delta} !")
+        if i == len(timestamp_list) - 1:
+            finalcheckout = dateFormatOdoo(timestamp_list[i])
+            print(f"Final checkout time: {finalcheckout}")
+            odoo.checkout(mac, finalcheckout)
+        
 
 
 
