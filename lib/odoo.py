@@ -131,20 +131,14 @@ def verify_existing_checkin(identification_id):
         [[['employee_id.identification_id', '=', identification_id], ['check_out', '=', False]]])
     if len(attendance_ids) == 0:
         print("No existing checkin!")
-        return False
+        return ids
     else:
         # Read the checkin time of the records
         checkin_times = attendance.execute_kw(db, uid, password,
             'hr.attendance', 'read',
             [attendance_ids, ['check_in']])
-        
         for record in checkin_times:
             # Convert the checkin time to a datetime object
-            checkin_time = datetime.strptime(record['check_in'], '%Y-%m-%d %H:%M:%S')
-            print(checkin_time)
-            # If the time difference is more than 30 minutes, set the check out time to the current time
-            # attendance.execute_kw(db, uid, password,
-                    # 'hr.attendance', 'write',
-                    # [[record['id']], {'check_out': checkout_time}])
             ids.append(record['id'])
+    print(f"Existing checkin found! {ids}")
     return ids
