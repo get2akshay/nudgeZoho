@@ -47,7 +47,7 @@ timestamp_list = []
 timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)  
 missingTime = 30
 existing_checkin = odoo.get_checkin(mac)
-odoo.auto_checkout('check_out','00:8c:10:30:02:6f', missingTime)  
+odoo.auto_checkout('00:8c:10:30:02:6f', missingTime)  
 
 for index, ts in enumerate(timestamp_list):
     # Convert the current and next timestamps to datetime objects
