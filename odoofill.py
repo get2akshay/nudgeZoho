@@ -62,7 +62,7 @@ timestamp_list = []
 timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)
 timestamp_list.sort()
 odoo.mark_attendance('check_in', mac, epoch_to_datetime(min(timestamp_list)))
-odoo.mark_attendance('check_out', mac, epoch_to_datetime(max(timestamp_list)[-1]))
+odoo.mark_attendance('check_out', mac, epoch_to_datetime(max(timestamp_list)))
 
 exit
 
