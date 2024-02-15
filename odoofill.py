@@ -51,11 +51,18 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
 mac = '00:8c:10:30:02:6f'
 timestamp_list = []
 timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)
-kvs = odoo.verify_existing_checkin(mac)
-for atdid, checkin in kvs.items():
-    timestamp_obj = datetime.datetime.strptime(checkin, '%Y-%m-%d %H:%M:%S')
-    timestamp_epoch = int(time.mktime(timestamp_obj.timetuple()))
-    print(f"Current checked In Time {checkin} and its Epoch {timestamp_epoch}")
+for move in timestamp_list:
+    print(move)
+    delta = 0
+    kvs = odoo.verify_existing_checkin(mac)
+    for atdid, checkin in kvs.items():
+        timestamp_obj = datetime.datetime.strptime(checkin, '%Y-%m-%d %H:%M:%S')
+        timestamp_epoch = int(time.mktime(timestamp_obj.timetuple()))
+        print(f"Current checked In Time {checkin} and its Epoch {timestamp_epoch}")
+        delta = move - timestamp_epoch
+        print(f"Difference between Live Checkin and latest move {delta} !") 
+
+
 
 
 
