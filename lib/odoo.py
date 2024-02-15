@@ -22,7 +22,7 @@ def auth():
     else:
         return False
 
-def mark_attendance(identification_id):
+def mark_attendance(identification_id, epoch):
     if auth():
         print("Server available!")
     else:
@@ -33,7 +33,7 @@ def mark_attendance(identification_id):
     employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[['identification_id', '=', identification_id]]])
     if employee_ids:
         # Mark the attendance
-        attendance_id = models.execute_kw(db, uid, password, 'hr.attendance', 'create', [{'employee_id': employee_ids[0], 'check_in': '2024-02-15 08:00:00'}])
+        attendance_id = models.execute_kw(db, uid, password, 'hr.attendance', 'create', [{'employee_id': employee_ids[0], 'check_in': epoch}])
         print(f"Attendance marked for employee with ID {identification_id}. Attendance ID is {attendance_id}.")
     else:
         print(f"No employee found with ID {identification_id}.")

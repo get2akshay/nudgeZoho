@@ -5,6 +5,17 @@ import numpy as np
 from lib import odoo
 
 
+# Define the method that takes an epoch time stamp as an argument
+def epoch_to_datetime(epoch):
+  # Convert the epoch time stamp to a datetime object
+  dt = datetime.datetime.fromtimestamp(epoch)
+  # Format the datetime object as a string
+  dt_str = dt.strftime('%Y-%m-%d %H:%M:%S')
+  # Return the formatted string
+  return dt_str
+
+
+
 def workHourRecord(mac, YYYY, MM, DD, HH):
     unique = []
     # Define the start date as a datetime object
@@ -33,6 +44,6 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
             return unique
         
 
-for stamp in  workHourRecord('00:8c:10:30:02:6f', YYYY=2024, MM=2, DD=1, HH=8):
-    print(stamp)
-    odoo.mark_attendance('00:8c:10:30:02:6f')
+for epoch in  workHourRecord('00:8c:10:30:02:6f', YYYY=2024, MM=2, DD=1, HH=8):
+    print(epoch)
+    odoo.mark_attendance('00:8c:10:30:02:6f', epoch_to_datetime(epoch))
