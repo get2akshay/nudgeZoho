@@ -187,9 +187,15 @@ def get_timestamp(tup):
     y = float(tup[-2])
     z = float(tup[-1])
     # Count how many of the x, y, and z values are non-zero
-    count = sum([1 for v in (x, y, z) if v != 0])
+    count = 0
+    if x != 0:
+        c += 1
+    if x != 0:
+        c += 1
+    if x != 0:
+        c += 1
     # If the count is greater than or equal to two, return the timestamp
-    if count >= 2:
+    if count == 3:
         return timestamp
 
 
