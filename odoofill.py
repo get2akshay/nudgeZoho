@@ -70,6 +70,14 @@ def day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8):
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH)
     kvs = []
     kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
+    if len(kvs) == 0:
+        print("Checkin here")
+    else:
+        for elem in kvs:
+            if elem and elem.get('checkin') and elem.get('checkout'):
+                print("Records exists for the")
+        
+
     print(kvs)
     # for move in timestamp_list:
     # for i in range(len(timestamp_list)):
