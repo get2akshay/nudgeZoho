@@ -1,10 +1,26 @@
-
 import datetime
 from lib import db
 import numpy as np
 from lib import odoo
 from pdb import set_trace
 import time
+
+def run_daily(YYYY=2023, MM=12, DD=1, HH=8):
+    start_date = datetime.datetime(YYYY, MM, DD, HH)
+    present_date = datetime.datetime.now()
+
+    while start_date <= present_date:
+        print(f"Running code for {start_date.strftime('%Y-%m-%d %H:%M:%S')}")
+        # Place your code here
+
+        # Increment the day by one
+        start_date += datetime.timedelta(days=1)
+
+        # If the next day is in the future, wait until it comes
+        if start_date > datetime.datetime.now():
+            print(f"Waiting for {start_date.strftime('%Y-%m-%d %H:%M:%S')}")
+            while datetime.datetime.now() < start_date:
+                time.sleep(60)  # Check every minute
 
 def dateFormatOdoo(timestamp):
     # Create a datetime object from the epoch time stamp
@@ -75,6 +91,7 @@ for i in range(len(timestamp_list)):
 
 
 
+run_daily()
 
 
 """
