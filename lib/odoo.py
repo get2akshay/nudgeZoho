@@ -117,8 +117,10 @@ def checkout(identification_id, checkout_time):
 
 
 def verify_existing_checkin(identification_id, YYYY, MM, DD):
+    # Day record
+    day_status = {}
+    day_list = []
     # Check if authenticated
-    
     if not auth():
         return False
     # Get the attendance model
@@ -138,7 +140,6 @@ def verify_existing_checkin(identification_id, YYYY, MM, DD):
         # Get the employee's identification_id
         employee = attendance.execute_kw(db, uid, password, 'hr.employee', 'read', [record['employee_id'][0]], {'fields': ['identification_id']})
         print(f"Employee ID: {record['employee_id'][1]}, Identification ID: {employee[0]['identification_id']}, Check In: {record['check_in']}, Check Out: {record['check_out']}")
-        if identification_id == employee[0]['identification_id']:
-            return True
-        else:
-            return False
+        day_status.update({'Badge': employee[0]['identification_id'], 'checkin': record['check_in'], 'checkout': record['check_out']})
+        day_list.append(day_status)   
+    return day_list

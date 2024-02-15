@@ -68,26 +68,14 @@ mac = '00:8c:10:30:02:6f'
 def day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8):
     timestamp_list = []
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH)
+    kvs = []
+    kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
+    print(kvs)
     # for move in timestamp_list:
-    for i in range(len(timestamp_list)):
-        print(timestamp_list[i])
-        delta = 0
-        kvs = False
-        kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
-        if not kvs:
-            if i == 0:
-                odoo.mark_attendance('check_in', mac, epoch_to_datetime(min(timestamp_list)))
-        else:
-            for atdid, checkin in kvs.items():
-                timestamp_obj = datetime.datetime.strptime(checkin, '%Y-%m-%d %H:%M:%S')
-                timestamp_epoch = int(time.mktime(timestamp_obj.timetuple()))
-                print(f"Current checked In Time {checkin} and its Epoch {timestamp_epoch}")
-                delta = (timestamp_list[i] - timestamp_epoch) / 60
-                print(f"Difference between Live Checkin and latest move {delta} !")
-            if i == len(timestamp_list) - 1:
-                finalcheckout = dateFormatOdoo(timestamp_list[i])
-                print(f"Final checkout time: {finalcheckout}")
-                odoo.checkout(mac, finalcheckout)
+    # for i in range(len(timestamp_list)):
+        # print(timestamp_list[i])
+        # kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
+        
         
 
 
