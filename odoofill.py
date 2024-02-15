@@ -53,7 +53,7 @@ checkins = odoo.get_checkin(mac)
 timestamp_obj = datetime.datetime.strptime(checkins[0], '%Y-%m-%d %H:%M:%S')
 timestamp_epoch = int(time.mktime(timestamp_obj.timetuple()))
 epoch_time = datetime.datetime.now().timestamp()
-if epoch_time - timestamp_epoch > missingTime:
+if (epoch_time - timestamp_epoch) > missingTime:
     odoo.auto_checkout('00:8c:10:30:02:6f', missingTime)
 
 for index, ts in enumerate(timestamp_list):
