@@ -13,7 +13,10 @@ def run_daily(func, mac, YYYY, MM, DD, HH):
         # print(f"Running code for {start_date.strftime('%Y-%m-%d %H:%M:%S')}")
         # Place your code here
         day = start_date.day
-        func(mac, YYYY, MM, day, HH)
+        year = start_date.year
+        month = start_date.year
+        hour = start_date.hour
+        func(mac, year, month, day, hour)
         # Increment the day by one
         start_date += datetime.timedelta(days=1)
         # If the next day is in the future, wait until it comes
@@ -72,14 +75,17 @@ def day_attendance(mac, YYYY, MM, DD, HH):
     kvs = []
     kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
     if len(kvs) == 0:
-        # print("Checkin here")
-        odoo.mark_attendance('check_in', mac, dateFormatOdoo(min(timestamp_list)))
+        cin = dateFormatOdoo(min(timestamp_list))
+        print(f"Making for {cin}")
+        odoo.mark_attendance('check_in', mac, cin)
     else:
         for elem in kvs:
             if elem and elem.get('checkin') and elem.get('checkout'):
                 print("Records exists for the")
         return True
-    odoo.checkout(mac, epoch_to_datetime(max(timestamp_list)))
+    cin = dateFormatOdoo(max(timestamp_list))
+    print(f"Making for {cin}")
+    odoo.checkout(mac, dateFormatOdoo(max(cin)))
     # print(kvs)
     # for move in timestamp_list:
     # for i in range(len(timestamp_list)):
