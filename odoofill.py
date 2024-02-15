@@ -12,7 +12,8 @@ def run_daily(func, mac, YYYY, MM, DD, HH):
     while start_date <= present_date:
         print(f"Running code for {start_date.strftime('%Y-%m-%d %H:%M:%S')}")
         # Place your code here
-        func(mac, YYYY, MM, DD, HH)
+        day = start_date.day
+        func(mac, YYYY, MM, day, HH)
         # Increment the day by one
         start_date += datetime.timedelta(days=1)
 
@@ -77,6 +78,7 @@ def day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8):
         for elem in kvs:
             if elem and elem.get('checkin') and elem.get('checkout'):
                 print("Records exists for the")
+        return True
     odoo.checkout(mac, epoch_to_datetime(max(timestamp_list)))
         
 
