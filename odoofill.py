@@ -43,9 +43,9 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
     # Define the start date as a datetime object
     start_time = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
     # Define the end date as a datetime object by adding 30 days to the start date
-    DD = DD + 1
+    # DD = DD + 1
     try:
-        end_time = datetime.datetime(YYYY, MM, DD, 3, 30, 0).strftime("%Y-%m-%d %H:%M:%S")
+        end_time = datetime.datetime(YYYY, MM, DD, 23, 59, 0).strftime("%Y-%m-%d %H:%M:%S")
         print(f"Getting Old Movement data from {start_time} to {end_time} Badge {mac} !")
         data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
     except ValueError as v:
@@ -66,9 +66,10 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
             return unique
 
 mac = '00:8c:10:30:02:6f'
-def day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8):
+def day_attendance(mac, YYYY, MM, DD, HH):
     timestamp_list = []
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH)
+    timestamp_list.sort()
     kvs = []
     kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
     if len(kvs) == 0:
