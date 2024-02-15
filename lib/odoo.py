@@ -69,7 +69,7 @@ def auto_checkout(identification_id, delta_minutes):
 
 
 
-def mark_attendance(identification_id, epoch):
+def mark_attendance(checkx,identification_id, epoch):
     if auth():
         print("Server available!")
     else:
@@ -80,7 +80,7 @@ def mark_attendance(identification_id, epoch):
     employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[['identification_id', '=', identification_id]]])
     if employee_ids:
         # Mark the attendance
-        attendance_id = models.execute_kw(db, uid, password, 'hr.attendance', 'create', [{'employee_id': employee_ids[0], 'check_in': epoch}])
+        attendance_id = models.execute_kw(db, uid, password, 'hr.attendance', 'create', [{'employee_id': employee_ids[0], checkx : epoch}])
         print(f"Attendance marked for employee with ID {identification_id}. Attendance ID is {attendance_id}.")
     else:
         print(f"No employee found with ID {identification_id}.")

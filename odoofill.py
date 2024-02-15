@@ -14,8 +14,6 @@ def epoch_to_datetime(epoch):
   # Return the formatted string
   return dt_str
 
-
-
 def workHourRecord(mac, YYYY, MM, DD, HH):
     unique = []
     # Define the start date as a datetime object
@@ -42,9 +40,45 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
         except TypeError as t:
             print(f"Time stamp empty for {mac} in the period {start_time} to {end_time} !")
             return unique
-        
 
-for epoch in  workHourRecord('00:8c:10:30:02:6f', YYYY=2024, MM=2, DD=1, HH=8):
+mac = '00:8c:10:30:02:6f'
+timestamp_list = []
+timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)  
+missingTime = 30
+existing_checkin = odoo.get_checkin(mac)
+odoo.auto_checkout('check_out','00:8c:10:30:02:6f', missingTime)  
+
+for index, ts in enumerate(timestamp_list):
+    # Convert the current and next timestamps to datetime objects
+    # Call the function with the appropriate arguments
+    if index == 0:
+        # First checkin with the earliest timestamp
+        # loginStatus = checkinout("checkIn", mac, timestamp_list[index])
+        loginStatus = odoo.mark_attendance('check_in', mac, epoch_to_datetime(timestamp_list[index]))
+    else:
+        # Checkout and checkin with the subsequent timestamps
+        try:
+            # Calculate the time difference in seconds
+            time_diff = (timestamp_list[index + 1] - timestamp_list[index])
+            # Print the time difference
+            print(f"The time difference between {timestamp_list[index + 1]} and {timestamp_list[index]} is {time_diff} seconds.")
+            # Check if the time difference is more than 1800 seconds
+            if time_diff > missingTime:
+                # Call the checkout function
+                # loginStatus = checkinout("checkOut", mac, timestamp_list[index] + missingTime)
+                loginStatus = odoo.mark_attendance('check_out', mac, epoch_to_datetime(timestamp_list[index]) + missingTime)
+                print(f"Making checkOut for OLd time stamp {loginStatus}")
+            print(f"Making checkIn for OLd time stamps {loginStatus}")
+            if index == len(timestamp_list) - 1:
+                # this is the last index loop
+                # loginStatus = checkinout("checkOut", mac, timestamp_list[index] + missingTime)
+                loginStatus = odoo.mark_attendance('check_out', mac, epoch_to_datetime(timestamp_list[index]) + missingTime)
+        except IndexError as i:
+            print(f"No movement detected for badge {mac}")
+            # Loop through the list of datetime objects
+
+
+for epoch in workHourRecord('00:8c:10:30:02:6f', YYYY=2024, MM=2, DD=1, HH=8):
     print(epoch)
     checkin = odoo.get_checkin('00:8c:10:30:02:6f')
     if not checkin:
