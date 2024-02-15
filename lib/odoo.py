@@ -84,7 +84,7 @@ def mark_attendance(checkx,identification_id, epoch):
     if employee_ids:
         # Mark the attendance
         attendance_id = models.execute_kw(db, uid, password, 'hr.attendance', 'create', [{'employee_id': employee_ids[0], checkx : epoch}])
-        print(f"Attendance marked for employee with ID {identification_id}. Attendance ID is {attendance_id}.")
+        # print(f"Attendance marked for employee with ID {identification_id}. Attendance ID is {attendance_id}.")
     else:
         print(f"No employee found with ID {identification_id}.")
 
