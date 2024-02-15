@@ -93,7 +93,7 @@ def day_attendance(mac, YYYY, MM, DD, HH):
 
 
 mac = '00:8c:10:30:02:6f'
-run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=1, HH=8)
+run_daily(day_attendance, mac, YYYY=2023, MM=12, DD=1, HH=8)
 
 
 """
