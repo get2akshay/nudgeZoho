@@ -6,6 +6,11 @@ from lib import odoo
 from pdb import set_trace
 import time
 
+def dateFormatOdoo(timestamp):
+    # Create a datetime object from the epoch time stamp
+    date_time = datetime.datetime.fromtimestamp(timestamp)
+    # Format the datetime object as a string
+    return date_time.strftime("%Y-%m-%d %H:%M:%S")
 
 # Define the method that takes an epoch time stamp as an argument
 def epoch_to_datetime(epoch):
@@ -61,7 +66,9 @@ checkOutExistingCheckin(mac)
 timestamp_list = []
 timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)
 timestamp_list.sort()
+print(f"Will checkin for time {dateFormatOdoo(min(timestamp_list))}")
 odoo.mark_attendance('check_in', mac, epoch_to_datetime(min(timestamp_list)))
+print(f"Will checkin for time {dateFormatOdoo(max(timestamp_list))}")
 odoo.mark_attendance('check_out', mac, epoch_to_datetime(max(timestamp_list)))
 
 exit
