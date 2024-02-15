@@ -47,7 +47,7 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
         except TypeError as t:
             print(f"Time stamp empty for {mac} in the period {start_time} to {end_time} !")
             return unique
-set_trace()
+
 def checkOutExistingCheckin(mac):
     checkins = odoo.get_checkin(mac)
     if len(checkins) > 0:
@@ -73,6 +73,7 @@ for i in range(len(timestamp_list)):
     # If it is the first timestamp, print the start time
     if i == 0:
         print(f"Start time: {dt}")
+        odoo.mark_attendance('check_in', mac, epoch_to_datetime(timestamp_list[i]))
     # Otherwise, calculate the time difference with the previous timestamp
     else:
         # Convert the previous timestamp to a datetime object
@@ -84,6 +85,7 @@ for i in range(len(timestamp_list)):
     # If it is the last timestamp, print the final checkout time
     if i == len(timestamp_list) - 1:
         print(f"Final checkout time: {dt}")
+        odoo.mark_attendance('check_out', mac, epoch_to_datetime(timestamp_list[i]))
 
 
 
