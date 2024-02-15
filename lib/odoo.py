@@ -120,7 +120,7 @@ def checkout(identification_id, checkout_time):
 
 def verify_existing_checkin(identification_id):
     # Check if authenticated
-    ids = []
+    ids = {}
     if not auth():
         return False
     # Get the attendance model
@@ -139,6 +139,6 @@ def verify_existing_checkin(identification_id):
             [attendance_ids, ['check_in']])
         for record in checkin_times:
             # Convert the checkin time to a datetime object
-            ids.append(record['id'])
+            ids.update({record['id'] : record['check_in']})
     print(f"Existing checkin found! {ids}")
     return ids

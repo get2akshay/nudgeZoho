@@ -51,7 +51,8 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
 mac = '00:8c:10:30:02:6f'
 timestamp_list = []
 timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)
-aids = odoo.verify_existing_checkin(mac)
+kvs = odoo.verify_existing_checkin(mac)
+aids = list(kvs.keys())
 if len(aids) == 0:
     odoo.mark_attendance('check_in', mac, epoch_to_datetime(min(timestamp_list)))
 aids = odoo.verify_existing_checkin(mac)
