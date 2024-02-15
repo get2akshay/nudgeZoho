@@ -45,7 +45,7 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
 
 def checkOutExistingCheckin(mac):
     checkins = odoo.get_checkin(mac)
-    if checkins > 0:
+    if len(checkins) > 0:
         timestamp_obj = datetime.datetime.strptime(checkins[0], '%Y-%m-%d %H:%M:%S')
         timestamp_epoch = int(time.mktime(timestamp_obj.timetuple()))
         epoch_time = timestamp_epoch + (4 * 60 * 60)
