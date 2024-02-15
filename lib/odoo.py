@@ -140,5 +140,3 @@ def verify_existing_checkin(identification_id):
             ids.update({record['id'] : record['check_in']})
     print(f"Existing checkin found! {ids}")
     return ids
-
-
