@@ -39,8 +39,9 @@ def get_checkin(identification_id):
     # Return the checkin times as a list
     return [record['check_in'] for record in checkin_times]
 
-def auto_checkout(identification_id, delta_minutes):
+def auto_checkout(identification_id, epoch_time=None):
     # Check if authenticated
+    delta_minutes = 30
     if not auth():
         return False
     # Get the attendance model
@@ -59,6 +60,8 @@ def auto_checkout(identification_id, delta_minutes):
         checkin_time = datetime.strptime(record['check_in'], '%Y-%m-%d %H:%M:%S')
         # Get the current time
         current_time = datetime.now()
+        if epoch_time is not None:
+            checkin_time = epoch_time
         # Calculate the time difference in minutes
         time_diff = (current_time - checkin_time).total_seconds() / 60
         # If the time difference is more than 30 minutes, set the check out time to the current time
