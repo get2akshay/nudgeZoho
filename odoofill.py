@@ -26,9 +26,9 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
     # Define the start date as a datetime object
     start_time = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
     # Define the end date as a datetime object by adding 30 days to the start date
-    DD = DD + 1
+    # DD = DD + 1
     try:
-        end_time = datetime.datetime(YYYY, MM, DD, 3, 30, 0).strftime("%Y-%m-%d %H:%M:%S")
+        end_time = datetime.datetime(YYYY, MM, DD, 23, 59, 0).strftime("%Y-%m-%d %H:%M:%S")
         print(f"Getting Old Movement data from {start_time} to {end_time} Badge {mac} !")
         data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
     except ValueError as v:
@@ -51,16 +51,22 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
 mac = '00:8c:10:30:02:6f'
 timestamp_list = []
 timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)
-for move in timestamp_list:
-    print(move)
+# for move in timestamp_list:
+for i in range(len(timestamp_list)):
+    print(timestamp_list[i])
     delta = 0
     kvs = odoo.verify_existing_checkin(mac)
     for atdid, checkin in kvs.items():
         timestamp_obj = datetime.datetime.strptime(checkin, '%Y-%m-%d %H:%M:%S')
         timestamp_epoch = int(time.mktime(timestamp_obj.timetuple()))
         print(f"Current checked In Time {checkin} and its Epoch {timestamp_epoch}")
-        delta = move - timestamp_epoch
-        print(f"Difference between Live Checkin and latest move {delta} !") 
+        delta = (timestamp_list[i] - timestamp_epoch) / 60
+        print(f"Difference between Live Checkin and latest move {delta} !")
+    if i == len(timestamp_list) - 1:
+        finalcheckout = dateFormatOdoo(timestamp_list[i])
+        print(f"Final checkout time: {finalcheckout}")
+        odoo.checkout(mac, finalcheckout)
+    
 
 
 
