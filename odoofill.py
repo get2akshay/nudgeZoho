@@ -43,7 +43,23 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
             print(f"Time stamp empty for {mac} in the period {start_time} to {end_time} !")
             return unique
 
+def checkOutExistingCheckin(mac):
+    checkins = odoo.get_checkin(mac)
+    if checkins > 0:
+        timestamp_obj = datetime.datetime.strptime(checkins[0], '%Y-%m-%d %H:%M:%S')
+        timestamp_epoch = int(time.mktime(timestamp_obj.timetuple()))
+        epoch_time = timestamp_epoch + (4 * 60 * 60)
+        loginStatus = odoo.mark_attendance('check_out', mac, epoch_to_datetime(epoch_time))
+
+
+
+
+
+
 mac = '00:8c:10:30:02:6f'
+
+checkOutExistingCheckin(mac)
+exit
 
 timestamp_list = []
 timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)  
