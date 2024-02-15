@@ -42,7 +42,7 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
         except TypeError as t:
             print(f"Time stamp empty for {mac} in the period {start_time} to {end_time} !")
             return unique
-
+set_trace()
 def checkOutExistingCheckin(mac):
     checkins = odoo.get_checkin(mac)
     if len(checkins) > 0:
