@@ -27,9 +27,12 @@ def run_daily(func, mac, YYYY, MM, DD, HH):
 
 def dateFormatOdoo(timestamp):
     # Create a datetime object from the epoch time stamp
-    date_time = datetime.datetime.fromtimestamp(timestamp)
     # Format the datetime object as a string
-    return date_time.strftime("%Y-%m-%d %H:%M:%S")
+    # Convert epoch to datetime
+    dt = datetime.datetime.fromtimestamp(timestamp)
+    # Format datetime in ISO 8601 format
+    odoo_time = dt.strftime('%Y-%m-%d %H:%M:%S')
+    return odoo_time
 
 # Define the method that takes an epoch time stamp as an argument
 def epoch_to_datetime(epoch):
