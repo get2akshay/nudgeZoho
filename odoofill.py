@@ -72,10 +72,12 @@ def day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8):
     kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
     if len(kvs) == 0:
         print("Checkin here")
+        odoo.mark_attendance('check_in', mac, epoch_to_datetime(min(timestamp_list)))
     else:
         for elem in kvs:
             if elem and elem.get('checkin') and elem.get('checkout'):
                 print("Records exists for the")
+    odoo.checkout(mac, epoch_to_datetime(max(timestamp_list)))
         
 
     print(kvs)
