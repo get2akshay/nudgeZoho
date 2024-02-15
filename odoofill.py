@@ -65,6 +65,7 @@ mac = '00:8c:10:30:02:6f'
 timestamp_list = []
 timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)
 timestamp_list.sort()
+tolrance = 30
 # odoo.mark_attendance('check_in', mac, epoch_to_datetime(min(timestamp_list)))
 # Loop through the list and compare each timestamp with the previous one
 for i in range(len(timestamp_list)):
@@ -82,6 +83,8 @@ for i in range(len(timestamp_list)):
         delta = (dt - prev_dt) / datetime.timedelta(minutes=1)
         # Print the time delta
         print(f"Time delta: {delta} minutes")
+        if delta > tolrance:
+            odoo.mark_attendance('check_out', mac, epoch_to_datetime(timestamp_list[i]))
     # If it is the last timestamp, print the final checkout time
     if i == len(timestamp_list) - 1:
         print(f"Final checkout time: {dt}")
