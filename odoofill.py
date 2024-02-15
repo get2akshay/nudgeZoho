@@ -3,6 +3,7 @@ import datetime
 from lib import db
 import numpy as np
 from lib import odoo
+from pdb import set_trace
 
 
 # Define the method that takes an epoch time stamp as an argument
@@ -46,6 +47,7 @@ mac = '00:8c:10:30:02:6f'
 timestamp_list = []
 timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)  
 missingTime = 30
+set_trace()
 existing_checkin = odoo.get_checkin(mac)
 odoo.auto_checkout('00:8c:10:30:02:6f', missingTime)  
 
