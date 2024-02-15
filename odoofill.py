@@ -51,6 +51,8 @@ def checkOutExistingCheckin(mac):
         epoch_time = timestamp_epoch + (4 * 60 * 60)
         # loginStatus = odoo.mark_attendance('check_out', mac, epoch_to_datetime(epoch_time))
         odoo.auto_checkout('00:8c:10:30:02:6f', epoch_time)
+        return True
+    return False
 
 
 mac = '00:8c:10:30:02:6f'
