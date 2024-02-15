@@ -31,7 +31,7 @@ def dateFormatOdoo(timestamp):
     # Convert epoch to datetime
     dt = datetime.datetime.fromtimestamp(timestamp)
     # Format datetime in ISO 8601 format
-    odoo_time = dt.strftime('%YYYY-%MM-%DD %H:%M:%S')
+    odoo_time = dt.strftime('%Y-%M-%D %H:%M:%S')
     return odoo_time
 
 # Define the method that takes an epoch time stamp as an argument
