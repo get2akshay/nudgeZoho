@@ -35,4 +35,4 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
 
 for stamp in  workHourRecord('00:8c:10:30:02:6f', YYYY=2024, MM=2, DD=1, HH=8):
     print(stamp)
-    odoo.mark_attendance()
+    odoo.mark_attendance('00:8c:10:30:02:6f')
