@@ -22,6 +22,24 @@ def auth():
     else:
         return False
 
+def get_checkin(identification_id):
+    # Check if authenticated
+    if not auth():
+        return False
+    # Get the attendance model
+    attendance = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+    # Search for the employee's attendance records
+    attendance_ids = attendance.execute_kw(db, uid, password,
+        'hr.attendance', 'search',
+        [[['employee_id.identification_id', '=', identification_id]]])
+    # Read the checkin time of the records
+    checkin_times = attendance.execute_kw(db, uid, password,
+        'hr.attendance', 'read',
+        [attendance_ids, ['check_in']])
+    # Return the checkin times as a list
+    return [record['check_in'] for record in checkin_times]
+
+
 def mark_attendance(identification_id, epoch):
     if auth():
         print("Server available!")
@@ -37,3 +55,5 @@ def mark_attendance(identification_id, epoch):
         print(f"Attendance marked for employee with ID {identification_id}. Attendance ID is {attendance_id}.")
     else:
         print(f"No employee found with ID {identification_id}.")
+
+

@@ -46,4 +46,8 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
 
 for epoch in  workHourRecord('00:8c:10:30:02:6f', YYYY=2024, MM=2, DD=1, HH=8):
     print(epoch)
-    odoo.mark_attendance('00:8c:10:30:02:6f', epoch_to_datetime(epoch))
+    checkin = odoo.get_checkin('00:8c:10:30:02:6f')
+    if not checkin:
+        odoo.mark_attendance('00:8c:10:30:02:6f', epoch_to_datetime(epoch))
+    else:
+        print("Apply chekin time check logic here!")
