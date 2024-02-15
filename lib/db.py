@@ -189,11 +189,11 @@ def get_timestamp(tup):
     # Count how many of the x, y, and z values are non-zero
     count = 0
     if x != 0:
-        c += 1
+        count += 1
     if x != 0:
-        c += 1
+        count += 1
     if x != 0:
-        c += 1
+        count += 1
     # If the count is greater than or equal to two, return the timestamp
     if count == 3:
         return timestamp
