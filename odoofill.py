@@ -78,7 +78,7 @@ def day_attendance(mac, YYYY, MM, DD, HH):
     timestamp_list.sort()
     kvs = []
     kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
-    if len(kvs) == 0:
+    if len(kvs) == 0 and len(timestamp_list) != 0:
         cin = dateFormatOdoo(min(timestamp_list) - offset)
         print(f"Making CheckIN for {cin}")
         odoo.mark_attendance('check_in', mac, cin)
@@ -87,9 +87,10 @@ def day_attendance(mac, YYYY, MM, DD, HH):
             if elem and elem.get('checkin') and elem.get('checkout'):
                 print("Records exists for the")
         return True
-    cin = dateFormatOdoo(max(timestamp_list) - offset)
-    print(f"Making CheckOut for {cin}")
-    odoo.checkout(mac, cin)
+    if len(timestamp_list) != 0:
+        cin = dateFormatOdoo(max(timestamp_list) - offset)
+        print(f"Making CheckOut for {cin}")
+        odoo.checkout(mac, cin)
     # print(kvs)
     # for move in timestamp_list:
     # for i in range(len(timestamp_list)):
