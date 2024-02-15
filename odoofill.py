@@ -52,10 +52,11 @@ mac = '00:8c:10:30:02:6f'
 timestamp_list = []
 timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)
 kvs = odoo.verify_existing_checkin(mac)
-aids = list(kvs.keys())
-if len(aids) == 0:
-    odoo.mark_attendance('check_in', mac, epoch_to_datetime(min(timestamp_list)))
-aids = odoo.verify_existing_checkin(mac)
+for atdid, checkin in kvs.items():
+    timestamp_obj = datetime.datetime.strptime(checkin, '%Y-%m-%d %H:%M:%S')
+    timestamp_epoch = int(time.mktime(timestamp_obj.timetuple()))
+    print(f"Current checked In Time {checkin} and its Epoch {timestamp_epoch}")
+
 
 
 """
