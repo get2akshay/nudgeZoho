@@ -61,8 +61,7 @@ def checkOutExistingCheckin(mac):
 
 
 mac = '00:8c:10:30:02:6f'
-
-checkOutExistingCheckin(mac)
+# checkOutExistingCheckin(mac)
 timestamp_list = []
 timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)
 timestamp_list.sort()
@@ -88,8 +87,7 @@ for i in range(len(timestamp_list)):
 
 
 
-odoo.mark_attendance('check_out', mac, epoch_to_datetime(max(timestamp_list)))
-
+# odoo.mark_attendance('check_out', mac, epoch_to_datetime(max(timestamp_list)))
 exit
 
 """
