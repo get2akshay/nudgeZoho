@@ -79,7 +79,7 @@ def day_attendance(mac, YYYY, MM, DD, HH):
     kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
     if len(kvs) == 0:
         cin = dateFormatOdoo(min(timestamp_list))
-        print(f"Making for {cin}")
+        print(f"Making CheckIN for {cin}")
         odoo.mark_attendance('check_in', mac, cin)
     else:
         for elem in kvs:
@@ -87,8 +87,8 @@ def day_attendance(mac, YYYY, MM, DD, HH):
                 print("Records exists for the")
         return True
     cin = dateFormatOdoo(max(timestamp_list))
-    print(f"Making for {cin}")
-    odoo.checkout(mac, dateFormatOdoo(max(cin)))
+    print(f"Making CheckOut for {cin}")
+    odoo.checkout(mac, cin)
     # print(kvs)
     # for move in timestamp_list:
     # for i in range(len(timestamp_list)):
