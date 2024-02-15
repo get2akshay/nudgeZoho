@@ -4,6 +4,7 @@ import numpy as np
 from lib import odoo
 from pdb import set_trace
 import time
+offset = (5 * 60 * 60) + (30 * 60) 
 
 def run_daily(func, mac, YYYY, MM, DD, HH):
     start_date = datetime.datetime(YYYY, MM, DD, HH)
@@ -78,9 +79,7 @@ def day_attendance(mac, YYYY, MM, DD, HH):
     kvs = []
     kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
     if len(kvs) == 0:
-        offset = (5 * 60 * 60) + (30 * 60) 
-        timestamp_list = timestamp_list - offset
-        cin = dateFormatOdoo(min(timestamp_list))
+        cin = dateFormatOdoo(min(timestamp_list) - offset)
         print(f"Making CheckIN for {cin}")
         odoo.mark_attendance('check_in', mac, cin)
     else:
@@ -88,9 +87,7 @@ def day_attendance(mac, YYYY, MM, DD, HH):
             if elem and elem.get('checkin') and elem.get('checkout'):
                 print("Records exists for the")
         return True
-    offset = (5 * 60 * 60) + (30 * 60)
-    timestamp_list = timestamp_list - offset
-    cin = dateFormatOdoo(max(timestamp_list))
+    cin = dateFormatOdoo(max(timestamp_list) - offset)
     print(f"Making CheckOut for {cin}")
     odoo.checkout(mac, cin)
     # print(kvs)
