@@ -190,9 +190,9 @@ def get_timestamp(tup):
     count = 0
     if x != 0:
         count += 1
-    if x != 0:
+    if y != 0:
         count += 1
-    if x != 0:
+    if z != 0:
         count += 1
     # If the count is greater than or equal to two, return the timestamp
     if count == 3:
