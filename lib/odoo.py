@@ -116,27 +116,29 @@ def checkout(identification_id, checkout_time):
     return True
 
 
-def verify_existing_checkin(identification_id):
+def verify_existing_checkin(identification_id, YYYY, MM, DD):
     # Check if authenticated
-    ids = {}
+    
     if not auth():
         return False
     # Get the attendance model
     attendance = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
     # Search for the employee's attendance records that have no check out
-    attendance_ids = attendance.execute_kw(db, uid, password,
-        'hr.attendance', 'search',
-        [[['employee_id.identification_id', '=', identification_id], ['check_out', '=', False]]])
-    if len(attendance_ids) == 0:
-        print("No existing checkin!")
-        return ids
-    else:
-        # Read the checkin time of the records
-        checkin_times = attendance.execute_kw(db, uid, password,
-            'hr.attendance', 'read',
-            [attendance_ids, ['check_in']])
-        for record in checkin_times:
-            # Convert the checkin time to a datetime object
-            ids.update({record['id'] : record['check_in']})
-    print(f"Existing checkin found! {ids}")
-    return ids
+    # Model and field details
+    model_name = 'hr.attendance'
+    # Specify the date you want to check attendance for
+    date_to_check = datetime(YYYY, MM, DD)
+    # Search for attendance records for the specified date
+    attendance_records = attendance.execute_kw(db, uid, password, model_name, 'search_read', [[('check_in', '>=', date_to_check.strftime('%Y-%m-%d 00:00:00')), ('check_in', '<=', date_to_check.strftime('%Y-%m-%d 23:59:59'))]], {'fields': ['employee_id', 'check_in', 'check_out']})
+    # Print the attendance records
+    for record in attendance_records:
+        print(f"Employee ID: {record['employee_id'][1]}, Check In: {record['check_in']}, Check Out: {record['check_out']}")
+    # Print the attendance records
+    for record in attendance_records:
+        # Get the employee's identification_id
+        employee = attendance.execute_kw(db, uid, password, 'hr.employee', 'read', [record['employee_id'][0]], {'fields': ['identification_id']})
+        print(f"Employee ID: {record['employee_id'][1]}, Identification ID: {employee[0]['identification_id']}, Check In: {record['check_in']}, Check Out: {record['check_out']}")
+        if identification_id == employee[0]['identification_id']:
+            return True
+        else:
+            return False

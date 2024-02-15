@@ -5,14 +5,14 @@ from lib import odoo
 from pdb import set_trace
 import time
 
-def run_daily(func, mac=None, YYYY=2023, MM=12, DD=1, HH=8):
+def run_daily(func, mac, YYYY, MM, DD, HH):
     start_date = datetime.datetime(YYYY, MM, DD, HH)
     present_date = datetime.datetime.now()
 
     while start_date <= present_date:
         print(f"Running code for {start_date.strftime('%Y-%m-%d %H:%M:%S')}")
         # Place your code here
-        func(mac, YYYY=2023, MM=12, DD=1, HH=8)
+        func(mac, YYYY, MM, DD, HH)
         # Increment the day by one
         start_date += datetime.timedelta(days=1)
 
@@ -42,9 +42,9 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
     # Define the start date as a datetime object
     start_time = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
     # Define the end date as a datetime object by adding 30 days to the start date
-    # DD = DD + 1
+    DD = DD + 1
     try:
-        end_time = datetime.datetime(YYYY, MM, DD, 23, 59, 0).strftime("%Y-%m-%d %H:%M:%S")
+        end_time = datetime.datetime(YYYY, MM, DD, 3, 30, 0).strftime("%Y-%m-%d %H:%M:%S")
         print(f"Getting Old Movement data from {start_time} to {end_time} Badge {mac} !")
         data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
     except ValueError as v:
@@ -72,8 +72,8 @@ def day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8):
     for i in range(len(timestamp_list)):
         print(timestamp_list[i])
         delta = 0
-        kvs = {}
-        kvs = odoo.verify_existing_checkin(mac)
+        kvs = False
+        kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
         if not kvs:
             if i == 0:
                 odoo.mark_attendance('check_in', mac, epoch_to_datetime(min(timestamp_list)))
