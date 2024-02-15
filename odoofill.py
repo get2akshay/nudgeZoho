@@ -50,11 +50,14 @@ timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)
 missingTime = 30
 set_trace()
 checkins = odoo.get_checkin(mac)
-timestamp_obj = datetime.datetime.strptime(checkins[0], '%Y-%m-%d %H:%M:%S')
-timestamp_epoch = int(time.mktime(timestamp_obj.timetuple()))
-epoch_time = datetime.datetime.now().timestamp()
-if (epoch_time - timestamp_epoch) > missingTime:
-    odoo.auto_checkout('00:8c:10:30:02:6f', missingTime)
+if len(checkins) > 0:
+    timestamp_obj = datetime.datetime.strptime(checkins[0], '%Y-%m-%d %H:%M:%S')
+    timestamp_epoch = int(time.mktime(timestamp_obj.timetuple()))
+    epoch_time = datetime.datetime.now().timestamp()
+    if (epoch_time - timestamp_epoch) > missingTime:
+        odoo.auto_checkout('00:8c:10:30:02:6f', missingTime)
+else:
+    exit
 
 for index, ts in enumerate(timestamp_list):
     # Convert the current and next timestamps to datetime objects
