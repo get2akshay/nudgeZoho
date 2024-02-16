@@ -4,6 +4,7 @@ import numpy as np
 from lib import odoo
 from pdb import set_trace
 import time
+import yaml
 offset = (5 * 60 * 60) + (30 * 60) 
 
 def run_daily(func, mac, YYYY, MM, DD, HH):
@@ -83,9 +84,14 @@ def day_attendance(mac, YYYY, MM, DD, HH):
         print(f"Making CheckIN for {cin}")
         odoo.mark_attendance('check_in', mac, cin)
     else:
+        captured = False
         for elem in kvs:
             if elem and elem.get('checkin') and elem.get('checkout'):
+                captured = True
                 print("Records exists for the")
+        if not captured:
+             cin = dateFormatOdoo(min(timestamp_list) - offset)
+             print(f"Data not captured for {cin}")
         return True
     if len(timestamp_list) != 0:
         cin = dateFormatOdoo(max(timestamp_list) - offset)
@@ -97,11 +103,14 @@ def day_attendance(mac, YYYY, MM, DD, HH):
         # print(timestamp_list[i])
         # kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
         
-        
+
+with open('staff.yaml', 'r') as file:
+    employees = yaml.safe_load(file)       
 
 
 mac = '00:8c:10:30:02:6f'
-run_daily(day_attendance, mac, YYYY=2023, MM=12, DD=1, HH=8)
+for mac in employees:
+    run_daily(day_attendance, mac, YYYY=2023, MM=12, DD=1, HH=8)
 
 
 """
