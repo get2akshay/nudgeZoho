@@ -8,9 +8,14 @@ db = 'nudge'
 username = 'akshay.sharma@byplayit.com'
 password = 'akshay911'
 
-# Specify the employee's identification ID
-# identification_id = '00:8c:10:30:02:6f'
-
+def dateFormatOdoo(timestamp):
+    # Create a datetime object from the epoch time stamp
+    # Format the datetime object as a string
+    # Convert epoch to datetime
+    dt = datetime.fromtimestamp(timestamp)
+    # Format datetime in ISO 8601 format
+    odoo_time = dt.strftime('%Y-%m-%d %H:%M:%S')
+    return odoo_time
 
 def auth():
     # Get the uid
@@ -72,7 +77,7 @@ def auto_checkout(identification_id, epoch_time=None):
 
 
 
-def mark_attendance(checkx,identification_id, epoch):
+def mark_attendancew(checkx,identification_id, epoch):
     if auth():
         print("Server available!")
     else:
@@ -89,11 +94,49 @@ def mark_attendance(checkx,identification_id, epoch):
         print(f"No employee found with ID {identification_id}.")
 
 
-def checkout(identification_id, checkout_time):
+def mark_attendance(checkx, identification_id, epoch):
+    if not auth():
+        print("Server not available!")
+        return False
+
+    # Get the models object
+    models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+
+    # Search for the employee
+    employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[['identification_id', '=', identification_id]]])
+    if not employee_ids:
+        print(f"No employee found with ID {identification_id}.")
+        return False
+
+    # Convert epoch to datetime in UTC
+    # dt = datetime.utcfromtimestamp(epoch)
+    odoo_time = dateFormatOdoo(epoch)
+
+    # Format datetime in ISO 8601 format
+    # odoo_time = dt.strftime('%Y-%m-%d %H:%M:%S')
+
+    # Search for existing attendance record
+    attendance_ids = models.execute_kw(db, uid, password, 'hr.attendance', 'search', [[('employee_id', '=', employee_ids[0]), (checkx, '=', odoo_time)]])
+    
+    if attendance_ids:
+        # Attendance record already exists
+        print(f"Attendance record already exists for employee with ID {identification_id} at {odoo_time}.")
+        return False
+    else:
+        # Create new attendance record
+        attendance_id = models.execute_kw(db, uid, password, 'hr.attendance', 'create', [{'employee_id': employee_ids[0], checkx : odoo_time}])
+        print(f"Attendance marked for employee with ID {identification_id}. Attendance ID is {attendance_id}.")
+        return True
+
+
+
+def checkout(identification_id, epoch):
     # Check if authenticated
     if not auth():
         return False
     # Get the attendance model
+    checkout_time = dateFormatOdoo(epoch)
+    # 
     attendance = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
     # Search for the employee's attendance records that have no check out
     attendance_ids = attendance.execute_kw(db, uid, password,
@@ -116,7 +159,7 @@ def checkout(identification_id, checkout_time):
     return True
 
 
-def verify_existing_checkin(identification_id, YYYY, MM, DD):
+def tverify_existing_checkin(identification_id, YYYY, MM, DD):
     # Day record
     day_status = {}
     day_list = []
@@ -142,4 +185,34 @@ def verify_existing_checkin(identification_id, YYYY, MM, DD):
         print(f"Employee ID: {record['employee_id'][1]}, Identification ID: {employee[0]['identification_id']}, Check In: {record['check_in']}, Check Out: {record['check_out']}")
         day_status.update({'Badge': employee[0]['identification_id'], 'checkin': record['check_in'], 'checkout': record['check_out']})
         day_list.append(day_status)   
+    return day_list
+
+def verify_existing_checkin(identification_id, YYYY, MM, DD):
+    # Check if authenticated
+    if not auth():
+        return False
+
+    # Get the attendance model
+    attendance = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+
+    # Model and field details
+    model_name = 'hr.attendance'
+
+    # Specify the date you want to check attendance for
+    date_to_check = datetime(YYYY, MM, DD)
+
+    # Get the employee's ID
+    employee_ids = attendance.execute_kw(db, uid, password, 'hr.employee', 'search', [[('identification_id', '=', identification_id)]])
+    if not employee_ids:
+        return []
+
+    # Search for the employee's attendance records for the specified date
+    attendance_records = attendance.execute_kw(db, uid, password, model_name, 'search_read', [[('employee_id', '=', employee_ids[0]), ('check_in', '>=', date_to_check.strftime('%Y-%m-%d 00:00:00')), ('check_in', '<=', date_to_check.strftime('%Y-%m-%d 23:59:59'))]], {'fields': ['check_in', 'check_out']})
+
+    # Prepare the list of day records
+    day_list = []
+    for record in attendance_records:
+        day_status = {'Badge': identification_id, 'checkin': record['check_in'], 'checkout': record['check_out']}
+        day_list.append(day_status)
+
     return day_list

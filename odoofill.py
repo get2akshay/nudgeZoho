@@ -1,13 +1,15 @@
 import datetime
-from lib import db
-import numpy as np
 from lib import odoo
+import numpy as np
+test = True
+if not test:
+    from lib import db
 from pdb import set_trace
 import time
 import yaml
 offset = (5 * 60 * 60) + (30 * 60) 
 
-def run_daily(func, mac, YYYY, MM, DD, HH):
+def run_daily(func, mac, YYYY, MM, DD, HH, test):
     start_date = datetime.datetime(YYYY, MM, DD, HH)
     present_date = datetime.datetime.now()
 
@@ -18,7 +20,7 @@ def run_daily(func, mac, YYYY, MM, DD, HH):
         year = start_date.year
         month = start_date.month
         hour = start_date.hour
-        func(mac, year, month, day, hour)
+        func(mac, year, month, day, hour, test)
         # Increment the day by one
         start_date += datetime.timedelta(days=1)
         # If the next day is in the future, wait until it comes
@@ -26,15 +28,6 @@ def run_daily(func, mac, YYYY, MM, DD, HH):
             print(f"Waiting for {start_date.strftime('%Y-%m-%d %H:%M:%S')}")
             while datetime.datetime.now() < start_date:
                 time.sleep(60)  # Check every minute
-
-def dateFormatOdoo(timestamp):
-    # Create a datetime object from the epoch time stamp
-    # Format the datetime object as a string
-    # Convert epoch to datetime
-    dt = datetime.datetime.fromtimestamp(timestamp)
-    # Format datetime in ISO 8601 format
-    odoo_time = dt.strftime('%Y-%m-%d %H:%M:%S')
-    return odoo_time
 
 # Define the method that takes an epoch time stamp as an argument
 def epoch_to_datetime(epoch):
@@ -45,7 +38,10 @@ def epoch_to_datetime(epoch):
   # Return the formatted string
   return dt_str
 
-def workHourRecord(mac, YYYY, MM, DD, HH):
+def workHourRecord(mac, YYYY, MM, DD, HH, test=False):
+    if test:
+        from lib import helper
+        return helper.generate_timestamps(YYYY, MM, DD, HH)
     unique = []
     # Define the start date as a datetime object
     start_time = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
@@ -72,29 +68,23 @@ def workHourRecord(mac, YYYY, MM, DD, HH):
             print(f"Time stamp empty for {mac} in the period {start_time} to {end_time} !")
             return unique
 
-mac = '00:8c:10:30:02:6f'
-def day_attendance(mac, YYYY, MM, DD, HH):
+def day_attendancew(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = []
-    timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH)
+    timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     timestamp_list.sort()
     kvs = []
     kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
     if len(kvs) == 0 and len(timestamp_list) != 0:
-        cin = dateFormatOdoo(min(timestamp_list) - offset)
-        print(f"Making CheckIN for {cin}")
+        cin = odoo.dateFormatOdoo(min(timestamp_list) - offset)
+        print(f"Making First CheckIN for {cin}")
         odoo.mark_attendance('check_in', mac, cin)
     else:
-        captured = False
         for elem in kvs:
             if elem and elem.get('checkin') and elem.get('checkout'):
-                captured = True
                 print("Records exists for the")
-        if not captured:
-             cin = dateFormatOdoo(min(timestamp_list) - offset)
-             print(f"Data not captured for {cin}")
         return True
     if len(timestamp_list) != 0:
-        cin = dateFormatOdoo(max(timestamp_list) - offset)
+        cin = odoo.dateFormatOdoo(max(timestamp_list) - offset)
         print(f"Making CheckOut for {cin}")
         odoo.checkout(mac, cin)
     # print(kvs)
@@ -102,15 +92,55 @@ def day_attendance(mac, YYYY, MM, DD, HH):
     # for i in range(len(timestamp_list)):
         # print(timestamp_list[i])
         # kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
-        
+tollarance = 30 * 60
+
+def day_attendance(mac, YYYY, MM, DD, HH, test=False):
+    timestamp_list = []
+    timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
+    timestamp_list.sort()
+    # Loop through the list and compare each timestamp with the previous one
+    first = False
+    checkedout = False
+    delta = 0
+    for i in range(len(timestamp_list)):
+        timestamp_list[i]
+        existing = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
+        if i == 0 and len(existing) == 0:
+            print("First checkin for the day")
+            first = True
+        if delta > tollarance:
+            print(f"Motion delta {delta} greater than {tollarance} seconds")
+            print(f"Checkout here for missing mor for {delta} seconds")
+            if first:
+                cin = odoo.dateFormatOdoo(timestamp_list[i] - offset)
+                print(f"Making CheckOut for {cin}")
+                odoo.checkout(mac, timestamp_list[i] - offset)
+                checkedout = True
+                first = False
+        else:
+            print(f"Motion delta {delta} less than {tollarance} seconds")
+            print(f"Keep last checkin as Badge Live on floor for {delta} seconds")
+            if checkedout and not first:
+                print("Checkin here for new time stamp!")
+                cin = odoo.dateFormatOdoo(timestamp_list[i] - offset)
+                print(f"Making after break Checkin for {cin}")
+                odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
+                checkedout = False
+        if i < (len(timestamp_list) - 1):
+            delta = (timestamp_list[i+1] - timestamp_list[i])
+
+
+
+
+
+
 
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)       
 
-
-mac = '00:8c:10:30:02:6f'
-for mac in employees:
-    run_daily(day_attendance, mac, YYYY=2023, MM=12, DD=1, HH=8)
+for mac in employees.values():
+    run_daily(day_attendance, mac, YYYY=2023, MM=12, DD=1, HH=8, test=test)
+    # print(mac)
 
 
 """
