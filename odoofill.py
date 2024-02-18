@@ -1,7 +1,7 @@
 import datetime
 from lib import odoo
 import numpy as np
-test = False
+test = True
 if not test:
     from lib import db
 from pdb import set_trace
@@ -64,101 +64,7 @@ def workHourRecord(mac, YYYY, MM, DD, HH, test=False):
             print(f"Time stamp empty for {mac} in the period {start_time} to {end_time} !")
             return unique
 
-def day_attendancew(mac, YYYY, MM, DD, HH, test=False):
-    timestamp_list = []
-    timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
-    timestamp_list.sort()
-    kvs = []
-    kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
-    if len(kvs) == 0 and len(timestamp_list) != 0:
-        cin = odoo.dateFormatOdoo(min(timestamp_list) - offset)
-        print(f"Making First CheckIN for {cin}")
-        odoo.mark_attendance('check_in', mac, cin)
-    else:
-        for elem in kvs:
-            if elem and elem.get('checkin') and elem.get('checkout'):
-                print("Records exists for the")
-        return True
-    if len(timestamp_list) != 0:
-        cin = odoo.dateFormatOdoo(max(timestamp_list) - offset)
-        print(f"Making CheckOut for {cin}")
-        odoo.checkout(mac, cin)
-    # print(kvs)
-    # for move in timestamp_list:
-    # for i in range(len(timestamp_list)):
-        # print(timestamp_list[i])
-        # kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
 tollarance = 30 * 60
-
-
-def day_attendancei(mac, YYYY, MM, DD, HH, test=False):
-    first = False
-    checkedout = False
-    existing = {}
-    timestamp_list = []
-    existing = odoo.get_attendance_times(mac, YYYY, MM, DD)
-    oute = int()
-    inne = int()
-    if len(existing) != 0:
-        idd = existing.get(id)
-        inn = existing.get("check_in")
-        if inn:
-            inne = odoo.get_epoch_timestamp(inn)
-        out = existing.get("check_out")
-        if out:
-            oute = odoo.get_epoch_timestamp(out)
-        if not inn or not out:
-            timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
-            timestamp_list.sort()
-            print(oute)
-            print(inne)
-            delta = (inne - (9 * 60 * 60))
-            odoo.checkout(mac, inne - offset, idd)
-            # odoo.mark_attendance('check_out', mac, timestamp_list[-1] - offset)
-    else:
-        timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
-        timestamp_list.sort()
-        print("No record found! continue here to prepare record!")
-        delta = (.5 * 60 * 60)
-        for i in range(len(timestamp_list)):
-            timestamp_list[i]
-            if i == 0:
-                print("First checkin for the day")
-                odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
-                first = True
-                checkedout = False
-                existing = odoo.get_attendance_times(mac, YYYY, MM, DD)
-            if delta > tollarance:
-                print(f"Motion delta {delta} greater than {tollarance} seconds")
-                print(f"Checkout here for missing for more than {delta} seconds")
-                if first:
-                    cin = odoo.dateFormatOdoo(timestamp_list[i] - offset)
-                    print(f"Making CheckOut for {cin}")
-                    odoo.checkout(mac, timestamp_list[i] - offset)
-                    checkedout = True
-                    first = False
-            else:
-                print(f"Motion delta {delta} less than {tollarance} seconds")
-                print(f"Keep last checkin as Badge Live on floor for {delta} seconds")
-                if checkedout and not first:
-                    print("Checkin here for new time stamp!")
-                    cin = odoo.dateFormatOdoo(timestamp_list[i] - offset)
-                    print(f"Making after break Checkin for {cin}")
-                    odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
-                    checkedout = False
-                    first = True
-            if i == (len(timestamp_list) - 1):
-                existing = odoo.get_attendance_times(mac, YYYY, MM, DD)
-                if existing is not None and len(existing) != 0:
-                    for e in existing:
-                        for k, v in e.items():
-                            if "Check-in" in k and not v:
-                                odoo.mark_attendance('check_in', mac, timestamp_list[0] - offset)
-                            if "Check-out" in k and not v:
-                                odoo.mark_attendance('check_out', mac, timestamp_list[-1] - offset)
-            return True
-
-
 
 
 def day_attendance(mac, YYYY, MM, DD, HH, test=False):
@@ -199,67 +105,10 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
                      odoo.checkout(mac, inne, idd)
                      
 
-
-
-                
-
-
-
-
-""" 
-    if inn is None or out is None:
-        timestamp_list = []
-        timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
-        timestamp_list.sort()
-    elif inn and out is None:
-        odoo.mark_attendance('check_out', mac, timestamp_list[-1] - offset)
-        return
-
-    # Loop through the list and compare each timestamp with the previous one
-    delta = 0
-    for i in range(len(timestamp_list)):
-        timestamp_list[i]
-        if i == 0:
-            print("First checkin for the day")
-            odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
-            first = True
-            checkedout = False
-        if delta > tollarance:
-            print(f"Motion delta {delta} greater than {tollarance} seconds")
-            print(f"Checkout here for missing for more than {delta} seconds")
-            if first:
-                cin = odoo.dateFormatOdoo(timestamp_list[i] - offset)
-                print(f"Making CheckOut for {cin}")
-                odoo.checkout(mac, timestamp_list[i] - offset)
-                checkedout = True
-                first = False
-        else:
-            print(f"Motion delta {delta} less than {tollarance} seconds")
-            print(f"Keep last checkin as Badge Live on floor for {delta} seconds")
-            if checkedout and not first:
-                print("Checkin here for new time stamp!")
-                cin = odoo.dateFormatOdoo(timestamp_list[i] - offset)
-                print(f"Making after break Checkin for {cin}")
-                odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
-                checkedout = False
-                first = True
-        if i == (len(timestamp_list) - 1):
-            existing = odoo.get_attendance_times(mac, YYYY, MM, DD)
-            if existing is not None and len(existing) != 0:
-                for e in existing:
-                    for k, v in e.items():
-                        if "Check-in" in k and not v:
-                            odoo.mark_attendance('check_in', mac, timestamp_list[0] - offset)
-                        if "Check-out" in k and not v:
-                            odoo.mark_attendance('check_out', mac, timestamp_list[-1] - offset)
-        return True
-             """
-
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)       
 
 
 for mac in employees.values():
-    run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=18, HH=8, test=test)
-    # run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=16, HH=8, test=test)
-    # print(mac)
+    # run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=18, HH=8, test=test)
+    day_attendance(mac, YYYY=2024, MM=2, DD=18, HH=8, test=test)
