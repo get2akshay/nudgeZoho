@@ -42,9 +42,9 @@ def workHourRecord(mac, YYYY, MM, DD, HH, test=False):
     # Define the start date as a datetime object
     start_time = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
     # Define the end date as a datetime object by adding 30 days to the start date
-    # DD = DD + 1
+    DD = DD + 1
     try:
-        end_time = datetime.datetime(YYYY, MM, DD, 23, 59, 0).strftime("%Y-%m-%d %H:%M:%S")
+        end_time = datetime.datetime(YYYY, MM, DD, 2, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
         print(f"Getting Old Movement data from {start_time} to {end_time} Badge {mac} !")
         data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
     except ValueError as v:
