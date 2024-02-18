@@ -7,7 +7,7 @@ def generate_timestamps(YYYY, MM, DD, HH):
     start_time = datetime.datetime(YYYY, MM, DD, HH)
 
     # Create a datetime object for the end time (next day at 01:00 AM)
-    end_time = start_time + datetime.timedelta(days=1, hours=17, minutes=30)
+    end_time = start_time + datetime.timedelta(days=1, hours=1, minutes=30)
 
     # Initialize the current time to the start time
     current_time = start_time
@@ -20,7 +20,7 @@ def generate_timestamps(YYYY, MM, DD, HH):
         timestamps.append(int(time.mktime(current_time.timetuple())))
 
         # Increment the current time by a random number of minutes between 0 and 30
-        current_time += datetime.timedelta(minutes=random.randint(10, 15))
+        current_time += datetime.timedelta(minutes=random.randint(25, 45))
 
     return timestamps
 

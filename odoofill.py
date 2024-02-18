@@ -1,13 +1,14 @@
 import datetime
 from lib import odoo
 import numpy as np
-test = True
+test = False
 if not test:
     from lib import db
 from pdb import set_trace
 import time
 import yaml
-offset = (5 * 60 * 60) + (30 * 60) 
+# offset = (5 * 60 * 60) + (30 * 60)
+offset = (5 * 60 * 60) + (30 * 60)  
 
 def run_daily(func, mac, YYYY, MM, DD, HH, test):
     start_date = datetime.datetime(YYYY, MM, DD, HH)
@@ -29,14 +30,9 @@ def run_daily(func, mac, YYYY, MM, DD, HH, test):
             while datetime.datetime.now() < start_date:
                 time.sleep(60)  # Check every minute
 
-# Define the method that takes an epoch time stamp as an argument
-def epoch_to_datetime(epoch):
-  # Convert the epoch time stamp to a datetime object
-  dt = datetime.datetime.fromtimestamp(epoch)
-  # Format the datetime object as a string
-  dt_str = dt.strftime('%Y-%m-%d %H:%M:%S')
-  # Return the formatted string
-  return dt_str
+# Usage:
+# print(get_epoch_timestamp('2024-02-16 02:30:00'))  # Output: 1708223400
+
 
 def workHourRecord(mac, YYYY, MM, DD, HH, test=False):
     if test:
@@ -94,25 +90,143 @@ def day_attendancew(mac, YYYY, MM, DD, HH, test=False):
         # kvs = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
 tollarance = 30 * 60
 
+
+def day_attendancei(mac, YYYY, MM, DD, HH, test=False):
+    first = False
+    checkedout = False
+    existing = {}
+    timestamp_list = []
+    existing = odoo.get_attendance_times(mac, YYYY, MM, DD)
+    oute = int()
+    inne = int()
+    if len(existing) != 0:
+        idd = existing.get(id)
+        inn = existing.get("check_in")
+        if inn:
+            inne = odoo.get_epoch_timestamp(inn)
+        out = existing.get("check_out")
+        if out:
+            oute = odoo.get_epoch_timestamp(out)
+        if not inn or not out:
+            timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
+            timestamp_list.sort()
+            print(oute)
+            print(inne)
+            delta = (inne - (9 * 60 * 60))
+            odoo.checkout(mac, inne - offset, idd)
+            # odoo.mark_attendance('check_out', mac, timestamp_list[-1] - offset)
+    else:
+        timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
+        timestamp_list.sort()
+        print("No record found! continue here to prepare record!")
+        delta = (.5 * 60 * 60)
+        for i in range(len(timestamp_list)):
+            timestamp_list[i]
+            if i == 0:
+                print("First checkin for the day")
+                odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
+                first = True
+                checkedout = False
+                existing = odoo.get_attendance_times(mac, YYYY, MM, DD)
+            if delta > tollarance:
+                print(f"Motion delta {delta} greater than {tollarance} seconds")
+                print(f"Checkout here for missing for more than {delta} seconds")
+                if first:
+                    cin = odoo.dateFormatOdoo(timestamp_list[i] - offset)
+                    print(f"Making CheckOut for {cin}")
+                    odoo.checkout(mac, timestamp_list[i] - offset)
+                    checkedout = True
+                    first = False
+            else:
+                print(f"Motion delta {delta} less than {tollarance} seconds")
+                print(f"Keep last checkin as Badge Live on floor for {delta} seconds")
+                if checkedout and not first:
+                    print("Checkin here for new time stamp!")
+                    cin = odoo.dateFormatOdoo(timestamp_list[i] - offset)
+                    print(f"Making after break Checkin for {cin}")
+                    odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
+                    checkedout = False
+                    first = True
+            if i == (len(timestamp_list) - 1):
+                existing = odoo.get_attendance_times(mac, YYYY, MM, DD)
+                if existing is not None and len(existing) != 0:
+                    for e in existing:
+                        for k, v in e.items():
+                            if "Check-in" in k and not v:
+                                odoo.mark_attendance('check_in', mac, timestamp_list[0] - offset)
+                            if "Check-out" in k and not v:
+                                odoo.mark_attendance('check_out', mac, timestamp_list[-1] - offset)
+            return True
+
+
+
+
 def day_attendance(mac, YYYY, MM, DD, HH, test=False):
+    first = False
+    checkedout = False
+    existing = {}
     timestamp_list = []
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     timestamp_list.sort()
+    for i in range(len(timestamp_list)):
+        existing = odoo.get_attendance_times(mac, YYYY, MM, DD)
+        print(existing)
+        idd = existing.get("id")
+        inn = existing.get("check_in")
+        if inn:
+            inne = odoo.get_epoch_timestamp(inn)
+        out = existing.get("check_out")
+        if out:
+            oute = odoo.get_epoch_timestamp(out)
+        if not inn and not out:
+            odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
+        if inn and not out:
+            delta = timestamp_list[i] - inne
+            if delta > (30 * 60) and idd:
+                odoo.checkout(mac, timestamp_list[i], idd)
+            else:
+                print(f"Cloud has existing checkin for {mac} at {inn} for Attendance ID {idd}")
+            if i == (timestamp_list[i] -1):
+                odoo.checkout(mac, timestamp_list[i], idd)
+                break
+        if not inn and out:
+            print("Not a possible situation according to current understanding!")
+        if inn and out:
+            print(f"Already marked for {mac} between {inn} and {out}")
+            if (timestamp_list[i] - oute) > 30:
+                 out = odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
+                 if not out:
+                     odoo.checkout(mac, inne, idd)
+                     
+
+
+
+                
+
+
+
+
+""" 
+    if inn is None or out is None:
+        timestamp_list = []
+        timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
+        timestamp_list.sort()
+    elif inn and out is None:
+        odoo.mark_attendance('check_out', mac, timestamp_list[-1] - offset)
+        return
+
     # Loop through the list and compare each timestamp with the previous one
-    first = False
-    checkedout = False
     delta = 0
     for i in range(len(timestamp_list)):
         timestamp_list[i]
-        existing = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
-        if i == 0 and len(existing) == 0:
+        if i == 0:
             print("First checkin for the day")
             odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
             first = True
             checkedout = False
         if delta > tollarance:
             print(f"Motion delta {delta} greater than {tollarance} seconds")
-            print(f"Checkout here for missing mor for {delta} seconds")
+            print(f"Checkout here for missing for more than {delta} seconds")
             if first:
                 cin = odoo.dateFormatOdoo(timestamp_list[i] - offset)
                 print(f"Making CheckOut for {cin}")
@@ -129,112 +243,23 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
                 odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
                 checkedout = False
                 first = True
-        if i < (len(timestamp_list) - 1):
-            delta = (timestamp_list[i+1] - timestamp_list[i])
-        if i == len(timestamp_list) - 1:
-           pass
-            
+        if i == (len(timestamp_list) - 1):
+            existing = odoo.get_attendance_times(mac, YYYY, MM, DD)
+            if existing is not None and len(existing) != 0:
+                for e in existing:
+                    for k, v in e.items():
+                        if "Check-in" in k and not v:
+                            odoo.mark_attendance('check_in', mac, timestamp_list[0] - offset)
+                        if "Check-out" in k and not v:
+                            odoo.mark_attendance('check_out', mac, timestamp_list[-1] - offset)
+        return True
+             """
 
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)       
 
+
 for mac in employees.values():
-    run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=15, HH=8, test=test)
+    run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=18, HH=8, test=test)
+    # run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=16, HH=8, test=test)
     # print(mac)
-
-
-"""
-
-def checkOutExistingCheckin(mac):
-    checkins = odoo.get_checkin(mac)
-    if len(checkins) > 0:
-        timestamp_obj = datetime.datetime.strptime(checkins[0], '%Y-%m-%d %H:%M:%S')
-        timestamp_epoch = int(time.mktime(timestamp_obj.timetuple()))
-        epoch_time = timestamp_epoch + (4 * 60 * 60)
-        # loginStatus = odoo.mark_attendance('check_out', mac, epoch_to_datetime(epoch_time))
-        odoo.auto_checkout('00:8c:10:30:02:6f', epoch_time)
-        return True
-    return False
-
-
-mac = '00:8c:10:30:02:6f'
-# checkOutExistingCheckin(mac)
-timestamp_list = []
-timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)
-timestamp_list.sort()
-tolrance = 30
-# odoo.mark_attendance('check_in', mac, epoch_to_datetime(min(timestamp_list)))
-# Loop through the list and compare each timestamp with the previous one
-for i in range(len(timestamp_list)):
-    # Convert the timestamp to a datetime object
-    dt = datetime.datetime.fromtimestamp(timestamp_list[i])
-    # If it is the first timestamp, print the start time
-    if i == 0:
-        print(f"Start time: {dt}")
-        odoo.mark_attendance('check_in', mac, epoch_to_datetime(timestamp_list[i]))
-    # Otherwise, calculate the time difference with the previous timestamp
-    else:
-        # Convert the previous timestamp to a datetime object
-        prev_dt = datetime.datetime.fromtimestamp(timestamp_list[i-1])
-        # Calculate the time delta in minutes
-        delta = (dt - prev_dt) / datetime.timedelta(minutes=1)
-        # Print the time delta
-        print(f"Time delta: {delta} minutes")
-        if delta > tolrance:
-            odoo.mark_attendance('check_out', mac, epoch_to_datetime(timestamp_list[i]))
-    # If it is the last timestamp, print the final checkout time
-    if i == len(timestamp_list) - 1:
-        print(f"Final checkout time: {dt}")
-        odoo.mark_attendance('check_out', mac, epoch_to_datetime(timestamp_list[i]))
-
-# odoo.mark_attendance('check_out', mac, epoch_to_datetime(max(timestamp_list)))
-exit
-
-"""
-
-timestamp_list = []
-timestamp_list = workHourRecord(mac, YYYY=2024, MM=2, DD=1, HH=8)  
-missingTime = 30
-set_trace()
-checkins = odoo.get_checkin(mac)
-if len(checkins) > 0:
-    timestamp_obj = datetime.datetime.strptime(checkins[0], '%Y-%m-%d %H:%M:%S')
-    timestamp_epoch = int(time.mktime(timestamp_obj.timetuple()))
-    epoch_time = datetime.datetime.now().timestamp()
-    if (epoch_time - timestamp_epoch) > missingTime:
-        odoo.auto_checkout('00:8c:10:30:02:6f', missingTime)
-else:
-    for index, ts in enumerate(timestamp_list):
-        # Convert the current and next timestamps to datetime objects
-        # Call the function with the appropriate arguments
-        if index == 0:
-            # First checkin with the earliest timestamp
-            # loginStatus = checkinout("checkIn", mac, timestamp_list[index])
-            loginStatus = odoo.mark_attendance('check_in', mac, epoch_to_datetime(timestamp_list[index]))
-        else:
-            # Checkout and checkin with the subsequent timestamps
-            try:
-                # Calculate the time difference in seconds
-                time_diff = (timestamp_list[index + 1] - timestamp_list[index])
-                # Print the time difference
-                print(f"The time difference between {timestamp_list[index + 1]} and {timestamp_list[index]} is {time_diff} seconds.")
-                # Check if the time difference is more than 1800 seconds
-                if time_diff > missingTime:
-                    # Call the checkout function
-                    # loginStatus = checkinout("checkOut", mac, timestamp_list[index] + missingTime)
-                    loginStatus = odoo.mark_attendance('check_out', mac, epoch_to_datetime(timestamp_list[index]))
-                    print(f"Making checkOut for OLd time stamp {loginStatus}")
-                print(f"Making checkIn for OLd time stamps {loginStatus}")
-                if index == len(timestamp_list) - 1:
-                    # this is the last index loop
-                    # loginStatus = checkinout("checkOut", mac, timestamp_list[index] + missingTime)
-                    loginStatus = odoo.mark_attendance('check_out', mac, epoch_to_datetime(timestamp_list[index]) + missingTime)
-            except IndexError as i:
-                print(f"No movement detected for badge {mac}")
-                # Loop through the list of datetime objects
-
-
-
-
-
-"""
