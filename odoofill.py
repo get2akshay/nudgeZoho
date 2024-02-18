@@ -107,7 +107,9 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
         existing = odoo.verify_existing_checkin(mac, YYYY, MM, DD)
         if i == 0 and len(existing) == 0:
             print("First checkin for the day")
+            odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
             first = True
+            checkedout = False
         if delta > tollarance:
             print(f"Motion delta {delta} greater than {tollarance} seconds")
             print(f"Checkout here for missing mor for {delta} seconds")
@@ -126,20 +128,18 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
                 print(f"Making after break Checkin for {cin}")
                 odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
                 checkedout = False
+                first = True
         if i < (len(timestamp_list) - 1):
             delta = (timestamp_list[i+1] - timestamp_list[i])
-
-
-
-
-
-
+        if i == len(timestamp_list) - 1:
+           pass
+            
 
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)       
 
 for mac in employees.values():
-    run_daily(day_attendance, mac, YYYY=2023, MM=12, DD=1, HH=8, test=test)
+    run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=15, HH=8, test=test)
     # print(mac)
 
 
