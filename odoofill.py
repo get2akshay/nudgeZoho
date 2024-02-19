@@ -83,6 +83,8 @@ def day_attendancew(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = []
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     timestamp_list.sort()
+    if len(timestamp_list) == 1:
+        return
     for i in range(len(timestamp_list)):
         existing = cloud_data(YYYY, MM, DD)
         # { "check_in": inne, "check_out": oute, "id": idd }
@@ -109,9 +111,10 @@ def day_attendancew(mac, YYYY, MM, DD, HH, test=False):
                 odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
 
 def day_attendance(mac, YYYY, MM, DD, HH, test=False):
-    set_trace()
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     timestamp_list.sort()
+    if len(timestamp_list) == 1:
+        return
     idd = None
     force_out = False
     for i in range(len(timestamp_list)):
@@ -136,7 +139,7 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
             odoo.checkout(mac, timestamp_list[i - 1] - offset, idd)
             force_out = True
 
-        if inn and not out and idd and (i == len(timestamp_list) -1):
+        if inn and not out and idd and (i == len(timestamp_list) - 1):
             odoo.checkout(mac, timestamp_list[i] - offset, idd)
 
 
