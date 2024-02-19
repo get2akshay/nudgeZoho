@@ -106,7 +106,7 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
         elif not inn and out:
             print("Not a possible situation according to current understanding!")
         elif inn and out:
-            delta = timestamp_list[i] - odoo.get_epoch_timestamp(inn)
+            delta = timestamp_list[i] - timestamp_list[i - 1]
             if i < (len(timestamp_list) - 1) and delta > tollarance:
                 odoo.checkout(mac, odoo.get_epoch_timestamp(out), idd)
                 odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
