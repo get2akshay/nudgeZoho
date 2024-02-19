@@ -120,12 +120,16 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
         idd = existing.get('id')
         if force_out:
             odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
+            existing = cloud_data(YYYY, MM, DD)
+            inn = existing.get('check_in')
+            out = existing.get('check_out')
+            idd = existing.get('id')
             force_out = False
 
         if not inn and not idd:
             odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
         
-        if i > 0 and (timestamp_list[i] - timestamp_list[i - 1]) > tollarance and inn and out and idd:
+        if i != 0 and (timestamp_list[i] - timestamp_list[i - 1]) > tollarance and inn and out and idd:
             print("Entered force out!")
             odoo.checkout(mac, timestamp_list[i - 1] - offset, idd)
             force_out = True
