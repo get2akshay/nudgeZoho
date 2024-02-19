@@ -99,14 +99,16 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
                 odoo.checkout(mac, timestamp_list[i], idd)
             else:
                 print(f"Cloud has existing checkin for {mac} at {inn} for Attendance ID {idd}")
+                continue
             if i == (len(timestamp_list) - 1):
                 odoo.checkout(mac, timestamp_list[i], idd)
-                return True
+                break
         elif not inn and out:
             print("Not a possible situation according to current understanding!")
         elif inn and out:
             # print(f"Already marked for {mac} between {inn} and {out}")
             movedelta = timestamp_list[i] - odoo.get_epoch_timestamp(out)
+            print(f"Current move timestamp and existing xheckout time on Cloud {movedelta}")
             if  timestamp_list[i] > odoo.get_epoch_timestamp(out) and movedelta > tollarance and i < (len(timestamp_list) - 1):
             # if (timestamp_list[i] - odoo.get_epoch_timestamp(out)) > tollarance and i < (len(timestamp_list) - 1):
                 odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
