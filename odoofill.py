@@ -96,7 +96,7 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
             idd = existing.get('id')
             delta = timestamp_list[i] - odoo.get_epoch_timestamp(inn)
             if delta > tollarance and idd:
-                odoo.checkout(mac, timestamp_list[i], idd)
+                odoo.checkout(mac, timestamp_list[i-1], idd)
             else:
                 print(f"Cloud has existing checkin for {mac} at {inn} for Attendance ID {idd}")
                 continue
