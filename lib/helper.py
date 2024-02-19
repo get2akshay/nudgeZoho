@@ -20,7 +20,7 @@ def generate_timestamps(YYYY, MM, DD, HH):
         timestamps.append(int(time.mktime(current_time.timetuple())))
 
         # Increment the current time by a random number of minutes between 0 and 30
-        current_time += datetime.timedelta(minutes=random.randint(25, 30))
+        current_time += datetime.timedelta(minutes=random.randint(27, 33))
 
     return timestamps
 

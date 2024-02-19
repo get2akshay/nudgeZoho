@@ -116,10 +116,6 @@ def mark_attendance(checkx, identification_id, epoch):
     except xmlrpc.client.Fault as fault:
         print(f"An XML-RPC fault occurred: {fault}")
         return False
-    
-    
-
-
 
 def checkout(identification_id, epoch, idd):
     # Check if authenticated
