@@ -106,12 +106,8 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
         elif not inn and out:
             print("Not a possible situation according to current understanding!")
         elif inn and out:
-            # print(f"Already marked for {mac} between {inn} and {out}")
-            movedelta = timestamp_list[i] - odoo.get_epoch_timestamp(out)
-            print(f"Delta of Current move timestamp and existing checkout time on Cloud {movedelta}")
-            if i < (len(timestamp_list) - 1):
-            # if (timestamp_list[i] - odoo.get_epoch_timestamp(out)) > tollarance and i < (len(timestamp_list) - 1):
-                # odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
+            delta = timestamp_list[i] - odoo.get_epoch_timestamp(inn)
+            if i < (len(timestamp_list) - 1) and delta > tollarance:
                 odoo.checkout(mac, odoo.get_epoch_timestamp(out), idd)
                 odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
 
