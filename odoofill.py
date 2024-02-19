@@ -1,7 +1,7 @@
 import datetime
 from lib import odoo
 import numpy as np
-test = True
+test = False
 if not test:
     from lib import db
 from pdb import set_trace
