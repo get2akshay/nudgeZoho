@@ -106,7 +106,9 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
             print("Not a possible situation according to current understanding!")
         elif inn and out:
             # print(f"Already marked for {mac} between {inn} and {out}")
-            if (timestamp_list[i] - odoo.get_epoch_timestamp(out)) > tollarance and i < (len(timestamp_list) - 1):
+            movedelta = timestamp_list[i] - odoo.get_epoch_timestamp(out)
+            if  timestamp_list[i] > odoo.get_epoch_timestamp(out) and movedelta > tollarance and i < (len(timestamp_list) - 1):
+            # if (timestamp_list[i] - odoo.get_epoch_timestamp(out)) > tollarance and i < (len(timestamp_list) - 1):
                 odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
 
 with open('staff.yaml', 'r') as file:
@@ -116,6 +118,6 @@ def dumm_do(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test):
     print(f"For {mac} processing data from {YYYY} {MM} {DD} {HH} {test}")
 
 for mac in employees.values():
-    run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
-    # day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
+    # run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
+    day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # run_daily(dumm_do, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
