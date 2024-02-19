@@ -64,30 +64,38 @@ def workHourRecord(mac, YYYY, MM, DD, HH, test=False):
             print(f"Time stamp empty for {mac} in the period {start_time} to {end_time} !")
             return unique
 
+def cloud_data(YYYY, MM, DD):
+    existing = {}
+    existing = odoo.get_attendance_times(mac, YYYY, MM, DD)
+    idd = existing.get("id")
+    inn = existing.get("check_in")
+    if inn:
+        inne = odoo.get_epoch_timestamp(inn)
+    out = existing.get("check_out")
+    if out:
+        oute = odoo.get_epoch_timestamp(out)
+    return { "check_in": inn, "check_out": out, "id": idd }
+
 tollarance = 30 * 60
 
 
 def day_attendance(mac, YYYY, MM, DD, HH, test=False):
-    first = False
-    checkedout = False
     existing = {}
+    idd = int()
     timestamp_list = []
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     timestamp_list.sort()
     for i in range(len(timestamp_list)):
-        existing = odoo.get_attendance_times(mac, YYYY, MM, DD)
-        print(existing)
-        idd = existing.get("id")
-        inn = existing.get("check_in")
-        if inn:
-            inne = odoo.get_epoch_timestamp(inn)
-        out = existing.get("check_out")
-        if out:
-            oute = odoo.get_epoch_timestamp(out)
+        existing = cloud_data(YYYY, MM, DD)
+        # { "check_in": inne, "check_out": oute, "id": idd }
+        inn = existing.get('check_in')
+        out = existing.get('check_out')
+        #To be improved
         if not inn and not out:
             odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
-        if inn and not out:
-            delta = timestamp_list[i] - inne
+        elif inn and not out:
+            idd = existing.get('id')
+            delta = timestamp_list[i] - odoo.get_epoch_timestamp(inn)
             if delta > (30 * 60) and idd:
                 odoo.checkout(mac, timestamp_list[i], idd)
             else:
@@ -95,14 +103,15 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
             if i == (timestamp_list[i] -1):
                 odoo.checkout(mac, timestamp_list[i], idd)
                 break
-        if not inn and out:
+        elif not inn and out:
             print("Not a possible situation according to current understanding!")
-        if inn and out:
+        elif inn and out:
             print(f"Already marked for {mac} between {inn} and {out}")
-            if (timestamp_list[i] - oute) > 30:
-                 out = odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
-                 if not out:
-                     odoo.checkout(mac, inne, idd)
+            if (timestamp_list[i] - odoo.get_epoch_timestamp(out)) > 30:
+                out = odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
+                if not out:
+                    odoo.checkout(mac, odoo.get_epoch_timestamp(inn), idd)
+        #To be improved
                      
 
 with open('staff.yaml', 'r') as file:
