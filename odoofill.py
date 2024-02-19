@@ -144,6 +144,6 @@ def dumm_do(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test):
     print(f"For {mac} processing data from {YYYY} {MM} {DD} {HH} {test}")
 
 for mac in employees.values():
-    # run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
-    day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
+    run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
+    # day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # run_daily(dumm_do, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
