@@ -111,7 +111,8 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
             print(f"Delta of Current move timestamp and existing checkout time on Cloud {movedelta}")
             if  timestamp_list[i] > odoo.get_epoch_timestamp(out) and movedelta > tollarance and i < (len(timestamp_list) - 1):
             # if (timestamp_list[i] - odoo.get_epoch_timestamp(out)) > tollarance and i < (len(timestamp_list) - 1):
-                odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
+                # odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
+                odoo.checkout(mac, odoo.get_epoch_timestamp(out), idd)
 
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)       
