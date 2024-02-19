@@ -33,7 +33,6 @@ def run_daily(func, mac, YYYY, MM, DD, HH, test):
 # Usage:
 # print(get_epoch_timestamp('2024-02-16 02:30:00'))  # Output: 1708223400
 
-
 def workHourRecord(mac, YYYY, MM, DD, HH, test=False):
     if test:
         from lib import helper
@@ -45,10 +44,10 @@ def workHourRecord(mac, YYYY, MM, DD, HH, test=False):
     DD = DD + 1
     try:
         end_time = datetime.datetime(YYYY, MM, DD, 2, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
-        print(f"Getting Old Movement data from {start_time} to {end_time} Badge {mac} !")
+        # print(f"Getting Old Movement data from {start_time} to {end_time} Badge {mac} !")
         data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
     except ValueError as v:
-        print(f"All Month days done, caught error {v}")
+        # print(f"All Month days done, caught error {v}")
         return unique
     if data is not None:
         # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
@@ -61,7 +60,7 @@ def workHourRecord(mac, YYYY, MM, DD, HH, test=False):
             # print("The list after removing duplicates:", unique)
             return unique
         except TypeError as t:
-            print(f"Time stamp empty for {mac} in the period {start_time} to {end_time} !")
+            # print(f"Time stamp empty for {mac} in the period {start_time} to {end_time} !")
             return unique
 
 def cloud_data(YYYY, MM, DD):
@@ -100,22 +99,23 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
                 odoo.checkout(mac, timestamp_list[i], idd)
             else:
                 print(f"Cloud has existing checkin for {mac} at {inn} for Attendance ID {idd}")
-            if i == (len(timestamp_list) -1):
+            if i == (len(timestamp_list) - 1):
                 odoo.checkout(mac, timestamp_list[i], idd)
                 return True
         elif not inn and out:
             print("Not a possible situation according to current understanding!")
         elif inn and out:
-            print(f"Already marked for {mac} between {inn} and {out}")
+            # print(f"Already marked for {mac} between {inn} and {out}")
             if (timestamp_list[i] - odoo.get_epoch_timestamp(out)) > tollarance and i < (len(timestamp_list) - 1):
                 odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
-    return True
-                     
 
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)       
 
+def dumm_do(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test):
+    print(f"For {mac} processing data from {YYYY} {MM} {DD} {HH} {test}")
 
 for mac in employees.values():
-    run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
+    # run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
+    run_daily(dumm_do, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
