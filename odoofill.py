@@ -119,4 +119,4 @@ with open('staff.yaml', 'r') as file:
 
 for mac in employees.values():
     # run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=18, HH=8, test=test)
-    day_attendance(mac, YYYY=2024, MM=2, DD=18, HH=8, test=test)
+    day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
