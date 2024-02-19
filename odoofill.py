@@ -77,7 +77,6 @@ def cloud_data(YYYY, MM, DD):
 
 tollarance = 30 * 60
 
-
 def day_attendance(mac, YYYY, MM, DD, HH, test=False):
     existing = {}
     idd = int()
@@ -96,7 +95,7 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
             idd = existing.get('id')
             delta = timestamp_list[i] - odoo.get_epoch_timestamp(inn)
             if delta > tollarance and idd:
-                odoo.checkout(mac, timestamp_list[i-1], idd)
+                odoo.checkout(mac, inn, idd)
             else:
                 print(f"Cloud has existing checkin for {mac} at {inn} for Attendance ID {idd}")
                 continue
@@ -108,7 +107,7 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
         elif inn and out:
             delta = timestamp_list[i] - timestamp_list[i - 1]
             if i < (len(timestamp_list) - 1) and delta > tollarance:
-                odoo.checkout(mac, odoo.get_epoch_timestamp(out), idd)
+                odoo.checkout(mac, odoo.get_epoch_timestamp(inn), idd)
                 odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
 
 with open('staff.yaml', 'r') as file:
