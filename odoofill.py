@@ -133,10 +133,6 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
         if inn and not out and idd and (i == len(timestamp_list) -1):
             odoo.checkout(mac, timestamp_list[i] - offset, idd)
 
-
-      
-
-
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)       
 
