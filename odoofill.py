@@ -77,39 +77,6 @@ def cloud_data(YYYY, MM, DD):
 
 tollarance = 30 * 60
 
-def day_attendancew(mac, YYYY, MM, DD, HH, test=False):
-    existing = {}
-    idd = int()
-    timestamp_list = []
-    timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
-    timestamp_list.sort()
-    if len(timestamp_list) < 5:
-        return
-    for i in range(len(timestamp_list)):
-        existing = cloud_data(YYYY, MM, DD)
-        # { "check_in": inne, "check_out": oute, "id": idd }
-        inn = existing.get('check_in')
-        out = existing.get('check_out')
-        #To be improved
-        if not inn and not out:
-            odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
-        elif inn and not out:
-            idd = existing.get('id')
-            delta = timestamp_list[i] - timestamp_list[i - 1]
-            if delta > tollarance and idd:
-                odoo.checkout(mac, odoo.get_epoch_timestamp(inn + 1), idd)
-            else:
-                print(f"Cloud has existing checkin for {mac} at {inn} for Attendance ID {idd}")
-                continue
-            if i == (len(timestamp_list) - 1):
-                odoo.checkout(mac, timestamp_list[i], idd)
-                break
-        elif not inn and out:
-            print("Not a possible situation according to current understanding!")
-        elif inn and out:
-            if i < (len(timestamp_list) - 1):
-                odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
-
 def day_attendance(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     timestamp_list.sort()
