@@ -113,7 +113,7 @@ def day_attendancew(mac, YYYY, MM, DD, HH, test=False):
 def day_attendance(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     timestamp_list.sort()
-    if len(timestamp_list) == 1:
+    if len(timestamp_list) < 5:
         return
     idd = None
     force_out = False
