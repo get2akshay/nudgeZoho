@@ -83,6 +83,8 @@ def day_attendancew(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = []
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     timestamp_list.sort()
+    if len(timestamp_list) == 1:
+        return
     for i in range(len(timestamp_list)):
         existing = cloud_data(YYYY, MM, DD)
         # { "check_in": inne, "check_out": oute, "id": idd }
@@ -111,26 +113,33 @@ def day_attendancew(mac, YYYY, MM, DD, HH, test=False):
 def day_attendance(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     timestamp_list.sort()
+    if len(timestamp_list) == 1:
+        return
     idd = None
     force_out = False
     for i in range(len(timestamp_list)):
-        existing = cloud_data(YYYY, MM, DD)
-        inn = existing.get('check_in')
-        out = existing.get('check_out')
-        idd = existing.get('id')
+        if not force_out:
+            existing = cloud_data(YYYY, MM, DD)
+            inn = existing.get('check_in')
+            out = existing.get('check_out')
+            idd = existing.get('id')
         if force_out:
             odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
+            existing = cloud_data(YYYY, MM, DD)
+            inn = existing.get('check_in')
+            out = existing.get('check_out')
+            idd = existing.get('id')
             force_out = False
 
         if not inn and not idd:
             odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
         
-        if i > 0 and (timestamp_list[i] - timestamp_list[i - 1]) > tollarance and inn and out and idd:
+        if i != 0 and (timestamp_list[i] - timestamp_list[i - 1]) > tollarance and inn and out and idd:
             print("Entered force out!")
             odoo.checkout(mac, timestamp_list[i - 1] - offset, idd)
             force_out = True
 
-        if inn and not out and idd and (i == len(timestamp_list) -1):
+        if inn and not out and idd and (i == len(timestamp_list) - 1):
             odoo.checkout(mac, timestamp_list[i] - offset, idd)
 
 with open('staff.yaml', 'r') as file:
