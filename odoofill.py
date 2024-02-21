@@ -75,6 +75,44 @@ def cloud_data(YYYY, MM, DD):
         oute = odoo.get_epoch_timestamp(out)
     return { "check_in": inn, "check_out": out, "id": idd }
 
+def markinglogic(mac, YYYY, MM, DD, HH, test=False):
+    timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
+    if timestamp_list is not None:
+        timestamp_list.sort()
+    if len(timestamp_list) < 5:
+        # print(f"Very few movements for the day ! {len(timestamp_list)}")
+        return
+    else:
+        print(f"There were total {len(timestamp_list)} moves for {mac} on {DD}/{MM}/{YYYY}")
+    previous_ts = int()
+    for i in range(len(timestamp_list)):
+        if in_mark:
+            odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
+        if out_mark:
+            odoo.checkout(mac, timestamp_list[i] - offset, idd)
+        delta = timestamp_list[i] - previous_ts
+        in_mark = False
+        out_mark = False
+        existing = cloud_data(YYYY, MM, DD)
+        inn = existing.get('check_in')
+        out = existing.get('check_out')
+        if inn:
+            idd = existing.get('id')
+        if not idd and not inn:
+            in_mark = True
+            out_mark = False
+        if idd and not out:
+            in_mark = False
+            if delta > tollarance:
+                out_mark = True
+            else:
+                out_mark = False
+        previous_ts = timestamp_list[i]
+        if inn and not out and idd and (i == len(timestamp_list) - 1):
+            odoo.checkout(mac, timestamp_list[i] - offset, idd)
+        time.sleep(2)
+
+
 tollarance = 30 * 60
 
 def day_attendance(mac, YYYY, MM, DD, HH, test=False):
@@ -82,8 +120,10 @@ def day_attendance(mac, YYYY, MM, DD, HH, test=False):
     if timestamp_list is not None:
         timestamp_list.sort()
     if len(timestamp_list) < 5:
-        print(f"Very few movements for the day ! {len(timestamp_list)}")
+        # print(f"Very few movements for the day ! {len(timestamp_list)}")
         return
+    else:
+        print(f"There were total {len(timestamp_list)} moves for {mac} on {DD}/{MM}/{YYYY}")
     idd = None
     force_out = False
     for i in range(len(timestamp_list)):
@@ -119,6 +159,7 @@ def dumm_do(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test):
     print(f"For {mac} processing data from {YYYY} {MM} {DD} {HH} {test}")
 
 for mac in employees.values():
-    run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
+    # run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # run_daily(dumm_do, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
+    run_daily(markinglogic, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)

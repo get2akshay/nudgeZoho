@@ -111,7 +111,7 @@ def mark_attendance(checkx, identification_id, epoch):
         else:
             # Create new attendance record
             attendance_id = models.execute_kw(db, uid, password, 'hr.attendance', 'create', [{'employee_id': employee_ids[0], checkx : odoo_time}])
-            print(f"Attendance marked for employee with ID {identification_id}. Attendance ID is {attendance_id}.")
+            # print(f"Attendance marked for employee with ID {identification_id}. Attendance ID is {attendance_id}.")
             return True
     except xmlrpc.client.Fault as fault:
         print(f"An XML-RPC fault occurred: {fault}")
