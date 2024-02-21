@@ -79,7 +79,8 @@ tollarance = 30 * 60
 
 def day_attendance(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
-    timestamp_list.sort()
+    if timestamp_list is not None:
+        timestamp_list.sort()
     if len(timestamp_list) < 5:
         print(f"Very few movements for the day ! {len(timestamp_list)}")
         return
