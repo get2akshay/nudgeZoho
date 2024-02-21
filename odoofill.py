@@ -85,6 +85,8 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
     else:
         print(f"There were total {len(timestamp_list)} moves for {mac} on {DD}/{MM}/{YYYY}")
     previous_ts = int()
+    in_mark = False
+    out_mark = False
     for i in range(len(timestamp_list)):
         if in_mark:
             odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
