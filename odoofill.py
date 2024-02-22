@@ -90,6 +90,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
     idd = 0
     inn = False
     out = False
+    set_trace()
     for i in range(len(timestamp_list)):
         if in_mark:
             odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
