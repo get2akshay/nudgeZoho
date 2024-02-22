@@ -92,19 +92,21 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
     out = False
     for i in range(len(timestamp_list)):
         if in_mark:
+            in_mark = False
             if test:
                 print("Will call REST API to checkin here!")
             else:
-                odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
+                odoo.mark_attendance('check_in', mac, previous_ts - offset)
         if out_mark:
+            out_mark = False
             if test:
                 print("Will call REST API to checkout here!")
             else:
-                odoo.checkout(mac, timestamp_list[i] - offset, idd)
-            
+                odoo.checkout(mac, previous_ts - offset, idd)
+     
         delta = timestamp_list[i] - previous_ts
-        in_mark = False
-        out_mark = False
+        # in_mark = False
+        # out_mark = False
         existing = cloud_data(YYYY, MM, DD)
         inn = existing.get('check_in')
         out = existing.get('check_out')
