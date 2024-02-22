@@ -1,7 +1,7 @@
 import datetime
 from lib import odoo
 import numpy as np
-test = False
+test = True
 if not test:
     from lib import db
 from pdb import set_trace
@@ -90,12 +90,18 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
     idd = 0
     inn = False
     out = False
-    set_trace()
     for i in range(len(timestamp_list)):
         if in_mark:
-            odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
+            if test:
+                print("Will call REST API to checkin here!")
+            else:
+                odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
         if out_mark:
-            odoo.checkout(mac, timestamp_list[i] - offset, idd)
+            if test:
+                print("Will call REST API to checkout here!")
+            else:
+                odoo.checkout(mac, timestamp_list[i] - offset, idd)
+            
         delta = timestamp_list[i] - previous_ts
         in_mark = False
         out_mark = False
@@ -115,7 +121,10 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
                 out_mark = False
         previous_ts = timestamp_list[i]
         if inn and not out and idd and (i == len(timestamp_list) - 1):
-            odoo.checkout(mac, timestamp_list[i] - offset, idd)
+            if test:
+                print("Will call REST API to do Final Checkout here!")
+            else:
+                odoo.checkout(mac, timestamp_list[i] - offset, idd)
         time.sleep(2)
 
 
