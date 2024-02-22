@@ -32,7 +32,7 @@ def job(anchors):
         if not s:
             if d in "Entry" or d in "EastWall" or d == "Kitchen Entry":
                 output, error = command.ssh_command("admin", "tiddly@1234567", "ls -lrt")
-                print('Output:', output)
+                print('Output from SSH:', output)
                 if error:
                     print('Error:', error)
             else:
@@ -46,11 +46,12 @@ def run_job_every_30_min(anchors):
     schedule.every(30).minutes.do(job, anchors)
 
 while True:
-    current_time = datetime.now().hour
-    if current_time >= 8 and current_time <= 23:
-        run_job_every_5_min(anchors)
-    else:
-        run_job_every_30_min(anchors)
-    schedule.run_pending()
-    time.sleep(1)
+    job(anchors)
+    # current_time = datetime.now().hour
+    # if current_time >= 8 and current_time <= 23:
+    #     run_job_every_5_min(anchors)
+    # else:
+    #     run_job_every_30_min(anchors)
+    # schedule.run_pending()
+    # time.sleep(5)
 
