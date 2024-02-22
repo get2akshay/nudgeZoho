@@ -11,11 +11,11 @@ def deviceStatus(device):
     params["deviceName"] = device
     t = tb.rest_get(api,params)
     if not t:
-        print(f"API {api} resulted Empty json!")
+        # print(f"API {api} resulted Empty json!")
         return None
     else:
         id = t.get("id").get("id")
-        print(id)
+        # print(id)
         api = f"api/device/info/{id}"
         s = tb.rest_get(api, params)
         if s.get("active"):
@@ -28,7 +28,7 @@ anchors = ["Entry", "InsideKitchin", "EastWall", "Kitchen Entry"]
 def job(anchors):
     for d in anchors:
         s = deviceStatus(d)
-        print(f"Anchor {d} is {s}")
+        # print(f"Anchor {d} is {s}")
         if not s:
             if d in "Entry" or d in "EastWall" or d == "Kitchen Entry":
                 output, error = command.ssh_command("admin", "tiddly@1234567", "ls -lrt")
