@@ -1,7 +1,7 @@
 import datetime
 from lib import odoo
 import numpy as np
-test = True
+test = False
 if not test:
     from lib import db
 from pdb import set_trace
@@ -64,6 +64,7 @@ def workHourRecord(mac, YYYY, MM, DD, HH, test=False):
             return unique
 
 def cloud_data(YYYY, MM, DD):
+    idd = int()    
     existing = {}
     existing = odoo.get_attendance_times(mac, YYYY, MM, DD)
     idd = existing.get("id")

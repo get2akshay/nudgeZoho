@@ -178,27 +178,7 @@ def verify_existing_checkin(identification_id, YYYY, MM, DD):
 
     return day_list
 
-
-
-def get_attendance_timesa(identification_id):
-    if not auth():
-        return False
-    common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
-    uid = common.authenticate(db, username, password, {})
-
-    models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
-
-    attendance_ids = models.execute_kw(db, uid, password,
-        'hr.attendance', 'search', [[['employee_id.identification_id', '=', identification_id]]])
-
-    attendances = models.execute_kw(db, uid, password,
-        'hr.attendance', 'read', [attendance_ids, ['check_in', 'check_out']])
-
-    for attendance in attendances:
-        print(f"Check-in: {attendance['check_in']}, Check-out: {attendance['check_out']}")
-
-
-def get_attendance_times(identification_id, YYYY, MM, DD):
+def get_attendance_times(identification_id, YYYY, MM, DD, test=False):
     data = {}
     if not auth():
         return False
