@@ -1,5 +1,6 @@
 import xmlrpc.client
 from datetime import datetime
+from time import sleep
 
 # Specify your Odoo server information
 # url = 'https://byplayit2.odoo.com/'
@@ -25,11 +26,22 @@ def auth():
     # Get the uid
     common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
     global uid
-    uid = common.authenticate(db, username, password, {})
-    if uid:
-        return True
-    else:
-        return False
+    count = 0
+    while count < 30:
+        try:
+            uid = common.authenticate(db, username, password, {})
+            if uid:
+                return True
+            else:
+                return False
+        except ConnectionRefusedError as ce:
+            print(f"Caught connection exception! {ce}")
+            sleep(30)
+            count += 1
+            continue
+            
+
+    
 
 def get_checkin(identification_id):
     # Check if authenticated
