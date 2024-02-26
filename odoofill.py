@@ -23,7 +23,7 @@ def run_daily(func, mac, YYYY, MM, DD, HH, test):
         hour = start_date.hour
         if not odoo.get_done_date(mac, year, month, day, test):
             print(f"For {mac} attandance not marked for {year} {day} {month} will fill!")
-            # func(mac, year, month, day, hour, test)
+            func(mac, year, month, day, hour, test)
         else:
             print(f"For {mac} attandance already marked for {year} {day} {month}")
         # Increment the day by one
