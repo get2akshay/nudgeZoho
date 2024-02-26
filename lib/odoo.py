@@ -25,6 +25,8 @@ def get_epoch_timestamp(date_string):
 def auth():
     # Get the uid
     common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
+    global models
+    models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
     global uid
     count = 0
     while count < 30:
@@ -39,73 +41,18 @@ def auth():
             sleep(30)
             count += 1
             continue
-            
-
-    
-
-def get_checkin(identification_id):
-    # Check if authenticated
-    if not auth():
-        return False
-    # Get the attendance model
-    attendance = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
-    # Search for the employee's attendance records
-    attendance_ids = attendance.execute_kw(db, uid, password,
-        'hr.attendance', 'search',
-        [[['employee_id.identification_id', '=', identification_id]]])
-    # Read the checkin time of the records
-    checkin_times = attendance.execute_kw(db, uid, password,
-        'hr.attendance', 'read',
-        [attendance_ids, ['check_in']])
-    # Return the checkin times as a list
-    return [record['check_in'] for record in checkin_times]
-
-def auto_checkout(identification_id, epoch_time=None):
-    # Check if authenticated
-    delta_minutes = 30
-    if not auth():
-        return False
-    # Get the attendance model
-    attendance = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
-    # Search for the employee's attendance records that have no check out
-    attendance_ids = attendance.execute_kw(db, uid, password,
-        'hr.attendance', 'search',
-        [[['employee_id.identification_id', '=', identification_id], ['check_out', '=', False]]])
-    # Read the checkin time of the records
-    checkin_times = attendance.execute_kw(db, uid, password,
-        'hr.attendance', 'read',
-        [attendance_ids, ['check_in']])
-    # Loop through the records and check the time difference
-    for record in checkin_times:
-        # Convert the checkin time to a datetime object
-        checkin_time = datetime.strptime(record['check_in'], '%Y-%m-%d %H:%M:%S')
-        # Get the current time
-        current_time = datetime.now()
-        if epoch_time is not None:
-            checkin_time = epoch_time
-        # Calculate the time difference in minutes
-        time_diff = (current_time - checkin_time).total_seconds() / 60
-        # If the time difference is more than 30 minutes, set the check out time to the current time
-        if time_diff > delta_minutes:
-            attendance.execute_kw(db, uid, password,
-                'hr.attendance', 'write',
-                [[record['id']], {'check_out': current_time.strftime('%Y-%m-%d %H:%M:%S')}])
-
 
 def mark_attendance(checkx, identification_id, epoch):
     if not auth():
         print("Server not available!")
         return False
-
     # Get the models object
-    models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
-
+    # models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
     # Search for the employee
     employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[['identification_id', '=', identification_id]]])
     if not employee_ids:
         print(f"No employee found with ID {identification_id}.")
         return False
-
     # Convert epoch to datetime in UTC
     # dt = datetime.utcfromtimestamp(epoch)
     odoo_time = dateFormatOdoo(epoch)
@@ -136,9 +83,9 @@ def checkout(identification_id, epoch, idd):
     # Get the attendance model
     checkout_time = dateFormatOdoo(epoch)
     # 
-    attendance = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+    # attendance = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
     # Search for the employee's attendance records that have no check out
-    attendance_ids = attendance.execute_kw(db, uid, password,
+    attendance_ids = models.execute_kw(db, uid, password,
         'hr.attendance', 'search',
         [[['employee_id.identification_id', '=', identification_id], ['check_out', '=', False]]])
     if len(attendance_ids) == 0:
@@ -146,7 +93,7 @@ def checkout(identification_id, epoch, idd):
         return False
     else:
         # Read the checkin time of the records
-        checkin_times = attendance.execute_kw(db, uid, password,
+        checkin_times = models.execute_kw(db, uid, password,
             'hr.attendance', 'read',
             [attendance_ids, ['check_in']])
         for record in checkin_times:
@@ -155,7 +102,7 @@ def checkout(identification_id, epoch, idd):
             # attendance.execute_kw(db, uid, password,
             #         'hr.attendance', 'write',
             #         [[record['id']], {'check_out': checkout_time}])
-            attendance.execute_kw(db, uid, password,
+            models.execute_kw(db, uid, password,
                     'hr.attendance', 'write',
                     [idd, {'check_out': checkout_time}])
     return True
@@ -166,7 +113,7 @@ def verify_existing_checkin(identification_id, YYYY, MM, DD):
         return False
 
     # Get the attendance model
-    attendance = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+    # attendance = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
 
     # Model and field details
     model_name = 'hr.attendance'
@@ -175,12 +122,12 @@ def verify_existing_checkin(identification_id, YYYY, MM, DD):
     date_to_check = datetime(YYYY, MM, DD)
 
     # Get the employee's ID
-    employee_ids = attendance.execute_kw(db, uid, password, 'hr.employee', 'search', [[('identification_id', '=', identification_id)]])
+    employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[('identification_id', '=', identification_id)]])
     if not employee_ids:
         return []
 
     # Search for the employee's attendance records for the specified date
-    attendance_records = attendance.execute_kw(db, uid, password, model_name, 'search_read', [[('employee_id', '=', employee_ids[0]), ('check_in', '>=', date_to_check.strftime('%Y-%m-%d 00:00:00')), ('check_in', '<=', date_to_check.strftime('%Y-%m-%d 23:59:59'))]], {'fields': ['check_in', 'check_out']})
+    attendance_records = models.execute_kw(db, uid, password, model_name, 'search_read', [[('employee_id', '=', employee_ids[0]), ('check_in', '>=', date_to_check.strftime('%Y-%m-%d 00:00:00')), ('check_in', '<=', date_to_check.strftime('%Y-%m-%d 23:59:59'))]], {'fields': ['check_in', 'check_out']})
 
     # Prepare the list of day records
     day_list = []
@@ -194,10 +141,9 @@ def get_attendance_times(identification_id, YYYY, MM, DD, test=False):
     data = {}
     if not auth():
         return False
-    common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
-    uid = common.authenticate(db, username, password, {})
-
-    models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+    # common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
+    # uid = common.authenticate(db, username, password, {})
+    # models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
 
     # Format the date in the 'YYYY-MM-DD' format
     date = datetime(YYYY, MM, DD)
@@ -216,6 +162,48 @@ def get_attendance_times(identification_id, YYYY, MM, DD, test=False):
             data.update({"id": attendance['id'], "check_in": attendance['check_in'], "check_out": attendance['check_out']})
         id = attendance.get('id')
     return data
+
+def get_done_date(mac, YYYY, MM, DD, test=False):
+    # {'id': 75, 'check_in': '2023-12-01 08:00:48', 'check_out': '2023-12-01 18:53:49'}
+    data = get_attendance_times(mac, YYYY, MM, DD, test)
+    if data:
+        if data.get('id') and data.get('check_in') and data.get('check_out'):
+            return True
+        elif data.get('id') and data.get('check_in') and not data.get('check_out'):
+            if delete_attendance_by_date_and_id(mac, YYYY, MM, DD, test):
+                print(f"Partial record deleted fill reattempt for {mac} {YYYY} {MM} {DD}")
+                return False
+            else:
+                print(f"Could not delete Partial record, fill reattempt for {mac} {YYYY} {MM} {DD}")
+                """Todo handle is delete fails"""
+                return False
+        elif not data.get('id') and not data.get('check_in') and not data.get('check_out'):
+            return False
+    return False
+
+
+def delete_attendance_by_date_and_id(identification_id, YYYY, MM, DD, test=False):
+    if not auth():
+        return False
+    # common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
+    # uid = common.authenticate(db, username, password, {})
+
+    # models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+
+    # Format the date in the 'YYYY-MM-DD' format
+    date = datetime(YYYY, MM, DD)
+    date_str = date.strftime('%Y-%m-%d')
+
+    # Search for the attendance records with the given identification_id and date
+    attendance_ids = models.execute_kw(db, uid, password,
+        'hr.attendance', 'search', [[['employee_id.identification_id', '=', identification_id], ['check_in', '>=', date_str], ['check_in', '<', date_str + ' 23:59:59']]])
+    # print(attendance_ids)
+    # Delete the attendance records
+    result = models.execute_kw(db, uid, password,
+        'hr.attendance', 'unlink', [attendance_ids])
+    return result
+
+
 
 # Usage:
 # get_attendance_times('myid', datetime(2024, 2, 15))

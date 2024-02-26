@@ -21,7 +21,11 @@ def run_daily(func, mac, YYYY, MM, DD, HH, test):
         year = start_date.year
         month = start_date.month
         hour = start_date.hour
-        func(mac, year, month, day, hour, test)
+        if not odoo.get_done_date(mac, year, month, day, test):
+            print(f"For {mac} attandance not marked for {year} {day} {month} will fill!")
+            # func(mac, year, month, day, hour, test)
+        else:
+            print(f"For {mac} attandance already marked for {year} {day} {month}")
         # Increment the day by one
         start_date += datetime.timedelta(days=1)
         # If the next day is in the future, wait until it comes
@@ -76,13 +80,16 @@ def cloud_data(YYYY, MM, DD):
         oute = odoo.get_epoch_timestamp(out)
     return { "check_in": inn, "check_out": out, "id": idd }
 
+
+tollarance = 30 * 60
+
 def markinglogic(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     if timestamp_list is not None:
         timestamp_list.sort()
     if len(timestamp_list) < 5:
         # print(f"Very few movements for the day ! {len(timestamp_list)}")
-        return
+        return True
     else:
         print(f"There were total {len(timestamp_list)} moves for {mac} on {DD}/{MM}/{YYYY}")
     previous_ts = int()
@@ -130,54 +137,14 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
                 odoo.checkout(mac, timestamp_list[i] - offset, idd)
         time.sleep(2)
 
-
-tollarance = 30 * 60
-
-def day_attendance(mac, YYYY, MM, DD, HH, test=False):
-    timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
-    if timestamp_list is not None:
-        timestamp_list.sort()
-    if len(timestamp_list) < 5:
-        # print(f"Very few movements for the day ! {len(timestamp_list)}")
-        return
-    else:
-        print(f"There were total {len(timestamp_list)} moves for {mac} on {DD}/{MM}/{YYYY}")
-    idd = None
-    force_out = False
-    for i in range(len(timestamp_list)):
-        if not force_out:
-            existing = cloud_data(YYYY, MM, DD)
-            inn = existing.get('check_in')
-            out = existing.get('check_out')
-            idd = existing.get('id')
-        if force_out:
-            odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
-            existing = cloud_data(YYYY, MM, DD)
-            inn = existing.get('check_in')
-            out = existing.get('check_out')
-            idd = existing.get('id')
-            force_out = False
-
-        if not inn and not idd:
-            odoo.mark_attendance('check_in', mac, timestamp_list[i] - offset)
-        
-        if i != 0 and (timestamp_list[i] - timestamp_list[i - 1]) > tollarance and inn and out and idd:
-            print("Entered force out!")
-            odoo.checkout(mac, timestamp_list[i - 1] - offset, idd)
-            force_out = True
-
-        if inn and not out and idd and (i == len(timestamp_list) - 1):
-            odoo.checkout(mac, timestamp_list[i] - offset, idd)
-        time.sleep(2)
-
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)       
 
-def dumm_do(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test):
+def dumm_do(mac, YYYY=2023, MM=12, DD=1, HH=8, test=test):
     print(f"For {mac} processing data from {YYYY} {MM} {DD} {HH} {test}")
 
 for mac in employees.values():
     # run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # run_daily(dumm_do, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
-    run_daily(markinglogic, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
+    run_daily(markinglogic, mac, YYYY=2023, MM=12, DD=1, HH=8, test=test)
