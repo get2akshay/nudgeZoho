@@ -1,7 +1,7 @@
 import datetime
 from lib import odoo
 import numpy as np
-test = True
+test = False
 if not test:
     from lib import db
 from pdb import set_trace
@@ -134,7 +134,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
                 print("Will call REST API to do Final Checkout here!")
             else:
                 odoo.checkout(mac, timestamp_list[i] - offset, idd)
-        time.sleep(2)
+        time.sleep(.5)
 
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)       
