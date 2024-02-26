@@ -1,7 +1,7 @@
 import datetime
 from lib import odoo
 import numpy as np
-test = False
+test = True
 if not test:
     from lib import db
 from pdb import set_trace
@@ -31,8 +31,7 @@ def run_daily(func, mac, YYYY, MM, DD, HH, test):
         # If the next day is in the future, wait until it comes
         if start_date > datetime.datetime.now():
             print(f"Waiting for {start_date.strftime('%Y-%m-%d %H:%M:%S')}")
-            while datetime.datetime.now() < start_date:
-                time.sleep(60)  # Check every minute
+            break
 
 # Usage:
 # print(get_epoch_timestamp('2024-02-16 02:30:00'))  # Output: 1708223400
