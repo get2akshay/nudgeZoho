@@ -31,7 +31,7 @@ if __name__ == "__main__":
     broker_ip = "192.168.0.184"
     username = "test"
     password = "test"
-    topic = "nudge"
+    topic = "nudge/pub"
     data = {
     "ID": 1,
     "major": 00000,

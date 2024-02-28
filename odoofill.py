@@ -8,7 +8,7 @@ from pdb import set_trace
 import time
 import yaml
 # offset = (5 * 60 * 60) + (30 * 60)
-offset = (5 * 60 * 60) + (30 * 60)  
+offset = (5 * 60 * 60) + (30 * 60)
 
 def run_daily(func, mac, YYYY, MM, DD, HH, test):
     start_date = datetime.datetime(YYYY, MM, DD, HH)

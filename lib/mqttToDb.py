@@ -9,8 +9,8 @@ database = "tiddly"
 tablename = "anchorsdata"
 schema = "btdata"
 # MQTT broker configuration
-broker_address = "192.168.0.184"  # Replace with your broker's IP address
-topic = "nudge"
+broker_address = "127.0.0.1"  # Replace with your broker's IP address
+topic = "nudge/pub"
 username = "test"
 password = "test"
 
@@ -24,7 +24,7 @@ def db_add(data):
         columns_sql = ', '.join(data.keys())
         values_sql = ', '.join([f"'{value}'" if isinstance(value, str) else str(value) for value in data.values()])
         epoch_time = int(time.time())  # Current epoch time
-        sql_query = f"INSERT INTO btdata.anchorsdata ({columns_sql}, epoch_time) VALUES ({values_sql}, {epoch_time})"
+        sql_query = f"INSERT INTO {schema}.{tablename} ({columns_sql}, epoch_time) VALUES ({values_sql}, {epoch_time})"
 
         # Execute the SQL query to insert data into the table
         cur.execute(sql_query)
@@ -100,7 +100,8 @@ def on_message(client, userdata, message):
         print(f"Database not present in DB will stop!")
         return False
     print("Call add_db here!")
-    db_add(data)
+    for d in data:
+        db_add(d)
     
 
 # Create an MQTT client instance

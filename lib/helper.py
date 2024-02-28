@@ -23,4 +23,3 @@ def generate_timestamps(YYYY, MM, DD, HH):
         current_time += datetime.timedelta(minutes=random.randint(27, 33))
 
     return timestamps
-
