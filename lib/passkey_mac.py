@@ -20,4 +20,4 @@ def build_passkey(ble_mac):
     return passkey
 
 
-print(build_passkey("00:8c:10:30:01:76"))
+print(build_passkey("00:8c:10:30:02:76"))
