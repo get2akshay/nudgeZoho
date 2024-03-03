@@ -32,18 +32,26 @@ if __name__ == "__main__":
     username = "test"
     password = "test"
     topic = "nudge/pub"
-    data = {
-    "ID": 1,
-    "major": 00000,
-    "minor": 1,
-    "uuid": giveUUID(),
-    "power": -59,
-    "rssi": randrange(start=-95, stop=-63, step=5),
-    "mac": choice(list(employees.values())),
-    "anchor": choice(list(anchors)),
-    "btdensity": randrange(start=30, stop=100, step=3)
-    }
-    message = data
+    count = 0
+    datalist = []
+    while count < 20:
+        datalist.append(
+        {
+            "ID": 1,
+            "major": 00000,
+            "minor": 1,
+            "uuid": giveUUID(),
+            "power": -59,
+            "rssi": randrange(start=-95, stop=-63, step=5),
+            "mac": choice(list(employees.values())),
+            "anchor": choice(list(anchors)),
+            "btdensity": randrange(start=30, stop=100, step=3)
+        }
+
+    )
+        count += 1
+    
+    message = datalist
 
     publish_to_mqtt(broker_ip, username, password, topic, message)
 
