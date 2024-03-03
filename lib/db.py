@@ -261,7 +261,7 @@ def query_db(query, start_date=None, end_date=None):
     # Return the output table
     return output
 
-def find_next_non_zero_timestamp(start_timestamp):
+def find_next_non_zero_timestamp(mac, start_timestamp):
     uuid = getuuid(mac)
     if uuid is None:
         print(f"DB returend empty UUID value for {mac} during time period {start_date} to {end_date}")
