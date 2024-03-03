@@ -261,7 +261,6 @@ def query_db(query, start_date=None, end_date=None):
     # Return the output table
     return output
 
-
 def find_next_non_zero_timestamp(start_timestamp):
     try:
         # Establish a connection to the PostgreSQL database
@@ -272,7 +271,6 @@ def find_next_non_zero_timestamp(start_timestamp):
             user="postgres",
             password="nl1234567"
         )
-
         # Create a cursor object
         cursor = conn.cursor()
 
