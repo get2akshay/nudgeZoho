@@ -279,7 +279,7 @@ def find_next_non_zero_timestamp(mac, start_timestamp):
         cursor = conn.cursor()
 
         # Prepare the SQL query
-        query = """
+        query = f"""
             SELECT
                 ts/1000 AS time,
                 str_v,
