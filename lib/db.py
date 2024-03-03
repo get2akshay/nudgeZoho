@@ -262,6 +262,10 @@ def query_db(query, start_date=None, end_date=None):
     return output
 
 def find_next_non_zero_timestamp(start_timestamp):
+    uuid = getuuid(mac)
+    if uuid is None:
+        print(f"DB returend empty UUID value for {mac} during time period {start_date} to {end_date}")
+        return None
     try:
         # Establish a connection to the PostgreSQL database
         conn = psycopg2.connect(
