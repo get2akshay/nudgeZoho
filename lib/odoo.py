@@ -205,5 +205,40 @@ def delete_attendance_by_date_and_id(identification_id, YYYY, MM, DD, test=False
 
 
 
+def odoo_version():
+    common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
+    return common.version()
+
+def get_employee_id(identification_id):
+    if auth():
+        employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[['identification_id', '=', identification_id]]])
+        return employee_ids[0]
+
+def get_attandanceids(employee_id):
+    if auth():
+        attendance_ids = models.execute_kw(db, uid, password, 'hr.attendance', 'search', [[('employee_id', '=', employee_id)]])
+        return sorted(attendance_ids)
+
+def get_latest_attndance_time(employee_id):
+    attendance_id = max(get_attandanceids(employee_id))
+    attendance_data = []
+    if attendance_id:
+        # Get the check-in and check-out times for a specific attendance ID
+        attendance_data = models.execute_kw(db, uid, password, 'hr.attendance', 'read', [attendance_id], {'fields': ['check_in', 'check_out']})
+
+    for val in attendance_data[-1].values():
+        if not val:
+            return False
+    return attendance_data[-1]
+
+
+
+            
+         
+
+
+
+    
+
 # Usage:
 # get_attendance_times('myid', datetime(2024, 2, 15))

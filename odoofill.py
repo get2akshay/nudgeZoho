@@ -54,7 +54,7 @@ def workHourRecord(mac, YYYY, MM, DD, HH, test=False):
         return unique
     if data is not None:
         # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
-        filtered_list = [t for t in data if np.count_nonzero(t[-3:]) > 2]
+        filtered_list = [t for t in data if np.count_nonzero(t[-3:]) >= 1]
         # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
         timestamp_list = [t[0] for t in filtered_list]
         # Print the timestamp list
@@ -78,7 +78,6 @@ def cloud_data(YYYY, MM, DD):
     if out:
         oute = odoo.get_epoch_timestamp(out)
     return { "check_in": inn, "check_out": out, "id": idd }
-
 
 tollarance = 30 * 60
 

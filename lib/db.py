@@ -55,6 +55,25 @@ WHERE
     rn = 1
 LIMIT 2;"""
 
+def next_motion_point():
+    f"""
+        SELECT
+            ts/1000 AS time,
+            str_v,
+            (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
+            (('x' || REPLACE(SUBSTRING(str_v FROM 10 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS y_axis,
+            (('x' || REPLACE(SUBSTRING(str_v FROM 19 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS z_axis
+        FROM
+            ts_kv
+        WHERE
+            entity_id = '{uuid}'
+            AND key = 53
+            AND ts > extract(epoch from 'start_timestamp'::timestamp) * 1000 -- Only timestamps in the future from the specified start time
+            AND (x_axis != 0 OR y_axis != 0 OR z_axis != 0) -- Check for non-zero values
+        ORDER BY ts ASC -- Order by timestamp in ascending order
+        LIMIT 1; -- Limit the result to 1 row
+    """
+
 def firstMoveOfTheDay(uuid):
     return """SELECT
             t1.ts/1000 AS time,
@@ -241,3 +260,59 @@ def query_db(query, start_date=None, end_date=None):
     conn.close()
     # Return the output table
     return output
+
+
+def find_next_non_zero_timestamp(start_timestamp):
+    try:
+        # Establish a connection to the PostgreSQL database
+        conn = psycopg2.connect(
+            host="127.0.0.1",
+            port="5432",
+            database="tiddly",
+            user="postgres",
+            password="nl1234567"
+        )
+
+        # Create a cursor object
+        cursor = conn.cursor()
+
+        # Prepare the SQL query
+        query = """
+            SELECT
+                ts/1000 AS time,
+                str_v,
+                (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
+                (('x' || REPLACE(SUBSTRING(str_v FROM 10 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS y_axis,
+                (('x' || REPLACE(SUBSTRING(str_v FROM 19 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS z_axis
+            FROM
+                ts_kv
+            WHERE
+                entity_id = '{uuid}'
+                AND key = 53
+                AND ts > extract(epoch from %s::timestamp) * 1000 -- Only timestamps in the future from the specified start time
+                AND (x_axis != 0 OR y_axis != 0 OR z_axis != 0) -- Check for non-zero values
+            ORDER BY ts ASC -- Order by timestamp in ascending order
+            LIMIT 1; -- Limit the result to 1 row
+        """
+
+        # Execute the SQL query
+        cursor.execute(query, (start_timestamp,))
+
+        # Fetch the result
+        result = cursor.fetchone()
+
+        return result
+
+    except (Exception, psycopg2.Error) as error:
+        print("Error while connecting to PostgreSQL:", error)
+
+    finally:
+        # Close the cursor and connection
+        if conn:
+            cursor.close()
+            conn.close()
+
+# Example usage
+# start_timestamp = '2024-03-02 08:39:53'
+# result = find_next_non_zero_timestamp(start_timestamp)
+# print("Result:", result)
