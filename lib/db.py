@@ -303,7 +303,7 @@ def find_next_non_zero_timestamp(mac, checkx_time):
             )
 
             SELECT
-                time,
+                ts,
                 str_v,
                 x_axis,
                 y_axis,
