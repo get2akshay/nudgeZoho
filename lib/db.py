@@ -292,7 +292,7 @@ def find_next_non_zero_timestamp(mac, start_timestamp):
                 WHERE
                     entity_id = '{uuid}'
                     AND key = 53
-                    AND ts > extract(epoch from %s::{start_timestamp}) * 1000 -- Only timestamps in the future from the specified start time
+                    AND ts > extract(epoch from %s::timestamp) * 1000 -- Only timestamps in the future from the specified start time
             )
 
             SELECT
