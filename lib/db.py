@@ -262,13 +262,13 @@ def query_db(query, start_date=None, end_date=None):
     # Return the output table
     return output
 
-def find_next_non_zero_timestamp(mac, start_timestamp):
+def find_next_non_zero_timestamp(mac, checkx_time):
     uuid = getuuid(mac)
     if uuid is None:
         print(f"DB returend empty UUID value for {mac} for time after {start_timestamp}")
         return None
 
-    dt = datetime.datetime.strptime(start_timestamp, '%Y-%m-%d %H:%M:%S')
+    dt = datetime.datetime.strptime(checkx_time, '%Y-%m-%d %H:%M:%S')
     start_timestamp = int(dt.timestamp())
     try:
         # Establish a connection to the PostgreSQL database
@@ -286,7 +286,8 @@ def find_next_non_zero_timestamp(mac, start_timestamp):
         query = f"""
             WITH GyroData AS (
                 SELECT
-                    ts/1000 AS time,
+                 -- ts/1000 AS time,
+                    ts,
                     str_v,
                     (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
                     (('x' || REPLACE(SUBSTRING(str_v FROM 10 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS y_axis,
