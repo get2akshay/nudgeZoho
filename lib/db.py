@@ -280,20 +280,32 @@ def find_next_non_zero_timestamp(mac, start_timestamp):
 
         # Prepare the SQL query
         query = f"""
+            WITH GyroData AS (
+                SELECT
+                    ts/1000 AS time,
+                    str_v,
+                    (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
+                    (('x' || REPLACE(SUBSTRING(str_v FROM 10 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS y_axis,
+                    (('x' || REPLACE(SUBSTRING(str_v FROM 19 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS z_axis
+                FROM
+                    ts_kv
+                WHERE
+                    entity_id = '{uuid}'
+                    AND key = 53
+                    AND ts > extract(epoch from %s::{start_timestamp}) * 1000 -- Only timestamps in the future from the specified start time
+            )
+
             SELECT
-                ts/1000 AS time,
+                time,
                 str_v,
-                (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
-                (('x' || REPLACE(SUBSTRING(str_v FROM 10 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS y_axis,
-                (('x' || REPLACE(SUBSTRING(str_v FROM 19 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS z_axis
+                x_axis,
+                y_axis,
+                z_axis
             FROM
-                ts_kv
+                GyroData
             WHERE
-                entity_id = '{uuid}'
-                AND key = 53
-                AND ts > extract(epoch from %s::timestamp) * 1000 -- Only timestamps in the future from the specified start time
-                AND (x_axis != 0 OR y_axis != 0 OR z_axis != 0) -- Check for non-zero values
-            ORDER BY ts ASC -- Order by timestamp in ascending order
+                (x_axis != 0 OR y_axis != 0 OR z_axis != 0) -- Check for non-zero values
+            ORDER BY time ASC -- Order by timestamp in ascending order
             LIMIT 1; -- Limit the result to 1 row
         """
 

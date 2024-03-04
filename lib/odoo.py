@@ -231,6 +231,57 @@ def get_latest_attndance_time(employee_id):
             return False
     return attendance_data[-1]
 
+def find_next_non_zero_timestamp(start_timestamp):
+    try:
+        # Establish a connection to the PostgreSQL database
+        conn = psycopg2.connect(
+            dbname='your_db_name',
+            user='your_db_user',
+            password='your_db_password',
+            host='your_db_host'
+        )
+
+        # Create a cursor object
+        cursor = conn.cursor()
+
+        # Prepare the SQL query
+        query = """
+            SELECT
+                ts/1000 AS time,
+                str_v,
+                (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
+                (('x' || REPLACE(SUBSTRING(str_v FROM 10 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS y_axis,
+                (('x' || REPLACE(SUBSTRING(str_v FROM 19 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS z_axis
+            FROM
+                ts_kv
+            WHERE
+                entity_id = '{uuid}'
+                AND key = 53
+                AND ts > extract(epoch from %s::timestamp) * 1000 -- Only timestamps in the future from the specified start time
+                AND (x_axis != 0 OR y_axis != 0 OR z_axis != 0) -- Check for non-zero values
+            ORDER BY ts ASC -- Order by timestamp in ascending order
+            LIMIT 1; -- Limit the result to 1 row
+        """
+
+        # Execute the SQL query
+        cursor.execute(query, (start_timestamp,))
+
+        # Fetch the result
+        result = cursor.fetchone()
+
+        return result
+
+    except (Exception, psycopg2.Error) as error:
+        print("Error while connecting to PostgreSQL:", error)
+
+    finally:
+        # Close the cursor and connection
+        if conn:
+            cursor.close()
+            conn.close()
+
+
+
 
 
             
