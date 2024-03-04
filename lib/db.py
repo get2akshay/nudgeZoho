@@ -261,27 +261,12 @@ def query_db(query, start_date=None, end_date=None):
     conn.close()
     # Return the output table
     return output
+    
+    
 
-def nextMinutesMotion(mac, timestamp_str, min_span=5):
-    """2024-03-02 08:39:53"""
-    # Your timestamp string
-    # Convert the timestamp string to a datetime object
-    dt = datetime.datetime.strptime(timestamp_str, '%Y-%m-%d %H:%M:%S')
-    # Extract the year, month, day, hour, minute, and second
-    YYYY = dt.year
-    MM = dt.month
-    DD = dt.day
-    HH = dt.hour
-    mm = dt.minute
-    sec = dt.second
-    EHH = HH
-    emm = mm + min_span
-    if emm >= 60:
-        EHH = HH + 1
-        emm = (mm + min_span) - 60
-    start_time = datetime.datetime(YYYY, MM, DD, HH, mm, sec).strftime("%Y-%m-%d %H:%M:%S")
-    end_time = datetime.datetime(YYYY, MM, DD, EHH, emm, sec).strftime("%Y-%m-%d %H:%M:%S")
-    print(f"Getting data from {start_time} {end_time}")
-    d = motionInSpecifiedTimePeriod(mac, start_time, end_time)
-    return d
+
+
+
+   
+
 

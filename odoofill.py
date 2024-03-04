@@ -81,6 +81,7 @@ def cloud_data(YYYY, MM, DD):
 
 tollarance = 30 * 60
 
+
 def markinglogic(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     if timestamp_list is not None:
@@ -133,7 +134,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
                 print("Will call REST API to do Final Checkout here!")
             else:
                 odoo.checkout(mac, timestamp_list[i] - offset, idd)
-        time.sleep(.5)
+        time.sleep(.1)
 
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)       
