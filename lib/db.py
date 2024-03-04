@@ -263,15 +263,12 @@ def query_db(query, start_date=None, end_date=None):
     return output
 
 def find_next_non_zero_timestamp(mac, start_timestamp):
-
     uuid = getuuid(mac)
     if uuid is None:
         print(f"DB returend empty UUID value for {mac} for time after {start_timestamp}")
         return None
-    
-
     # Convert the timestamp string to a datetime object
-    dt = datetime.strptime(start_timestamp, '%Y-%m-%d %H:%M:%S')
+    dt = datetime.datetime.strptime(start_timestamp, '%Y-%m-%d %H:%M:%S')
     # Convert the datetime object to epoch timestamp
     start_timestamp = int(time.mktime(dt.timetuple()))
 
