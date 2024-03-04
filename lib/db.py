@@ -267,11 +267,9 @@ def find_next_non_zero_timestamp(mac, start_timestamp):
     if uuid is None:
         print(f"DB returend empty UUID value for {mac} for time after {start_timestamp}")
         return None
-    # Convert the timestamp string to a datetime object
-    dt = datetime.datetime.strptime(start_timestamp, '%Y-%m-%d %H:%M:%S')
-    # Convert the datetime object to epoch timestamp
-    start_timestamp = int(time.mktime(dt.timetuple()))
 
+    dt = datetime.datetime.strptime(start_timestamp, '%Y-%m-%d %H:%M:%S')
+    start_timestamp = int(dt.timestamp())
     try:
         # Establish a connection to the PostgreSQL database
         conn = psycopg2.connect(
