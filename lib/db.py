@@ -262,76 +262,23 @@ def query_db(query, start_date=None, end_date=None):
     # Return the output table
     return output
 
-def find_next_non_zero_timestamp(mac, checkx_time):
-    uuid = getuuid(mac)
-    if uuid is None:
-        print(f"DB returend empty UUID value for {mac} for time after {start_timestamp}")
-        return None
-    dt = datetime.datetime.strptime(checkx_time, '%Y-%m-%d %H:%M:%S')
-    start_timestamp = int(dt.timestamp())
-    try:
-        # Establish a connection to the PostgreSQL database
-        conn = psycopg2.connect(
-            host="127.0.0.1",
-            port="5432",
-            database="tiddly",
-            user="postgres",
-            password="nl1234567"
-        )
-        # Create a cursor object
-        cursor = conn.cursor()
+def nextMinutesMotion(mac, timestamp_str, min_span=5):
+    """2024-03-02 08:39:53"""
+    # Your timestamp string
+    # Convert the timestamp string to a datetime object
+    dt = datetime.datetime.strptime(timestamp_str, '%Y-%m-%d %H:%M:%S')
+    # Extract the year, month, day, hour, minute, and second
+    YYYY = dt.year
+    MM = dt.month
+    DD = dt.day
+    HH = dt.hour
+    mm = dt.minute
+    sec = dt.second
+    if mm + min_span >= 60:
+        HH = HH + 1
+        mm = (mm + min_span) - 60
+    start_time = datetime.datetime(YYYY, MM, DD, HH, mm, sec).strftime("%Y-%m-%d %H:%M:%S")
+    end_time = datetime.datetime(YYYY, MM, DD, HH, mm, sec).strftime("%Y-%m-%d %H:%M:%S")
+    print(f"Getting data from {start_time} {end_time}")
+    d = motionInSpecifiedTimePeriod(mac, start_time, end_time)
 
-        # Prepare the SQL query
-        query = f"""
-            WITH GyroData AS (
-                SELECT
-                 -- ts/1000 AS time,
-                    ts,
-                    str_v,
-                    (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
-                    (('x' || REPLACE(SUBSTRING(str_v FROM 10 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS y_axis,
-                    (('x' || REPLACE(SUBSTRING(str_v FROM 19 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS z_axis
-                FROM
-                    ts_kv
-                WHERE
-                    entity_id = '{uuid}'
-                    AND key = 53
-                    AND ts > '{start_timestamp}'
-                   -- AND ts > extract(epoch from %s::timestamp) * 1000 -- Only timestamps in the future from the specified start time
-
-            )
-            SELECT
-                ts,
-                str_v,
-                x_axis,
-                y_axis,
-                z_axis
-            FROM
-                GyroData
-            WHERE
-                (x_axis != 0 OR y_axis != 0 OR z_axis != 0) -- Check for non-zero values
-            ORDER BY ts ASC -- Order by timestamp in ascending order
-            LIMIT 1; -- Limit the result to 1 row
-        """
-
-        # Execute the SQL query
-        cursor.execute(query, (start_timestamp,))
-
-        # Fetch the result
-        result = cursor.fetchone()
-
-        return result
-
-    except (Exception, psycopg2.Error) as error:
-        print("Error while connecting to PostgreSQL:", error)
-
-    finally:
-        # Close the cursor and connection
-        if conn:
-            cursor.close()
-            conn.close()
-
-# Example usage
-# start_timestamp = '2024-03-02 08:39:53'
-# result = find_next_non_zero_timestamp(start_timestamp)
-# print("Result:", result)
