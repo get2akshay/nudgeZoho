@@ -22,7 +22,7 @@ cur = conn.cursor()
 def getTimeStamp():
     import time
     # Get the current date as a datetime object
-    today = datetime.date.today()
+    today = datetime.datetime.date.today()
     # Get the start of the day as a datetime object
     start_of_day = datetime.datetime.combine(today, datetime.time())        
     # Convert the start of the day to epoch time
