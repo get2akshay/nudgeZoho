@@ -275,10 +275,11 @@ def nextMinutesMotion(mac, timestamp_str, min_span=5):
     mm = dt.minute
     sec = dt.second
     if mm + min_span >= 60:
-        HH = HH + 1
-        mm = (mm + min_span) - 60
+        EHH = HH + 1
+        emm = (mm + min_span) - 60
     start_time = datetime.datetime(YYYY, MM, DD, HH, mm, sec).strftime("%Y-%m-%d %H:%M:%S")
-    end_time = datetime.datetime(YYYY, MM, DD, HH, mm, sec).strftime("%Y-%m-%d %H:%M:%S")
+    end_time = datetime.datetime(YYYY, MM, DD, EHH, emm, sec).strftime("%Y-%m-%d %H:%M:%S")
     print(f"Getting data from {start_time} {end_time}")
     d = motionInSpecifiedTimePeriod(mac, start_time, end_time)
+    return d
 
