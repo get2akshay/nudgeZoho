@@ -267,7 +267,6 @@ def find_next_non_zero_timestamp(mac, checkx_time):
     if uuid is None:
         print(f"DB returend empty UUID value for {mac} for time after {start_timestamp}")
         return None
-
     dt = datetime.datetime.strptime(checkx_time, '%Y-%m-%d %H:%M:%S')
     start_timestamp = int(dt.timestamp())
     try:
@@ -301,7 +300,6 @@ def find_next_non_zero_timestamp(mac, checkx_time):
                    -- AND ts > extract(epoch from %s::timestamp) * 1000 -- Only timestamps in the future from the specified start time
 
             )
-
             SELECT
                 ts,
                 str_v,
@@ -312,7 +310,7 @@ def find_next_non_zero_timestamp(mac, checkx_time):
                 GyroData
             WHERE
                 (x_axis != 0 OR y_axis != 0 OR z_axis != 0) -- Check for non-zero values
-            ORDER BY time ASC -- Order by timestamp in ascending order
+            ORDER BY ts ASC -- Order by timestamp in ascending order
             LIMIT 1; -- Limit the result to 1 row
         """
 
