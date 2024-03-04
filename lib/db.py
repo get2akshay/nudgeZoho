@@ -41,20 +41,20 @@ def getTimeStamp():
 def get_mac_uuid(mac):
     return f"""SELECT
     most_common_entity_id
-FROM (
-    SELECT
-        entity_id AS most_common_entity_id,
-        ROW_NUMBER() OVER (PARTITION BY str_v ORDER BY COUNT(*) DESC) AS rn
-    FROM
-        ts_kv
+    FROM (
+        SELECT
+            entity_id AS most_common_entity_id,
+            ROW_NUMBER() OVER (PARTITION BY str_v ORDER BY COUNT(*) DESC) AS rn
+        FROM
+            ts_kv
+        WHERE
+            str_v SIMILAR TO '{mac}'
+        GROUP BY
+            str_v, entity_id
+    ) AS subquery
     WHERE
-        str_v SIMILAR TO '{mac}'
-    GROUP BY
-        str_v, entity_id
-) AS subquery
-WHERE
-    rn = 1
-LIMIT 2;"""
+        rn = 1
+    LIMIT 2;"""
 
 def next_motion_point():
     f"""
