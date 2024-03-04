@@ -1,6 +1,7 @@
 import psycopg2
 from decimal import Decimal
 import datetime
+import time
 
 # connect to the PostgreSQL database
 # connect to the PostgreSQL database server
@@ -262,10 +263,18 @@ def query_db(query, start_date=None, end_date=None):
     return output
 
 def find_next_non_zero_timestamp(mac, start_timestamp):
+
     uuid = getuuid(mac)
     if uuid is None:
-        print(f"DB returend empty UUID value for {mac} during time period {start_date} to {end_date}")
+        print(f"DB returend empty UUID value for {mac} for time after {start_timestamp}")
         return None
+    
+
+    # Convert the timestamp string to a datetime object
+    dt = datetime.strptime(start_timestamp, '%Y-%m-%d %H:%M:%S')
+    # Convert the datetime object to epoch timestamp
+    start_timestamp = int(time.mktime(dt.timetuple()))
+
     try:
         # Establish a connection to the PostgreSQL database
         conn = psycopg2.connect(
@@ -292,7 +301,9 @@ def find_next_non_zero_timestamp(mac, start_timestamp):
                 WHERE
                     entity_id = '{uuid}'
                     AND key = 53
-                    AND ts > extract(epoch from %s::timestamp) * 1000 -- Only timestamps in the future from the specified start time
+                    AND ts > '{start_timestamp}'
+                   -- AND ts > extract(epoch from %s::timestamp) * 1000 -- Only timestamps in the future from the specified start time
+
             )
 
             SELECT
