@@ -88,7 +88,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
     else:
         timestamp_list = tdd
     if timestamp_list is not None:
-        timestamp_list.sort()
+        sorted(timestamp_list)
     if len(timestamp_list) < 2:
         # print(f"Very few movements for the day ! {len(timestamp_list)}")
         return True
@@ -100,7 +100,9 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
             # First timestamp, mark as check-in
             print("First checkin!")
             odoo.checkin_employee(mac, timestamp - offset)
+            time.sleep(.1)
             dic = odoo.get_latest_attndance_time(mac)
+            time.sleep(.1)
             idd = dic.get('id')
         elif idx == len(timestamp_list) - 1:
             # Last timestamp, mark as check-out
@@ -115,19 +117,25 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
                 print("Delta more than 1800")
                 # odoo.checkout_employee(mac, timestamp - offset)
                 odoo.checkout(mac, timestamp - offset, idd)
+                time.sleep(.1)
             elif time_diff < 1800:
                 # Less than 30 seconds difference, continue with previous check-in
                 dic = odoo.get_latest_attndance_time(mac)
                 print(f"Delta less than 1800 with cloud {dic}")
+                time.sleep(.1)
                 if not dic.get('id') and not dic.get('check_in'):
                     print("No checkin")
                     odoo.checkin_employee(mac, timestamp - offset)
+                    time.sleep(.1)
                     dic = odoo.get_latest_attndance_time(mac)
+                    time.sleep(.1)
                     idd = dic.get('id')
                 elif dic.get('id') and dic.get('check_out'):
                     print("checkin but and out both, needs checkin for new timestamp")
                     odoo.checkin_employee(mac, timestamp - offset)
+                    time.sleep(.1)
                     dic = odoo.get_latest_attndance_time(mac)
+                    time.sleep(.1)
                     idd = dic.get('id')
                 elif dic.get('id') and not dic.get('check_out'):
                     print("checkin but no checkout")
