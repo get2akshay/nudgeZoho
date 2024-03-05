@@ -95,9 +95,10 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
         if idx == 0:
             # First timestamp, mark as check-in
             odoo.checkin_employee(mac, timestamp)
-        elif idx == len(timestamp_list) - 1:
+        if idx == len(timestamp_list) - 1:
             # Last timestamp, mark as check-out
             odoo.checkout_employee(mac, timestamp)
+            break
         else:
             time_diff = timestamp - timestamp_list[idx - 1]
             if time_diff > 1800:
