@@ -83,8 +83,13 @@ tollarance = 30 * 60
 
 def markinglogic(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
-    first_timestamp = min(timestamp_list)
-    last_timestamp = max(timestamp_list)
+    if timestamp_list is not None:
+        timestamp_list.sort()
+    if len(timestamp_list) < 2:
+        # print(f"Very few movements for the day ! {len(timestamp_list)}")
+        return True
+    else:
+        print(f"There were total {len(timestamp_list)} moves for {mac} on {DD}/{MM}/{YYYY}")
 
     for idx, timestamp in enumerate(timestamp_list):
         if idx == 0:
