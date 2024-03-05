@@ -145,7 +145,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
                 # odoo.checkin_employee(mac, timestamp - offset)
                 # to-do mark break
                 print("mark break")
-                pass
+                continue
 
 def markinglogicv1(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
