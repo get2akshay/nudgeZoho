@@ -109,7 +109,9 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
                 continue
             else:
                 # Between 30 seconds and 30 minutes, mark as shift break
-                odoo.checkin_employee(mac, timestamp)
+                # odoo.checkin_employee(mac, timestamp)
+                # to-do mark break
+                pass
 
 def markinglogicv1(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
