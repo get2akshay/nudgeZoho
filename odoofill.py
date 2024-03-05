@@ -9,6 +9,7 @@ import time
 import yaml
 # offset = (5 * 60 * 60) + (30 * 60)
 offset = (5 * 60 * 60) + (30 * 60)
+tdd = [1706779963, 1706780640, 1706790586, 1706792442, 1706792448, 1706792770, 1706793326, 1706795112, 1706795114, 1706799685, 1706801012, 1706802195, 1706802210, 1706802296, 1706802471, 1706802472, 1706803193, 1706803820, 1706804712, 1706806236, 1706806238, 1706806552, 1706806572, 1706806574, 1706806689, 1706806691, 1706806693, 1706806699, 1706806700, 1706807178, 1706807180, 1706807968, 1706807972, 1706808217, 1706808251, 1706808269, 1706808291, 1706808318, 1706808320, 1706809142, 1706809653, 1706809655, 1706812381, 1706812384, 1706812386, 1706812910]
 
 def run_daily(func, mac, YYYY, MM, DD, HH, test):
     start_date = datetime.datetime(YYYY, MM, DD, HH)
@@ -81,8 +82,11 @@ def cloud_data(YYYY, MM, DD):
 
 tollarance = 30 * 60
 
-def markinglogicv1(mac, YYYY, MM, DD, HH, test=False):
-    timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
+def markinglogic(mac, YYYY, MM, DD, HH, test=False):
+    if not test:
+        timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
+    else:
+        timestamp_list = tdd
     if timestamp_list is not None:
         timestamp_list.sort()
     if len(timestamp_list) < 2:
@@ -90,45 +94,52 @@ def markinglogicv1(mac, YYYY, MM, DD, HH, test=False):
         return True
     else:
         print(f"There were total {timestamp_list} moves for {mac} on {DD}/{MM}/{YYYY}")
-
-    for idx, timestamp in enumerate(timestamp_list):
+    idd = 0
+    for idx, timestamp in enumerate(sorted(timestamp_list)):
         if idx == 0:
             # First timestamp, mark as check-in
             print("First checkin!")
-            # odoo.checkin_employee(mac, timestamp)
+            odoo.checkin_employee(mac, timestamp - offset)
+            dic = odoo.get_latest_attndance_time(mac)
+            idd = dic.get('id')
         elif idx == len(timestamp_list) - 1:
             # Last timestamp, mark as check-out
             print("Last checkout")
-            # odoo.checkout_employee(mac, timestamp)
+            # odoo.checkout_employee(mac, timestamp - offset)
+            odoo.checkout(mac, timestamp - offset, idd)
             break
         else:
             time_diff = timestamp - timestamp_list[idx - 1]
             if time_diff > 1800:
                 # More than 30 minutes difference, mark as shift break
                 print("Delta more than 1800")
-                # odoo.checkout_employee(mac, timestamp)
-                # odoo.mark_break_time(identification_id, timestamps[idx - 1], timestamp)
+                # odoo.checkout_employee(mac, timestamp - offset)
+                odoo.checkout(mac, timestamp - offset, idd)
             elif time_diff < 1800:
                 # Less than 30 seconds difference, continue with previous check-in
-                print("Delta less than 1800")
                 dic = odoo.get_latest_attndance_time(mac)
+                print(f"Delta less than 1800 with cloud {dic}")
                 if not dic.get('id') and not dic.get('check_in'):
                     print("No checkin")
-                    # odoo.checkin_employee(mac, timestamp)
+                    odoo.checkin_employee(mac, timestamp - offset)
+                    dic = odoo.get_latest_attndance_time(mac)
+                    idd = dic.get('id')
                 elif dic.get('id') and dic.get('check_out'):
-                    print("checkin but and out both")
-                    # odoo.checkin_employee(mac, timestamp)
+                    print("checkin but and out both, needs checkin for new timestamp")
+                    odoo.checkin_employee(mac, timestamp - offset)
+                    dic = odoo.get_latest_attndance_time(mac)
+                    idd = dic.get('id')
                 elif dic.get('id') and not dic.get('check_out'):
                     print("checkin but no checkout")
                     continue
             else:
                 # Between 30 seconds and 30 minutes, mark as shift break
-                # odoo.checkin_employee(mac, timestamp)
+                # odoo.checkin_employee(mac, timestamp - offset)
                 # to-do mark break
                 print("mark break")
                 pass
 
-def markinglogic(mac, YYYY, MM, DD, HH, test=False):
+def markinglogicv1(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     if timestamp_list is not None:
         timestamp_list.sort()
@@ -252,4 +263,3 @@ for mac in employees.values():
     # pass
 
 
-# t = [1706779963, 1706780640, 1706790586, 1706792442, 1706792448, 1706792770, 1706793326, 1706795112, 1706795114, 1706799685, 1706801012, 1706802195, 1706802210, 1706802296, 1706802471, 1706802472, 1706803193, 1706803820, 1706804712, 1706806236, 1706806238, 1706806552, 1706806572, 1706806574, 1706806689, 1706806691, 1706806693, 1706806699, 1706806700, 1706807178, 1706807180, 1706807968, 1706807972, 1706808217, 1706808251, 1706808269, 1706808291, 1706808318, 1706808320, 1706809142, 1706809653, 1706809655, 1706812381, 1706812384, 1706812386, 1706812910]

@@ -246,25 +246,31 @@ def checkin_employee(identification_id, timestamp):
     # Check if authenticated
     if not auth():
         return False
-    
-    employee_id = get_employee_id(identification_id)
-    # Search for the employee based on employee ID
-    # employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[('employee_id', '=', employee_id)]])
-    employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[['identification_id', '=', identification_id]]])
-    
-    if employee_ids:
-        # Employee found, perform check-in
-        attendance_data = {
-            'employee_id': employee_ids[0],
-            'check_in': dateFormatOdoo(timestamp),
-        }
-        attendance_id = models.execute_kw(db, uid, password, 'hr.attendance', 'create', [attendance_data])
-        if attendance_id:
-            print(f"Checked in for Employee ID {employee_id} at {timestamp}")
+    try:
+        employee_id = get_employee_id(identification_id)
+        # Search for the employee based on employee ID
+        # employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[('employee_id', '=', employee_id)]])
+        employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[['identification_id', '=', identification_id]]])
+        
+        if employee_ids:
+            # Employee found, perform check-in
+            attendance_data = {
+                'employee_id': employee_ids[0],
+                'check_in': dateFormatOdoo(timestamp),
+            }
+            attendance_id = models.execute_kw(db, uid, password, 'hr.attendance', 'create', [attendance_data])
+            if attendance_id:
+                print(f"Checked in for Employee ID {employee_id} at {timestamp}")
+                return True
+            else:
+                print(f"Failed to check in for Employee ID {employee_id}")
+                return False
         else:
-            print(f"Failed to check in for Employee ID {employee_id}")
-    else:
-        print(f"Employee with ID {employee_id} not found.")
+            print(f"Employee with ID {employee_id} not found.")
+            return False
+    except xmlrpc.client.Fault as fault:
+        print(f"An XML-RPC fault occurred: {fault}")
+        return False
 
 # Function to check-out using employee ID
 def checkout_employee(identification_id, timestamp):
