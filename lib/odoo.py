@@ -225,6 +225,7 @@ def get_attandanceids(employee_id):
 
 def get_latest_attndance_time(employee_id):
     attendance_id = max(get_attandanceids(employee_id))
+    employee_id = get_employee_id(identification_id)
     attendance_data = []
     if attendance_id:
         # Get the check-in and check-out times for a specific attendance ID
