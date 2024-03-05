@@ -89,7 +89,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
         # print(f"Very few movements for the day ! {len(timestamp_list)}")
         return True
     else:
-        print(f"There were total {len(timestamp_list)} moves for {mac} on {DD}/{MM}/{YYYY}")
+        print(f"There were total {timestamp_list} moves for {mac} on {DD}/{MM}/{YYYY}")
 
     for idx, timestamp in enumerate(timestamp_list):
         if idx == 0:
@@ -177,4 +177,3 @@ for mac in employees.values():
     # run_daily(dumm_do, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     run_daily(markinglogic, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # pass
-
