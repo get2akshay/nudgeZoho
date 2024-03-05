@@ -272,7 +272,7 @@ def checkout_employee(identification_id, timestamp):
     # attendance_ids = models.execute_kw(db, uid, password, 'hr.attendance', 'search', [[('employee_id.employee_id', '=', employee_id)]],{'order': 'check_in desc', 'limit': 1})
     attendance_ids = get_attandanceids(3)
     # attendance_ids = models.execute_kw(db, uid, password, 'hr.attendance', 'search', [[('employee_id', '=', employee_id)]])
-    if attendance_ids[-1]:
+    if attendance_ids:
         # Update the last attendance record with checkout time
         attendance_data = {
             'check_out': dateFormatOdoo(timestamp),
