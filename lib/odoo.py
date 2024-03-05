@@ -223,18 +223,22 @@ def get_attandanceids(employee_id):
         attendance_ids = models.execute_kw(db, uid, password, 'hr.attendance', 'search', [[('employee_id', '=', employee_id)]])
         return sorted(attendance_ids)
 
-def get_latest_attndance_time(employee_id):
-    attendance_id = max(get_attandanceids(employee_id))
-    employee_id = get_employee_id(identification_id)
-    attendance_data = []
-    if attendance_id:
-        # Get the check-in and check-out times for a specific attendance ID
-        attendance_data = models.execute_kw(db, uid, password, 'hr.attendance', 'read', [attendance_id], {'fields': ['check_in', 'check_out']})
+def get_latest_attndance_time(identification_id):
+    ids = get_attandanceids(employee_id)
+    if ids:
+        attendance_id = max()
+        employee_id = get_employee_id(identification_id)
+        attendance_data = []
+        if attendance_id:
+            # Get the check-in and check-out times for a specific attendance ID
+            attendance_data = models.execute_kw(db, uid, password, 'hr.attendance', 'read', [attendance_id], {'fields': ['check_in', 'check_out']})
 
-    # for val in attendance_data[-1].values():
-        # if not val:
-            # return False
-    return attendance_data[-1]
+        # for val in attendance_data[-1].values():
+            # if not val:
+                # return False
+        return attendance_data[-1]
+    else:
+        return False
 
 # Function to check-in using employee ID
 def checkin_employee(identification_id, timestamp):
