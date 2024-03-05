@@ -107,9 +107,11 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
             elif time_diff < 1800:
                 # Less than 30 seconds difference, continue with previous check-in
                 dic = odoo.get_latest_attndance_time(mac)
-                if dic.get('check_in') and dic.get('check_in'):
+                if not dic.get('id') and not dic.get('check_in'):
                     odoo.checkin_employee(mac, timestamp)
-                elif dic.get('check_in') and not dic.get('check_in'):
+                elif dic.get('check_in') and dic.get('check_out'):
+                    odoo.checkin_employee(mac, timestamp)
+                elif dic.get('check_in') and not dic.get('check_out'):
                     continue
             else:
                 # Between 30 seconds and 30 minutes, mark as shift break

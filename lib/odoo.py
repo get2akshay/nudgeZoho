@@ -238,7 +238,7 @@ def get_latest_attndance_time(identification_id):
                 # return False
         return attendance_data[-1]
     else:
-        return False
+        return {"id": False, "check_in": False, "check_out": False}
 
 # Function to check-in using employee ID
 def checkin_employee(identification_id, timestamp):
