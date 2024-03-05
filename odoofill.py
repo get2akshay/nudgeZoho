@@ -95,6 +95,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
     else:
         print(f"There were total {timestamp_list} moves for {mac} on {DD}/{MM}/{YYYY}")
     idd = 0
+    set_trace()
     for idx, timestamp in enumerate(sorted(timestamp_list)):
         if idx == 0:
             # First timestamp, mark as check-in
