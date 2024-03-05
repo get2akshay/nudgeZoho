@@ -1,7 +1,7 @@
 import datetime
 from lib import odoo
 import numpy as np
-test = True
+test = False
 if not test:
     from lib import db
 from pdb import set_trace
@@ -173,7 +173,3 @@ for mac in employees.values():
     run_daily(markinglogic, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # pass
 
-
-# Example usage
-# timestamps = [1635709200, 1635712800, 1635716400, 1635718200, 1635720000]  # Example epoch timestamps
-# identification_id = "00:8c:10:30:02:6f"  # Example employee ID
