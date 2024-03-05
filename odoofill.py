@@ -95,15 +95,14 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
     else:
         print(f"There were total {timestamp_list} moves for {mac} on {DD}/{MM}/{YYYY}")
     idd = 0
-    set_trace()
     for idx, timestamp in enumerate(sorted(timestamp_list)):
         if idx == 0:
             # First timestamp, mark as check-in
             print("First checkin!")
             odoo.checkin_employee(mac, timestamp - offset)
-            time.sleep(.1)
+            time.sleep(.5)
             dic = odoo.get_latest_attndance_time(mac)
-            time.sleep(.1)
+            time.sleep(.5)
             idd = dic.get('id')
         elif idx == len(timestamp_list) - 1:
             # Last timestamp, mark as check-out
@@ -118,7 +117,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
                 print("Delta more than 1800")
                 # odoo.checkout_employee(mac, timestamp - offset)
                 odoo.checkout(mac, timestamp - offset, idd)
-                time.sleep(.1)
+                time.sleep(.5)
             elif time_diff < 1800:
                 # Less than 30 seconds difference, continue with previous check-in
                 dic = odoo.get_latest_attndance_time(mac)
@@ -127,16 +126,16 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
                 if not dic.get('id') and not dic.get('check_in'):
                     print("No checkin")
                     odoo.checkin_employee(mac, timestamp - offset)
-                    time.sleep(.1)
+                    time.sleep(.5)
                     dic = odoo.get_latest_attndance_time(mac)
-                    time.sleep(.1)
+                    time.sleep(.5)
                     idd = dic.get('id')
                 elif dic.get('id') and dic.get('check_out'):
                     print("checkin but and out both, needs checkin for new timestamp")
                     odoo.checkin_employee(mac, timestamp - offset)
-                    time.sleep(.1)
+                    time.sleep(.5)
                     dic = odoo.get_latest_attndance_time(mac)
-                    time.sleep(.1)
+                    time.sleep(.5)
                     idd = dic.get('id')
                 elif dic.get('id') and not dic.get('check_out'):
                     print("checkin but no checkout")
@@ -269,6 +268,5 @@ for mac in employees.values():
     # day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # run_daily(dumm_do, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     run_daily(markinglogic, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
-    # pass
 
 
