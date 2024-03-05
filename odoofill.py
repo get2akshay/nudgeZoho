@@ -81,7 +81,7 @@ def cloud_data(YYYY, MM, DD):
 
 tollarance = 30 * 60
 
-def markinglogic(mac, YYYY, MM, DD, HH, test=False):
+def markinglogicv1(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     if timestamp_list is not None:
         timestamp_list.sort()
@@ -119,6 +119,62 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
                 # odoo.checkin_employee(mac, timestamp)
                 # to-do mark break
                 pass
+
+def markinglogic(mac, YYYY, MM, DD, HH, test=False):
+    timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
+    if timestamp_list is not None:
+        timestamp_list.sort()
+    if len(timestamp_list) < 5:
+        # print(f"Very few movements for the day ! {len(timestamp_list)}")
+        return True
+    else:
+        print(f"There were total {len(timestamp_list)} moves for {mac} on {DD}/{MM}/{YYYY}")
+    previous_ts = int()
+    in_mark = False
+    out_mark = False
+    idd = 0
+    inn = False
+    out = False
+    for i in range(len(timestamp_list)):
+        if in_mark:
+            in_mark = False
+            if test:
+                print("Will call REST API to checkin here!")
+            else:
+                # odoo.mark_attendance('check_in', mac, previous_ts - offset)
+                odoo.checkin_employee(mac, previous_ts - offset)
+        if out_mark:
+            out_mark = False
+            if test:
+                print("Will call REST API to checkout here!")
+            else:
+                odoo.checkout(mac, previous_ts - offset, idd)
+     
+        delta = timestamp_list[i] - previous_ts
+        # in_mark = False
+        # out_mark = False
+        existing = cloud_data(YYYY, MM, DD)
+        inn = existing.get('check_in')
+        out = existing.get('check_out')
+        if inn:
+            idd = existing.get('id')
+        if not idd and not inn:
+            in_mark = True
+            out_mark = False
+        if idd and not out:
+            in_mark = False
+            if delta > tollarance:
+                out_mark = True
+            else:
+                out_mark = False
+        previous_ts = timestamp_list[i]
+        if inn and not out and idd and (i == len(timestamp_list) - 1):
+            if test:
+                print("Will call REST API to do Final Checkout here!")
+            else:
+                odoo.checkout(mac, timestamp_list[i] - offset, idd)
+        time.sleep(.1)
+
 
 def markinglogicv1(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
