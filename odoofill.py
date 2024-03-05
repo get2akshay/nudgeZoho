@@ -94,30 +94,38 @@ def markinglogicv1(mac, YYYY, MM, DD, HH, test=False):
     for idx, timestamp in enumerate(timestamp_list):
         if idx == 0:
             # First timestamp, mark as check-in
-            odoo.checkin_employee(mac, timestamp)
-        if idx == len(timestamp_list) - 1:
+            print("First checkin!")
+            # odoo.checkin_employee(mac, timestamp)
+        elif idx == len(timestamp_list) - 1:
             # Last timestamp, mark as check-out
-            odoo.checkout_employee(mac, timestamp)
+            print("Last checkout")
+            # odoo.checkout_employee(mac, timestamp)
             break
         else:
             time_diff = timestamp - timestamp_list[idx - 1]
             if time_diff > 1800:
                 # More than 30 minutes difference, mark as shift break
-                odoo.checkout_employee(mac, timestamp)
+                print("Delta more than 1800")
+                # odoo.checkout_employee(mac, timestamp)
                 # odoo.mark_break_time(identification_id, timestamps[idx - 1], timestamp)
             elif time_diff < 1800:
                 # Less than 30 seconds difference, continue with previous check-in
+                print("Delta less than 1800")
                 dic = odoo.get_latest_attndance_time(mac)
                 if not dic.get('id') and not dic.get('check_in'):
-                    odoo.checkin_employee(mac, timestamp)
+                    print("No checkin")
+                    # odoo.checkin_employee(mac, timestamp)
                 elif dic.get('id') and dic.get('check_out'):
-                    odoo.checkin_employee(mac, timestamp)
+                    print("checkin but and out both")
+                    # odoo.checkin_employee(mac, timestamp)
                 elif dic.get('id') and not dic.get('check_out'):
+                    print("checkin but no checkout")
                     continue
             else:
                 # Between 30 seconds and 30 minutes, mark as shift break
                 # odoo.checkin_employee(mac, timestamp)
                 # to-do mark break
+                print("mark break")
                 pass
 
 def markinglogic(mac, YYYY, MM, DD, HH, test=False):
