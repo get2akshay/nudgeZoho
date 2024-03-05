@@ -109,9 +109,9 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
                 dic = odoo.get_latest_attndance_time(mac)
                 if not dic.get('id') and not dic.get('check_in'):
                     odoo.checkin_employee(mac, timestamp)
-                elif dic.get('check_in') and dic.get('check_out'):
+                elif dic.get('id') and not dic.get('check_out'):
                     odoo.checkin_employee(mac, timestamp)
-                elif dic.get('check_in') and not dic.get('check_out'):
+                elif dic.get('id') and not dic.get('check_out'):
                     continue
             else:
                 # Between 30 seconds and 30 minutes, mark as shift break
