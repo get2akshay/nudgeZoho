@@ -1,6 +1,7 @@
 import xmlrpc.client
 from datetime import datetime
 from time import sleep
+from pdb import set_trace
 
 # Specify your Odoo server information
 # url = 'https://byplayit2.odoo.com/'
@@ -8,6 +9,9 @@ url = 'http://65.20.78.99:8069/'
 db = 'nudge'
 username = 'akshay.sharma@byplayit.com'
 password = 'akshay911'
+# Odoo XML-RPC endpoint
+common_endpoint = f"{url}/xmlrpc/2/common"
+object_endpoint = f"{url}/xmlrpc/2/object"
 
 def dateFormatOdoo(timestamp):
     # Create a datetime object from the epoch time stamp
@@ -24,9 +28,9 @@ def get_epoch_timestamp(date_string):
 
 def auth():
     # Get the uid
-    common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
+    common = xmlrpc.client.ServerProxy(common_endpoint)
     global models
-    models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+    models = xmlrpc.client.ServerProxy(object_endpoint)
     global uid
     count = 0
     while count < 30:
@@ -226,70 +230,88 @@ def get_latest_attndance_time(employee_id):
         # Get the check-in and check-out times for a specific attendance ID
         attendance_data = models.execute_kw(db, uid, password, 'hr.attendance', 'read', [attendance_id], {'fields': ['check_in', 'check_out']})
 
-    for val in attendance_data[-1].values():
-        if not val:
-            return False
+    # for val in attendance_data[-1].values():
+        # if not val:
+            # return False
     return attendance_data[-1]
 
-def find_next_non_zero_timestamp(start_timestamp):
-    try:
-        # Establish a connection to the PostgreSQL database
-        conn = psycopg2.connect(
-            dbname='your_db_name',
-            user='your_db_user',
-            password='your_db_password',
-            host='your_db_host'
-        )
-
-        # Create a cursor object
-        cursor = conn.cursor()
-
-        # Prepare the SQL query
-        query = """
-            SELECT
-                ts/1000 AS time,
-                str_v,
-                (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
-                (('x' || REPLACE(SUBSTRING(str_v FROM 10 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS y_axis,
-                (('x' || REPLACE(SUBSTRING(str_v FROM 19 FOR 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS z_axis
-            FROM
-                ts_kv
-            WHERE
-                entity_id = '{uuid}'
-                AND key = 53
-                AND ts > extract(epoch from %s::timestamp) * 1000 -- Only timestamps in the future from the specified start time
-                AND (x_axis != 0 OR y_axis != 0 OR z_axis != 0) -- Check for non-zero values
-            ORDER BY ts ASC -- Order by timestamp in ascending order
-            LIMIT 1; -- Limit the result to 1 row
-        """
-
-        # Execute the SQL query
-        cursor.execute(query, (start_timestamp,))
-
-        # Fetch the result
-        result = cursor.fetchone()
-
-        return result
-
-    except (Exception, psycopg2.Error) as error:
-        print("Error while connecting to PostgreSQL:", error)
-
-    finally:
-        # Close the cursor and connection
-        if conn:
-            cursor.close()
-            conn.close()
-
-
-
-
-
-            
-         
-
-
-
+# Function to check-in using employee ID
+def checkin_employee(identification_id, timestamp):
+    # models_proxy = xmlrpc.client.ServerProxy(object_endpoint)
+    # Check if authenticated
+    if not auth():
+        return False
     
+    employee_id = get_employee_id(identification_id)
+    # Search for the employee based on employee ID
+    # employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[('employee_id', '=', employee_id)]])
+    employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[['identification_id', '=', identification_id]]])
+    
+    if employee_ids:
+        # Employee found, perform check-in
+        attendance_data = {
+            'employee_id': employee_ids[0],
+            'check_in': dateFormatOdoo(timestamp),
+        }
+        attendance_id = models.execute_kw(db, uid, password, 'hr.attendance', 'create', [attendance_data])
+        if attendance_id:
+            print(f"Checked in for Employee ID {employee_id} at {timestamp}")
+        else:
+            print(f"Failed to check in for Employee ID {employee_id}")
+    else:
+        print(f"Employee with ID {employee_id} not found.")
 
-# Usage:
-# get_attendance_times('myid', datetime(2024, 2, 15))
+# Function to check-out using employee ID
+def checkout_employee(identification_id, timestamp):
+    # models_proxy = xmlrpc.client.ServerProxy(object_endpoint)
+    # Check if authenticated
+    if not auth():
+        return False
+    employee_id = get_employee_id(identification_id)
+    # Search for the employee's last attendance record based on employee ID
+    # attendance_ids = models.execute_kw(db, uid, password, 'hr.attendance', 'search', [[('employee_id.employee_id', '=', employee_id)]],{'order': 'check_in desc', 'limit': 1})
+    attendance_ids = get_attandanceids(3)
+    # attendance_ids = models.execute_kw(db, uid, password, 'hr.attendance', 'search', [[('employee_id', '=', employee_id)]])
+    if attendance_ids[-1]:
+        # Update the last attendance record with checkout time
+        attendance_data = {
+            'check_out': dateFormatOdoo(timestamp),
+        }
+        models.execute_kw(db, uid, password, 'hr.attendance', 'write', [[attendance_ids[-1]], attendance_data])
+        print(f"Checked out for Employee ID {employee_id} at {timestamp}")
+    else:
+        print(f"No check-in record found for Employee ID {employee_id}")
+
+
+# Function to create break time record for an employee
+def mark_break_time(identification_id, start_date, end_date):
+    # Check if authenticated
+    if not auth():
+        return False
+    employee_id = get_employee_id(identification_id)
+    # Search for the leave type representing break time
+    leave_type_id = models.execute_kw(db, uid, password, 'hr.leave.type', 'search', 
+                                            [[('name', '=', 'Break Time')]])
+    if leave_type_id:
+        leave_type_id = leave_type_id[0]
+    else:
+        print("Break Time leave type not found.")
+        return
+
+    # Create leave record for break time
+    leave_data = {
+        'employee_id': employee_id,
+        'holiday_status_id': leave_type_id,
+        'request_date_from': dateFormatOdoo(start_date),
+        'request_date_to': dateFormatOdoo(end_date),
+        'state': 'validate',  # Optional: Set to 'validate' to automatically approve the break time
+    }
+    leave_id = models.execute_kw(db, uid, password, 'hr.leave', 'create', [leave_data])
+    if leave_id:
+        print("Break time marked successfully.")
+    else:
+        print("Failed to mark break time.")
+
+
+
+

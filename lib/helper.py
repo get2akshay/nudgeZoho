@@ -1,6 +1,7 @@
 import datetime
 import random
 import time
+import paho.mqtt.client as mqtt
 
 def generate_timestamps(YYYY, MM, DD, HH):
     # Create a datetime object for the start time
@@ -23,3 +24,4 @@ def generate_timestamps(YYYY, MM, DD, HH):
         current_time += datetime.timedelta(minutes=random.randint(27, 33))
 
     return timestamps
+

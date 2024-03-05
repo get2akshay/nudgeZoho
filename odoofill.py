@@ -1,7 +1,7 @@
 import datetime
 from lib import odoo
 import numpy as np
-test = False
+test = True
 if not test:
     from lib import db
 from pdb import set_trace
@@ -81,8 +81,32 @@ def cloud_data(YYYY, MM, DD):
 
 tollarance = 30 * 60
 
-
 def markinglogic(mac, YYYY, MM, DD, HH, test=False):
+    timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
+    first_timestamp = min(timestamp_list)
+    last_timestamp = max(timestamp_list)
+
+    for idx, timestamp in enumerate(timestamp_list):
+        if idx == 0:
+            # First timestamp, mark as check-in
+            odoo.checkin_employee(mac, timestamp)
+        elif idx == len(timestamp_list) - 1:
+            # Last timestamp, mark as check-out
+            odoo.checkout_employee(mac, timestamp)
+        else:
+            time_diff = timestamp - timestamp_list[idx - 1]
+            if time_diff > 1800:
+                # More than 30 minutes difference, mark as shift break
+                odoo.checkout_employee(mac, timestamp)
+                # odoo.mark_break_time(identification_id, timestamps[idx - 1], timestamp)
+            elif time_diff < 30:
+                # Less than 30 seconds difference, continue with previous check-in
+                continue
+            else:
+                # Between 30 seconds and 30 minutes, mark as shift break
+                odoo.checkin_employee(mac, timestamp)
+
+def markinglogicv1(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     if timestamp_list is not None:
         timestamp_list.sort()
@@ -147,3 +171,9 @@ for mac in employees.values():
     # day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # run_daily(dumm_do, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     run_daily(markinglogic, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
+    # pass
+
+
+# Example usage
+# timestamps = [1635709200, 1635712800, 1635716400, 1635718200, 1635720000]  # Example epoch timestamps
+# identification_id = "00:8c:10:30:02:6f"  # Example employee ID
