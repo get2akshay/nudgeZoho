@@ -154,7 +154,6 @@ def verify_existing_checkin(identification_id, YYYY, MM, DD):
     for record in attendance_records:
         day_status = {'Badge': identification_id, 'checkin': record['check_in'], 'checkout': record['check_out']}
         day_list.append(day_status)
-
     return day_list
 
 def get_attendance_times(identification_id, YYYY, MM, DD, test=False):
