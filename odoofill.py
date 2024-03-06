@@ -126,14 +126,14 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
                 if not dic.get('id') and not dic.get('check_in'):
                     print("No checkin")
                     odoo.checkin_employee(mac, timestamp - offset)
-                    time.sleep(.5)
+                    time.sleep(1)
                     dic = odoo.get_latest_attndance_time(mac)
                     time.sleep(.5)
                     idd = dic.get('id')
                 elif dic.get('id') and dic.get('check_out'):
                     print("checkin but and out both, needs checkin for new timestamp")
                     odoo.checkin_employee(mac, timestamp - offset)
-                    time.sleep(.5)
+                    time.sleep(1)
                     dic = odoo.get_latest_attndance_time(mac)
                     time.sleep(.5)
                     idd = dic.get('id')
