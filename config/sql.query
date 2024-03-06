@@ -9,3 +9,4 @@ SELECT
             WHERE
                 entity_id = '58a03740-7caf-11ee-9304-e17cb189e218'
             AND key = 53
+            LIMIT 1
