@@ -115,6 +115,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
         if idx == 0:
             # First timestamp, mark as check-in
             checkin_thread(timestamp, offset)
+            time.sleep(1)
         elif idx == len(timestamp_list) - 1:
             # Last timestamp, mark as check-out
             checkout_thread(timestamp, offset)
@@ -124,18 +125,20 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
             if time_diff > 1800:
                 # More than 30 minutes difference, mark as shift break
                 threading.Thread(target=checkout_thread, args=(timestamp, offset)).start()
-                time.sleep(0.5)
+                time.sleep(1)
             elif time_diff < 1800:
                 # Less than 30 seconds difference, continue with previous check-in
                 dic = odoo.get_latest_attndance_time(mac)
                 print(f"Delta less than 1800 with cloud {dic}")
-                time.sleep(0.1)
+                time.sleep(1)
                 if not dic.get('id') and not dic.get('check_in'):
                     print("No checkin")
                     threading.Thread(target=checkin_thread, args=(timestamp, offset)).start()
+                    time.sleep(1)
                 elif dic.get('id') and dic.get('check_out'):
                     print("checkin but and out both, needs checkin for new timestamp")
                     threading.Thread(target=checkin_thread, args=(timestamp, offset)).start()
+                    time.sleep(1)
                 elif dic.get('id') and not dic.get('check_out'):
                     print("checkin but no checkout")
                     continue

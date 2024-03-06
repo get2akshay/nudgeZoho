@@ -1,7 +1,9 @@
 import xmlrpc.client
 from datetime import datetime
+import http.client
 from time import sleep
 from pdb import set_trace
+from urllib.parse import urlparse
 
 # Specify your Odoo server information
 # url = 'https://byplayit2.odoo.com/'
@@ -12,6 +14,24 @@ password = 'akshay911'
 # Odoo XML-RPC endpoint
 common_endpoint = f"{url}/xmlrpc/2/common"
 object_endpoint = f"{url}/xmlrpc/2/object"
+timeout = 30
+
+
+# Function to create a ServerProxy instance with timeout
+def server_proxy(endpoint, timeout):
+    # parsed_url = urlparse(endpoint)
+    # connection = http.client.HTTPConnection(parsed_url.hostname, parsed_url.port, timeout=timeout)
+    # transport = xmlrpc.client.Transport()
+    # transport._connection = connection
+    return xmlrpc.client.ServerProxy(endpoint)
+
+# Function to authenticate with Odoo
+def authenticate_with_odoo(timeout):
+    endpoint = common_endpoint
+    common_proxy = server_proxy(endpoint, timeout)
+    return common_proxy.authenticate(db, username, password, {})
+
+uid = authenticate_with_odoo(timeout)
 
 def dateFormatOdoo(timestamp):
     # Create a datetime object from the epoch time stamp
@@ -81,14 +101,10 @@ def mark_attendance(checkx, identification_id, epoch):
         return False
 
 def checkout(identification_id, epoch, idd):
-    # Check if authenticated
-    if not auth():
-        return False
-    # Get the attendance model
     checkout_time = dateFormatOdoo(epoch)
-    # 
     # attendance = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
     # Search for the employee's attendance records that have no check out
+    models = server_proxy(object_endpoint, timeout=timeout)
     attendance_ids = models.execute_kw(db, uid, password,
         'hr.attendance', 'search',
         [[['employee_id.identification_id', '=', identification_id], ['check_out', '=', False]]])
@@ -143,12 +159,7 @@ def verify_existing_checkin(identification_id, YYYY, MM, DD):
 
 def get_attendance_times(identification_id, YYYY, MM, DD, test=False):
     data = {}
-    if not auth():
-        return False
-    # common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
-    # uid = common.authenticate(db, username, password, {})
-    # models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
-
+    models = server_proxy(object_endpoint, timeout=timeout)
     # Format the date in the 'YYYY-MM-DD' format
     date = datetime(YYYY, MM, DD)
     date_str = date.strftime('%Y-%m-%d')
@@ -197,7 +208,7 @@ def delete_attendance_by_date_and_id(identification_id, YYYY, MM, DD, test=False
     # Format the date in the 'YYYY-MM-DD' format
     date = datetime(YYYY, MM, DD)
     date_str = date.strftime('%Y-%m-%d')
-
+    models = server_proxy(object_endpoint, timeout=timeout)
     # Search for the attendance records with the given identification_id and date
     attendance_ids = models.execute_kw(db, uid, password,
         'hr.attendance', 'search', [[['employee_id.identification_id', '=', identification_id], ['check_in', '>=', date_str], ['check_in', '<', date_str + ' 23:59:59']]])
@@ -214,33 +225,34 @@ def odoo_version():
     return common.version()
 
 def get_employee_id(identification_id):
-    if auth():
-        employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[['identification_id', '=', identification_id]]])
-        return employee_ids[0]
+    models = server_proxy(object_endpoint, timeout=timeout)
+    employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[['identification_id', '=', identification_id]]])
+    return employee_ids[0]
 
 def get_attandanceids(employee_id):
-    if auth():
-        retry_count = 3
-        attendance_ids = []
-        while retry_count > 0:
-            try:
-                # Attempt to fetch attendance IDs
-                attendance_ids = models.execute_kw(db, uid, password, 'hr.attendance', 'search', [[('employee_id', '=', employee_id)]])
-                return sorted(attendance_ids)
-            except xmlrpc.client.ProtocolError as e:
-                print("Error occurred while sending the request:", e)
-                retry_count -= 1
-                if retry_count == 0:
-                    print("Retry limit exceeded.")
-                    raise
-                print(f"Retrying after 10 seconds. Retry attempts left: {retry_count}")
-                sleep(10)
-            except Exception as e:
-                print("An unexpected error occurred:", e)
-                sleep(10)
-        return None
+    models = server_proxy(object_endpoint, timeout=timeout)
+    retry_count = 3
+    attendance_ids = []
+    while retry_count > 0:
+        try:
+            # Attempt to fetch attendance IDs
+            attendance_ids = models.execute_kw(db, uid, password, 'hr.attendance', 'search', [[('employee_id', '=', employee_id)]])
+            return sorted(attendance_ids)
+        except xmlrpc.client.ProtocolError as e:
+            print("Error occurred while sending the request:", e)
+            retry_count -= 1
+            if retry_count == 0:
+                print("Retry limit exceeded.")
+                raise
+            print(f"Retrying after 10 seconds. Retry attempts left: {retry_count}")
+            sleep(10)
+        except Exception as e:
+            print("An unexpected error occurred:", e)
+            sleep(10)
+    return None
 
 def get_latest_attndance_time(identification_id):
+    models = server_proxy(object_endpoint, timeout=timeout)
     employee_id = get_employee_id(identification_id)
     ids = get_attandanceids(employee_id)
     if ids:
@@ -261,8 +273,7 @@ def get_latest_attndance_time(identification_id):
 def checkin_employee(identification_id, timestamp):
     # models_proxy = xmlrpc.client.ServerProxy(object_endpoint)
     # Check if authenticated
-    if not auth():
-        return False
+    models = server_proxy(object_endpoint, timeout=timeout)
     try:
         employee_id = get_employee_id(identification_id)
         # Search for the employee based on employee ID
@@ -293,8 +304,7 @@ def checkin_employee(identification_id, timestamp):
 def checkout_employee(identification_id, timestamp):
     # models_proxy = xmlrpc.client.ServerProxy(object_endpoint)
     # Check if authenticated
-    if not auth():
-        return False
+    models = server_proxy(object_endpoint, timeout=timeout)
     employee_id = get_employee_id(identification_id)
     # Search for the employee's last attendance record based on employee ID
     # attendance_ids = models.execute_kw(db, uid, password, 'hr.attendance', 'search', [[('employee_id.employee_id', '=', employee_id)]],{'order': 'check_in desc', 'limit': 1})
@@ -314,8 +324,7 @@ def checkout_employee(identification_id, timestamp):
 # Function to create break time record for an employee
 def mark_break_time(identification_id, start_date, end_date):
     # Check if authenticated
-    if not auth():
-        return False
+    models = server_proxy(object_endpoint, timeout=timeout)
     employee_id = get_employee_id(identification_id)
     # Search for the leave type representing break time
     leave_type_id = models.execute_kw(db, uid, password, 'hr.leave.type', 'search', 
@@ -339,7 +348,3 @@ def mark_break_time(identification_id, start_date, end_date):
         print("Break time marked successfully.")
     else:
         print("Failed to mark break time.")
-
-
-
-
