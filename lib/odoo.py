@@ -104,28 +104,33 @@ def checkout(identification_id, epoch, idd):
     checkout_time = dateFormatOdoo(epoch)
     # attendance = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
     # Search for the employee's attendance records that have no check out
-    models = server_proxy(object_endpoint, timeout=timeout)
-    attendance_ids = models.execute_kw(db, uid, password,
-        'hr.attendance', 'search',
-        [[['employee_id.identification_id', '=', identification_id], ['check_out', '=', False]]])
-    if len(attendance_ids) == 0:
-        print("No existing checkin!")
+    try:
+        models = server_proxy(object_endpoint, timeout=timeout)
+        attendance_ids = models.execute_kw(db, uid, password,
+            'hr.attendance', 'search',
+            [[['employee_id.identification_id', '=', identification_id], ['check_out', '=', False]]])
+        if len(attendance_ids) == 0:
+            print("No existing checkin!")
+            return False
+        else:
+            # Read the checkin time of the records
+            checkin_times = models.execute_kw(db, uid, password,
+                'hr.attendance', 'read',
+                [attendance_ids, ['check_in']])
+            for record in checkin_times:
+                # Convert the checkin time to a datetime object
+                # If the time difference is more than 30 minutes, set the check out time to the current time
+                # attendance.execute_kw(db, uid, password,
+                #         'hr.attendance', 'write',
+                #         [[record['id']], {'check_out': checkout_time}])
+                models.execute_kw(db, uid, password,
+                        'hr.attendance', 'write',
+                        [idd, {'check_out': checkout_time}])
+        return True
+    except xmlrpc.client.Fault as fault:
+        print(f"An XML-RPC fault occurred: {fault}")
         return False
-    else:
-        # Read the checkin time of the records
-        checkin_times = models.execute_kw(db, uid, password,
-            'hr.attendance', 'read',
-            [attendance_ids, ['check_in']])
-        for record in checkin_times:
-            # Convert the checkin time to a datetime object
-            # If the time difference is more than 30 minutes, set the check out time to the current time
-            # attendance.execute_kw(db, uid, password,
-            #         'hr.attendance', 'write',
-            #         [[record['id']], {'check_out': checkout_time}])
-            models.execute_kw(db, uid, password,
-                    'hr.attendance', 'write',
-                    [idd, {'check_out': checkout_time}])
-    return True
+    
 
 def verify_existing_checkin(identification_id, YYYY, MM, DD):
     # Check if authenticated
