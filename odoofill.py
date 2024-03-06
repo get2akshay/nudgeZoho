@@ -7,6 +7,8 @@ if not test:
 from pdb import set_trace
 import time
 import yaml
+import threading
+
 # offset = (5 * 60 * 60) + (30 * 60)
 offset = (5 * 60 * 60) + (30 * 60)
 tdd = [1706779963, 1706780640, 1706790586, 1706792442, 1706792448, 1706792770, 1706793326, 1706795112, 1706795114, 1706799685, 1706801012, 1706802195, 1706802210, 1706802296, 1706802471, 1706802472, 1706803193, 1706803820, 1706804712, 1706806236, 1706806238, 1706806552, 1706806572, 1706806574, 1706806689, 1706806691, 1706806693, 1706806699, 1706806700, 1706807178, 1706807180, 1706807968, 1706807972, 1706808217, 1706808251, 1706808269, 1706808291, 1706808318, 1706808320, 1706809142, 1706809653, 1706809655, 1706812381, 1706812384, 1706812386, 1706812910]
@@ -83,6 +85,68 @@ def cloud_data(YYYY, MM, DD):
 tollarance = 30 * 60
 
 def markinglogic(mac, YYYY, MM, DD, HH, test=False):
+    if not test:
+        timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
+    else:
+        timestamp_list = tdd
+    if timestamp_list is not None:
+        sorted(timestamp_list)
+    if len(timestamp_list) < 2:
+        # print(f"Very few movements for the day ! {len(timestamp_list)}")
+        return True
+    else:
+        print(f"There were total {timestamp_list} moves for {mac} on {DD}/{MM}/{YYYY}")
+
+    idd = 0
+
+    def checkin_thread(timestamp, offset):
+        print("First checkin!")
+        odoo.checkin_employee(mac, timestamp - offset)
+        time.sleep(0.5)
+        dic = odoo.get_latest_attndance_time(mac)
+        time.sleep(0.5)
+        nonlocal idd
+        idd = dic.get('id')
+
+    def checkout_thread(timestamp, offset):
+        print("Last checkout")
+        odoo.checkout(mac, timestamp - offset, idd)
+
+    for idx, timestamp in enumerate(sorted(timestamp_list)):
+        if idx == 0:
+            # First timestamp, mark as check-in
+            checkin_thread(timestamp, offset)
+        elif idx == len(timestamp_list) - 1:
+            # Last timestamp, mark as check-out
+            checkout_thread(timestamp, offset)
+            break
+        else:
+            time_diff = timestamp - timestamp_list[idx - 1]
+            if time_diff > 1800:
+                # More than 30 minutes difference, mark as shift break
+                checkout_thread(timestamp, offset)
+                time.sleep(0.5)
+            elif time_diff < 1800:
+                # Less than 30 seconds difference, continue with previous check-in
+                dic = odoo.get_latest_attndance_time(mac)
+                print(f"Delta less than 1800 with cloud {dic}")
+                time.sleep(0.1)
+                if not dic.get('id') and not dic.get('check_in'):
+                    print("No checkin")
+                    checkin_thread(timestamp, offset)
+                elif dic.get('id') and dic.get('check_out'):
+                    print("checkin but and out both, needs checkin for new timestamp")
+                    checkin_thread(timestamp, offset)
+                elif dic.get('id') and not dic.get('check_out'):
+                    print("checkin but no checkout")
+                    continue
+            else:
+                # Between 30 seconds and 30 minutes, mark as shift break
+                # to-do mark break
+                print("mark break")
+                continue
+
+def markinglogicv03(mac, YYYY, MM, DD, HH, test=False):
     if not test:
         timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     else:
