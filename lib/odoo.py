@@ -220,8 +220,23 @@ def get_employee_id(identification_id):
 
 def get_attandanceids(employee_id):
     if auth():
-        attendance_ids = models.execute_kw(db, uid, password, 'hr.attendance', 'search', [[('employee_id', '=', employee_id)]])
-        return sorted(attendance_ids)
+        retry_count = 3
+        while retry_count > 0:
+            try:
+                # Attempt to fetch attendance IDs
+                attendance_ids = models.execute_kw(db, uid, password, 'hr.attendance', 'search', [[('employee_id', '=', employee_id)]])
+                return sorted(attendance_ids)
+            except xmlrpc.client.ProtocolError as e:
+                print("Error occurred while sending the request:", e)
+                retry_count -= 1
+                if retry_count == 0:
+                    print("Retry limit exceeded.")
+                    raise
+                print(f"Retrying after 10 seconds. Retry attempts left: {retry_count}")
+                sleep(10)
+            except Exception as e:
+                print("An unexpected error occurred:", e)
+                raise
 
 def get_latest_attndance_time(identification_id):
     employee_id = get_employee_id(identification_id)
