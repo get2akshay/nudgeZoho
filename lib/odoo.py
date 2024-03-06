@@ -221,6 +221,7 @@ def get_employee_id(identification_id):
 def get_attandanceids(employee_id):
     if auth():
         retry_count = 3
+        attendance_ids = []
         while retry_count > 0:
             try:
                 # Attempt to fetch attendance IDs
@@ -236,7 +237,8 @@ def get_attandanceids(employee_id):
                 sleep(10)
             except Exception as e:
                 print("An unexpected error occurred:", e)
-                raise
+                sleep(10)
+        return None
 
 def get_latest_attndance_time(identification_id):
     employee_id = get_employee_id(identification_id)
