@@ -369,7 +369,7 @@ def markinglogicv1(mac, YYYY, MM, DD, HH, test=False):
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
 
-ist_start_date = "2024-02-08 16:22:34"
+ist_start_date = "2024-03-01 07:00:00"
 for mac in employees.values():
     # run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
