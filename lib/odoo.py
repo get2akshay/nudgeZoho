@@ -5,7 +5,9 @@ from time import sleep
 from pdb import set_trace
 from urllib.parse import urlparse
 import pytz
-IST = pytz.timezone('Asia/Kolkata')  # Define the IST timezone
+# IST = pytz.timezone('Asia/Kolkata')  # Define the IST timezone
+# Define the UTC timezone
+UTC = pytz.utc
 
 # Specify your Odoo server information
 # url = 'https://byplayit2.odoo.com/'
@@ -41,7 +43,7 @@ def dateFormatOdoo(timestamp):
     # Convert the timestamp to a datetime object
     dt = datetime.fromtimestamp(timestamp)
     # Convert the datetime object to IST timezone
-    dt_ist = dt.astimezone(IST)
+    dt_ist = dt.astimezone(UTC)
     # Format the datetime in the required format (assuming 'YYYY-MM-DD HH:mm:ss')
     return dt_ist.strftime('%Y-%m-%d %H:%M:%S')
 
