@@ -10,6 +10,7 @@ import yaml
 import threading
 # offset = (5 * 60 * 60) + (30 * 60)
 offset = (5 * 60 * 60) + (30 * 60)
+
 tdd = [1706779963, 1706780640, 1706790586, 1706792442, 1706792448, 1706792770, 1706793326, 1706795112, 1706795114, 1706799685, 1706801012, 1706802195, 1706802210, 1706802296, 1706802471, 1706802472, 1706803193, 1706803820, 1706804712, 1706806236, 1706806238, 1706806552, 1706806572, 1706806574, 1706806689, 1706806691, 1706806693, 1706806699, 1706806700, 1706807178, 1706807180, 1706807968, 1706807972, 1706808217, 1706808251, 1706808269, 1706808291, 1706808318, 1706808320, 1706809142, 1706809653, 1706809655, 1706812381, 1706812384, 1706812386, 1706812910]
 
 def run_daily(func, mac, YYYY, MM, DD, HH, test):
@@ -269,7 +270,6 @@ def markinglogicv1(mac, YYYY, MM, DD, HH, test=False):
                 odoo.checkout(mac, timestamp_list[i] - offset, idd)
         time.sleep(.1)
 
-
 def markinglogicv1(mac, YYYY, MM, DD, HH, test=False):
     timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
     if timestamp_list is not None:
@@ -325,15 +325,10 @@ def markinglogicv1(mac, YYYY, MM, DD, HH, test=False):
         time.sleep(.1)
 
 with open('staff.yaml', 'r') as file:
-    employees = yaml.safe_load(file)       
-
-def dumm_do(mac, YYYY=2023, MM=12, DD=1, HH=8, test=test):
-    print(f"For {mac} processing data from {YYYY} {MM} {DD} {HH} {test}")
+    employees = yaml.safe_load(file)
 
 for mac in employees.values():
     # run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # run_daily(dumm_do, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
-    run_daily(markinglogic, mac, YYYY=2024, MM=3, DD=1, HH=8, test=test)
-
-
+    run_daily(markinglogic, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
