@@ -115,7 +115,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
     for idx, timestamp in enumerate(sorted(timestamp_list)):
         if idx == 0:
             # First timestamp, mark as check-in
-            checkin_thread(timestamp, offset)
+            checkin_thread(timestamp)
             time.sleep(3)
         elif idx == len(timestamp_list) - 1:
             # Last timestamp, mark as check-out
