@@ -125,7 +125,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
             if time_diff > 1800:
                 print(f"Delta greater than 1800 with cloud {dic}")
                 # More than 30 minutes difference, mark as shift break
-                threading.Thread(target=checkout_thread, args=(timestamp, offset)).start()
+                threading.Thread(target=checkout_thread, args=(timestamp_list[idx - 1], offset)).start()
                 time.sleep(3)
             elif time_diff < 1800:
                 # Less than 30 seconds difference, continue with previous check-in
