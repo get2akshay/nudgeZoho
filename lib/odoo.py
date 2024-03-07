@@ -233,7 +233,7 @@ def get_employee_id(identification_id):
     employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[['identification_id', '=', identification_id]]])
     if not employee_ids[0]:
         return False
-    else
+    else:
         return employee_ids[0]
 
 def get_attandanceids(employee_id):
