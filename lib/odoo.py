@@ -4,6 +4,8 @@ import http.client
 from time import sleep
 from pdb import set_trace
 from urllib.parse import urlparse
+import pytz
+IST = pytz.timezone('Asia/Kolkata')  # Define the IST timezone
 
 # Specify your Odoo server information
 # url = 'https://byplayit2.odoo.com/'
@@ -33,13 +35,15 @@ def authenticate_with_odoo(timeout):
 uid = authenticate_with_odoo(timeout)
 
 def dateFormatOdoo(timestamp):
-    # Create a datetime object from the epoch time stamp
-    # Format the datetime object as a string
-    # Convert epoch to datetime
+    """
+    Convert the timestamp to IST format.
+    """
+    # Convert the timestamp to a datetime object
     dt = datetime.fromtimestamp(timestamp)
-    # Format datetime in ISO 8601 format
-    odoo_time = dt.strftime('%Y-%m-%d %H:%M:%S')
-    return odoo_time
+    # Convert the datetime object to IST timezone
+    dt_ist = dt.astimezone(IST)
+    # Format the datetime in the required format (assuming 'YYYY-MM-DD HH:mm:ss')
+    return dt_ist.strftime('%Y-%m-%d %H:%M:%S')
 
 def get_epoch_timestamp(date_string):
     dt = datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
