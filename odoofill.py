@@ -99,7 +99,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
     idd = 0
 
     def checkin_thread(timestamp, offset):
-        print("First checkin!")
+        # print("First checkin!")
         odoo.checkin_employee(mac, timestamp - offset)
         time.sleep(3)
         dic = odoo.get_latest_attndance_time(mac)
@@ -108,7 +108,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
         idd = dic.get('id')
 
     def checkout_thread(timestamp, offset):
-        print("Last checkout")
+        # print("Last checkout")
         odoo.checkout(mac, timestamp - offset, idd)
 
     for idx, timestamp in enumerate(sorted(timestamp_list)):
@@ -123,6 +123,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
         else:
             time_diff = timestamp - timestamp_list[idx - 1]
             if time_diff > 1800:
+                print(f"Delta greater than 1800 with cloud {dic}")
                 # More than 30 minutes difference, mark as shift break
                 threading.Thread(target=checkout_thread, args=(timestamp, offset)).start()
                 time.sleep(3)
@@ -132,15 +133,15 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
                 print(f"Delta less than 1800 with cloud {dic}")
                 time.sleep(3)
                 if not dic.get('id') and not dic.get('check_in'):
-                    print("No checkin")
+                    # print("No checkin")
                     threading.Thread(target=checkin_thread, args=(timestamp, offset)).start()
                     time.sleep(3)
                 elif dic.get('id') and dic.get('check_out'):
-                    print("checkin but and out both, needs checkin for new timestamp")
+                    # print("checkin but and out both, needs checkin for new timestamp")
                     threading.Thread(target=checkin_thread, args=(timestamp, offset)).start()
                     time.sleep(3)
                 elif dic.get('id') and not dic.get('check_out'):
-                    print("checkin but no checkout")
+                    # print("checkin but no checkout")
                     continue
             else:
                 # Between 30 seconds and 30 minutes, mark as shift break
