@@ -99,7 +99,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
 
     idd = 0
 
-    def checkin_thread(timestamp, offset):
+    def checkin_thread(timestamp):
         # print("First checkin!")
         odoo.checkin_employee(mac, timestamp - offset)
         time.sleep(3)
@@ -108,9 +108,9 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
         nonlocal idd
         idd = dic.get('id')
 
-    def checkout_thread(timestamp, offset):
+    def checkout_thread(timestamp, idd):
         # print("Last checkout")
-        odoo.checkout(mac, timestamp - offset, idd)
+        odoo.checkout_employee(mac, timestamp - offset, idd)
 
     for idx, timestamp in enumerate(sorted(timestamp_list)):
         if idx == 0:
@@ -119,14 +119,14 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
             time.sleep(3)
         elif idx == len(timestamp_list) - 1:
             # Last timestamp, mark as check-out
-            checkout_thread(timestamp, offset)
+            checkout_thread(timestamp, idd)
             break
         else:
             time_diff = timestamp - timestamp_list[idx - 1]
             if time_diff > 1800:
                 print(f"Delta greater than 1800 with cloud {dic}")
                 # More than 30 minutes difference, mark as shift break
-                threading.Thread(target=checkout_thread, args=(timestamp_list[idx - 1], offset)).start()
+                threading.Thread(target=checkout_thread, args=(timestamp_list[idx - 1], idd)).start()
                 time.sleep(3)
             elif time_diff < 1800:
                 # Less than 30 seconds difference, continue with previous check-in
@@ -135,11 +135,11 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
                 time.sleep(3)
                 if not dic.get('id') and not dic.get('check_in'):
                     # print("No checkin")
-                    threading.Thread(target=checkin_thread, args=(timestamp, offset)).start()
+                    threading.Thread(target=checkin_thread, args=(timestamp)).start()
                     time.sleep(3)
                 elif dic.get('id') and dic.get('check_out'):
                     # print("checkin but and out both, needs checkin for new timestamp")
-                    threading.Thread(target=checkin_thread, args=(timestamp, offset)).start()
+                    threading.Thread(target=checkin_thread, args=(timestamp)).start()
                     time.sleep(3)
                 elif dic.get('id') and not dic.get('check_out'):
                     # print("checkin but no checkout")

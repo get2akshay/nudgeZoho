@@ -309,27 +309,16 @@ def checkin_employee(identification_id, timestamp):
         return False
 
 # Function to check-out using employee ID
-def checkout_employee(identification_id, timestamp):
+def checkout_employee(identification_id, timestamp, idd):
     # models_proxy = xmlrpc.client.ServerProxy(object_endpoint)
     # Check if authenticated
     models = server_proxy(object_endpoint, timeout=timeout)
-    employee_id = get_employee_id(identification_id)
-    if not employee_id:
-            return False
-    # Search for the employee's last attendance record based on employee ID
-    # attendance_ids = models.execute_kw(db, uid, password, 'hr.attendance', 'search', [[('employee_id.employee_id', '=', employee_id)]],{'order': 'check_in desc', 'limit': 1})
-    attendance_ids = get_attandanceids(3)
-    # attendance_ids = models.execute_kw(db, uid, password, 'hr.attendance', 'search', [[('employee_id', '=', employee_id)]])
-    if attendance_ids:
-        # Update the last attendance record with checkout time
-        attendance_data = {
-            'check_out': dateFormatOdoo(timestamp),
-        }
-        models.execute_kw(db, uid, password, 'hr.attendance', 'write', [[attendance_ids[-1]], attendance_data])
-        print(f"Checked out for Employee ID {employee_id} at {timestamp}")
-    else:
-        print(f"No check-in record found for Employee ID {employee_id}")
-
+    try:
+        nidd = models.execute_kw(db, uid, password,'hr.attendance', 'write', [[idd], {'check_out': dateFormatOdoo(timestamp), 'identification_id': identification_id}])
+        return nidd
+    except xmlrpc.client.Fault as fault:
+        print(f"An XML-RPC fault occurred: {fault}")
+        return False
 
 # Function to create break time record for an employee
 def mark_break_time(identification_id, start_date, end_date):
