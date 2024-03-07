@@ -16,7 +16,6 @@ common_endpoint = f"{url}/xmlrpc/2/common"
 object_endpoint = f"{url}/xmlrpc/2/object"
 timeout = 30
 
-
 # Function to create a ServerProxy instance with timeout
 def server_proxy(endpoint, timeout):
     # parsed_url = urlparse(endpoint)
@@ -222,8 +221,6 @@ def delete_attendance_by_date_and_id(identification_id, YYYY, MM, DD, test=False
         'hr.attendance', 'unlink', [attendance_ids])
     return result
 
-
-
 def odoo_version():
     common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
     return common.version()
@@ -231,7 +228,7 @@ def odoo_version():
 def get_employee_id(identification_id):
     models = server_proxy(object_endpoint, timeout=timeout)
     employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[['identification_id', '=', identification_id]]])
-    if not employee_ids[0]:
+    if (len(employee_ids)) == 0:
         return False
     else:
         return employee_ids[0]
