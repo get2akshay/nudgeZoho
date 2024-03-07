@@ -46,7 +46,7 @@ if __name__ == "__main__":
             "mac": choice(list(employees.values())),
             "anchor": choice(list(anchors)),
             "btdensity": randrange(start=30, stop=100, step=3)
-        }
+    }
 
     )
         count += 1

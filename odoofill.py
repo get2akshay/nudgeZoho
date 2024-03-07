@@ -13,8 +13,49 @@ offset = (5 * 60 * 60) + (30 * 60)
 
 tdd = [1706779963, 1706780640, 1706790586, 1706792442, 1706792448, 1706792770, 1706793326, 1706795112, 1706795114, 1706799685, 1706801012, 1706802195, 1706802210, 1706802296, 1706802471, 1706802472, 1706803193, 1706803820, 1706804712, 1706806236, 1706806238, 1706806552, 1706806572, 1706806574, 1706806689, 1706806691, 1706806693, 1706806699, 1706806700, 1706807178, 1706807180, 1706807968, 1706807972, 1706808217, 1706808251, 1706808269, 1706808291, 1706808318, 1706808320, 1706809142, 1706809653, 1706809655, 1706812381, 1706812384, 1706812386, 1706812910]
 
-def run_daily(func, mac, YYYY, MM, DD, HH, test):
-    start_date = datetime.datetime(YYYY, MM, DD, HH)
+def extract_datetime_components(date_string):
+    try:
+        # Parse the input date string
+        dt = datetime.datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S")
+
+        # Extract individual components
+        YYYY = dt.year
+        MM = dt.month
+        DD = dt.day
+        HH = dt.hour
+        mm = dt.minute
+        ss = dt.second
+
+        return YYYY, MM, DD, HH, mm, ss
+    except ValueError:
+        # Handle invalid date string format
+        return None
+    
+
+def extract_datetime_components(date_string, offset_minutes=offset):
+    try:
+        # Parse the input date string
+        dt_nooffset = datetime.datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S")
+
+        # Add the offset to the datetime
+        dt = dt_nooffset + datetime.timedelta(minutes=offset_minutes)
+
+        # Extract individual components
+        YYYY = dt.year
+        MM = dt.month
+        DD = dt.day
+        HH = dt.hour
+        mm = dt.minute
+        ss = dt.second
+
+        return YYYY, MM, DD, HH, mm, ss
+    except ValueError:
+        # Handle invalid date string format
+        return None
+
+def run_daily(func, mac, ist_start_date, test):
+    YYYY, MM, DD, HH, mm, ss = extract_datetime_components(ist_start_date, offset_minutes=offset)
+    start_date = datetime.datetime(YYYY, MM, DD, HH, mm, ss)
     present_date = datetime.datetime.now()
 
     while start_date <= present_date:
@@ -26,7 +67,7 @@ def run_daily(func, mac, YYYY, MM, DD, HH, test):
         hour = start_date.hour
         if not odoo.get_done_date(mac, year, month, day, test):
             print(f"For {mac} attandance not marked for {year} {day} {month} will fill!")
-            func(mac, year, month, day, hour, test)
+            func(mac, ist_start_date, test)
         else:
             print(f"For {mac} attandance already marked for {year} {day} {month}")
         # Increment the day by one
@@ -39,17 +80,18 @@ def run_daily(func, mac, YYYY, MM, DD, HH, test):
 # Usage:
 # print(get_epoch_timestamp('2024-02-16 02:30:00'))  # Output: 1708223400
 
-def workHourRecord(mac, YYYY, MM, DD, HH, test=False):
+def workHourRecord(mac, ist_start_date, test=False):
+    YYYY, MM, DD, HH, mm, ss = extract_datetime_components(ist_start_date)
     if test:
         from lib import helper
         return helper.generate_timestamps(YYYY, MM, DD, HH)
     unique = []
     # Define the start date as a datetime object
-    start_time = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
+    start_time = datetime.datetime(YYYY, MM, DD, HH, mm, ss).strftime("%Y-%m-%d %H:%M:%S")
     # Define the end date as a datetime object by adding 30 days to the start date
     DD = DD + 1
     try:
-        end_time = datetime.datetime(YYYY, MM, DD, 2, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
+        end_time = datetime.datetime(YYYY, MM, DD, 2, mm, ss).strftime("%Y-%m-%d %H:%M:%S")
         # print(f"Getting Old Movement data from {start_time} to {end_time} Badge {mac} !")
         data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
     except ValueError as v:
@@ -84,9 +126,9 @@ def cloud_data(YYYY, MM, DD):
 
 tollarance = 30 * 60
 
-def markinglogic(mac, YYYY, MM, DD, HH, test=False):
+def markinglogic(mac, ist_start_date, test=False):
     if not test:
-        timestamp_list = workHourRecord(mac, YYYY=YYYY, MM=MM, DD=DD, HH=HH, test=test)
+        timestamp_list = workHourRecord(mac, ist_start_date, test=test)
     else:
         timestamp_list = tdd
     if timestamp_list is not None:
@@ -95,7 +137,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
         # print(f"Very few movements for the day ! {len(timestamp_list)}")
         return True
     else:
-        print(f"There were total {timestamp_list} moves for {mac} on {DD}/{MM}/{YYYY}")
+        print(f"There were total {timestamp_list} moves for {mac} on {ist_start_date}")
 
     idd = 0
 
@@ -126,7 +168,7 @@ def markinglogic(mac, YYYY, MM, DD, HH, test=False):
             if time_diff > 1800:
                 print(f"Delta greater than 1800 with cloud {dic}")
                 # More than 30 minutes difference, mark as shift break
-                threading.Thread(target=checkout_thread, args=(timestamp_list[idx - 1], idd, )).start()
+                threading.Thread(target=checkout_thread, args=(timestamp_list[idx - 1], idd,)).start()
                 time.sleep(3)
             elif time_diff < 1800:
                 # Less than 30 seconds difference, continue with previous check-in
@@ -327,8 +369,9 @@ def markinglogicv1(mac, YYYY, MM, DD, HH, test=False):
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
 
+ist_start_date = "2024-02-08 16:22:34"
 for mac in employees.values():
     # run_daily(day_attendance, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # day_attendance(mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
     # run_daily(dumm_do, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
-    run_daily(markinglogic, mac, YYYY=2024, MM=2, DD=1, HH=8, test=test)
+    run_daily(markinglogic, mac, ist_start_date, test=test)
