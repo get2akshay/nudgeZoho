@@ -231,7 +231,10 @@ def odoo_version():
 def get_employee_id(identification_id):
     models = server_proxy(object_endpoint, timeout=timeout)
     employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[['identification_id', '=', identification_id]]])
-    return employee_ids[0]
+    if not employee_ids[0]:
+        return False
+    else
+        return employee_ids[0]
 
 def get_attandanceids(employee_id):
     models = server_proxy(object_endpoint, timeout=timeout)
@@ -258,6 +261,8 @@ def get_attandanceids(employee_id):
 def get_latest_attndance_time(identification_id):
     models = server_proxy(object_endpoint, timeout=timeout)
     employee_id = get_employee_id(identification_id)
+    if not employee_id:
+            return False
     ids = get_attandanceids(employee_id)
     if ids:
         attendance_id = max(ids)
@@ -280,6 +285,8 @@ def checkin_employee(identification_id, timestamp):
     models = server_proxy(object_endpoint, timeout=timeout)
     try:
         employee_id = get_employee_id(identification_id)
+        if not employee_id:
+            return False
         # Search for the employee based on employee ID
         # employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[('employee_id', '=', employee_id)]])
         employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[['identification_id', '=', identification_id]]])
@@ -310,6 +317,8 @@ def checkout_employee(identification_id, timestamp):
     # Check if authenticated
     models = server_proxy(object_endpoint, timeout=timeout)
     employee_id = get_employee_id(identification_id)
+    if not employee_id:
+            return False
     # Search for the employee's last attendance record based on employee ID
     # attendance_ids = models.execute_kw(db, uid, password, 'hr.attendance', 'search', [[('employee_id.employee_id', '=', employee_id)]],{'order': 'check_in desc', 'limit': 1})
     attendance_ids = get_attandanceids(3)
@@ -330,6 +339,8 @@ def mark_break_time(identification_id, start_date, end_date):
     # Check if authenticated
     models = server_proxy(object_endpoint, timeout=timeout)
     employee_id = get_employee_id(identification_id)
+    if not employee_id:
+            return False
     # Search for the leave type representing break time
     leave_type_id = models.execute_kw(db, uid, password, 'hr.leave.type', 'search', 
                                             [[('name', '=', 'Break Time')]])
