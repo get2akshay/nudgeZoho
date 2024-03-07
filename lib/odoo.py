@@ -313,8 +313,9 @@ def checkout_employee(identification_id, timestamp, idd):
     # models_proxy = xmlrpc.client.ServerProxy(object_endpoint)
     # Check if authenticated
     models = server_proxy(object_endpoint, timeout=timeout)
+    employee_id = get_employee_id(identification_id)
     try:
-        nidd = models.execute_kw(db, uid, password,'hr.attendance', 'write', [[idd], {'check_out': dateFormatOdoo(timestamp), 'identification_id': identification_id}])
+        nidd = models.execute_kw(db, uid, password,'hr.attendance', 'write', [[idd], {'check_out': dateFormatOdoo(timestamp), 'employee_id': employee_id}])
         return nidd
     except xmlrpc.client.Fault as fault:
         print(f"An XML-RPC fault occurred: {fault}")
