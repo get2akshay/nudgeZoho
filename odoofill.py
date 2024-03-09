@@ -162,8 +162,9 @@ def markinglogic(mac, ist_start_date, test=False):
                     time.sleep(3)
                 elif dic.get('id') and dic.get('check_out'):
                     # print("checkin but and out both, needs checkin for new timestamp")
-                    threading.Thread(target=checkin_thread, args=(timestamp,)).start()
-                    time.sleep(3)
+                    # threading.Thread(target=checkin_thread, args=(timestamp,)).start()
+                    # time.sleep(3)
+                    continue
                 elif dic.get('id') and not dic.get('check_out'):
                     # print("checkin but no checkout")
                     continue
