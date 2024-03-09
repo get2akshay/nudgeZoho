@@ -356,3 +356,13 @@ def mark_break_time(identification_id, start_date, end_date):
         print("Break time marked successfully.")
     else:
         print("Failed to mark break time.")
+
+
+def checkout_timestamp_diff(check_out, its):
+    # Convert the string to a datetime object
+    utc_time = datetime.strptime(check_out, "%Y-%m-%d %H:%M:%S")
+    # Calculate the epoch time (seconds since January 1, 1970)
+    epoch_time = (utc_time - datetime(1970, 1, 1)).total_seconds()
+    print(f"Epoch time for {check_out} is: {int(epoch_time)} seconds")
+    return (check_out - its)
+
