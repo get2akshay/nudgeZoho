@@ -364,5 +364,5 @@ def checkout_timestamp_diff(check_out, its):
     # Calculate the epoch time (seconds since January 1, 1970)
     epoch_time = (utc_time - datetime(1970, 1, 1)).total_seconds()
     print(f"Epoch time for {check_out} is: {int(epoch_time)} seconds")
-    return (check_out - its)
+    return (epoch_time - its)
 
