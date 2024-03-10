@@ -136,6 +136,8 @@ def markinglogic(mac, ist_start_date, test=False):
             # First timestamp, mark as check-in
             checkin_thread(timestamp)
             time.sleep(2)
+            dic = odoo.get_latest_attndance_time(mac)
+            idd = dic.get('id')
         elif idx == len(timestamp_list) - 1:
             # Last timestamp, mark as check-out
             checkout_thread(timestamp, idd)
