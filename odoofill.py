@@ -126,10 +126,6 @@ def markinglogic(mac, ist_start_date, test=False):
         # print("First checkin!")
         odoo.checkin_employee(mac, timestamp - offset)
         time.sleep(3)
-        dic = odoo.get_latest_attndance_time(mac)
-        time.sleep(3)
-        nonlocal idd
-        idd = dic.get('id')
 
     def checkout_thread(timestamp, idd):
         # print("Last checkout")
@@ -147,17 +143,14 @@ def markinglogic(mac, ist_start_date, test=False):
         else:
             time_diff = timestamp - timestamp_list[idx - 1]
             if time_diff > 1800:
-                dic = odoo.get_latest_attndance_time(mac)
                 if dic.get('id') and not dic.get('check_out'):
                     print(f"Delta greater than 1800 with cloud {dic}")
                     # More than 30 minutes difference, mark as shift break
-                    threading.Thread(target=checkout_thread, args=(timestamp_list[idx - 1], idd,)).start()
+                    threading.Thread(target=checkout_thread, args=(timestamp_list[idx - 1], dic.get('id'),)).start()
                     time.sleep(3)  
             elif time_diff < 1800:
                 # Less than 30 seconds difference, continue with previous check-in
-                dic = odoo.get_latest_attndance_time(mac)
                 print(f"Delta less than 1800 with cloud {dic}")
-                time.sleep(3)
                 if not dic.get('id') and not dic.get('check_in'):
                     # print("No checkin")
                     threading.Thread(target=checkin_thread, args=(timestamp,)).start()
@@ -169,14 +162,13 @@ def markinglogic(mac, ist_start_date, test=False):
                         threading.Thread(target=checkin_thread, args=(timestamp,)).start()
                         time.sleep(3)
                         continue
-                elif dic.get('id') and not dic.get('check_out'):
-                    # print("checkin but no checkout")
-                    continue
             else:
                 # Between 30 seconds and 30 minutes, mark as shift break
                 # to-do mark break shift
                 print("mark break")
                 continue
+        dic = odoo.get_latest_attndance_time(mac)
+        time.sleep(2)
 
 def markinglogicv03(mac, YYYY, MM, DD, HH, test=False):
     if not test:
