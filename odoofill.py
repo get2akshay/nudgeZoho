@@ -147,18 +147,22 @@ def markinglogic(mac, ist_start_date, test=False):
                 # More than 30 minutes difference, mark as shift break
                 if dic.get('id'):
                     threading.Thread(target=checkout_thread, args=(timestamp_list[idx - 1], dic.get('id'),)).start()
-                    time.sleep(3)    
+                    time.sleep(2)  
+                    dic = odoo.get_latest_attndance_time(mac)
+                    time.sleep(2)    
             elif time_diff < 1800:
-                if dic.get('check_out'):
+                if dic.get('check_out') and dic.get('check_in') :
                     checkin_thread(timestamp)
+                    time.sleep(2)
+                    dic = odoo.get_latest_attndance_time(mac)
+                    time.sleep(2)
                 continue
             else:
                 # Between 30 seconds and 30 minutes, mark as shift break
                 # to-do mark break shift
                 print("mark break")
                 continue
-        dic = odoo.get_latest_attndance_time(mac)
-        time.sleep(2)
+        
 
 def markinglogicv03(mac, YYYY, MM, DD, HH, test=False):
     if not test:
