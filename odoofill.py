@@ -143,25 +143,15 @@ def markinglogic(mac, ist_start_date, test=False):
         else:
             time_diff = timestamp - timestamp_list[idx - 1]
             if time_diff > 1800:
-                if dic.get('id') and not dic.get('check_out'):
-                    print(f"Delta greater than 1800 with cloud {dic}")
-                    # More than 30 minutes difference, mark as shift break
+                print(f"Delta greater than 1800 with cloud {dic}")
+                # More than 30 minutes difference, mark as shift break
+                if dic.get('id'):
                     threading.Thread(target=checkout_thread, args=(timestamp_list[idx - 1], dic.get('id'),)).start()
-                    time.sleep(3)  
+                    time.sleep(3)    
             elif time_diff < 1800:
-                # Less than 30 seconds difference, continue with previous check-in
-                print(f"Delta less than 1800 with cloud {dic}")
-                if not dic.get('id') and not dic.get('check_in'):
-                    # print("No checkin")
-                    threading.Thread(target=checkin_thread, args=(timestamp,)).start()
-                    time.sleep(3)
-                elif dic.get('id') and dic.get('check_out'):
-                    diff = odoo.checkout_timestamp_diff(dic.get('check_out'), timestamp)
-                    if diff < 0:
-                        print("checkin but and out both, needs checkin for new timestamp")
-                        threading.Thread(target=checkin_thread, args=(timestamp,)).start()
-                        time.sleep(3)
-                        continue
+                if dic.get('check_out'):
+                    checkin_thread(timestamp)
+                continue
             else:
                 # Between 30 seconds and 30 minutes, mark as shift break
                 # to-do mark break shift
