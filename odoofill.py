@@ -129,31 +129,31 @@ def markinglogic(mac, ist_start_date, test=False):
                 if type(dic) is dict:
                     idd = dic.get('id')
                     check_in_str = dic.get('check_in')
-                if check_in_str:
-                    check_in = odoo.get_epoch_timestamp(check_in_str)
+                    if check_in_str:
+                        check_in = odoo.get_epoch_timestamp(check_in_str)
                     check_out_str = dic.get('check_out')
-                if check_out_str:
-                    check_out = odoo.get_epoch_timestamp(check_out_str)
-                if idd and check_in and not check_out and timestamp > check_in:
-                    checkout_thread(timestamp_list[idx - 1], idd)
-                    checkin_thread(timestamp)
-                greater = True
-                less = False
+                    if check_out_str:
+                        check_out = odoo.get_epoch_timestamp(check_out_str)
+                    if idd and check_in and not check_out and timestamp > check_in:
+                        checkout_thread(timestamp_list[idx - 1], idd)
+                        checkin_thread(timestamp)
+                    greater = True
+                    less = False
             elif time_diff < tollarance and not less:
                 dic = odoo.get_latest_attndance_time(mac)
                 idd = False
                 if type(dic) is dict:
                     idd = dic.get('id')
                     check_in_str = dic.get('check_in')
-                if check_in_str:
-                    check_in = odoo.get_epoch_timestamp(check_in_str)
+                    if check_in_str:
+                        check_in = odoo.get_epoch_timestamp(check_in_str)
                     check_out_str = dic.get('check_out')
-                if check_out_str:
-                    check_out = odoo.get_epoch_timestamp(check_out_str)
-                if idd and check_in and check_out and timestamp > check_out:
-                    checkin_thread(timestamp)
-                greater = False
-                less = True
+                    if check_out_str:
+                        check_out = odoo.get_epoch_timestamp(check_out_str)
+                    if idd and check_in and check_out and timestamp > check_out:
+                        checkin_thread(timestamp)
+                    greater = False
+                    less = True
 
 
 with open('staff.yaml', 'r') as file:
