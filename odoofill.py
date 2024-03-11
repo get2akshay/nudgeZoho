@@ -8,6 +8,7 @@ from pdb import set_trace
 import time
 import yaml
 import threading
+
 # offset = (5 * 60 * 60) + (30 * 60)
 offset = 0
 
@@ -118,31 +119,32 @@ def markinglogic(mac, ist_start_date, test=False):
         # print(f"Very few movements for the day ! {len(timestamp_list)}")
         return True
     else:
-        print(f"There were total {timestamp_list} moves for {mac} on {ist_start_date}")
+        pass
+        # print(f"There were total {timestamp_list} moves for {mac} on {ist_start_date}")
 
     idd = 0
 
     def checkin_thread(timestamp):
         # print("First checkin!")
         odoo.checkin_employee(mac, timestamp - offset)
-        time.sleep(3)
+        time.sleep(2)
 
     def checkout_thread(timestamp, idd):
         # print("Last checkout")
         odoo.checkout_employee(mac, timestamp - offset, idd)
+        time.sleep(2)
     dic = {}
+    set_trace()
     for idx, timestamp in enumerate(sorted(timestamp_list)):
         if idx == 0:
             # First timestamp, mark as check-in
             checkin_thread(timestamp)
-            time.sleep(2)
             dic = odoo.get_latest_attndance_time(mac)
             idd = dic.get('id')
+            continue
         elif idx == len(timestamp_list) - 1:
             # Last timestamp, mark as check-out
             checkout_thread(timestamp, idd)
-            break
-        
 
 def markinglogicv03(mac, YYYY, MM, DD, HH, test=False):
     if not test:

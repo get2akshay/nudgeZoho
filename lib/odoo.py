@@ -38,7 +38,7 @@ uid = authenticate_with_odoo(timeout)
 
 def dateFormatOdoo(timestamp):
     """
-    Convert the timestamp to IST format.
+    Convert the timestamp to UTC format.
     """
     # Convert the timestamp to a datetime object
     dt = datetime.fromtimestamp(timestamp)
