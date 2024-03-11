@@ -124,9 +124,9 @@ def markinglogic(mac, ist_start_date, test=False):
         pass
         # print(f"There were total {timestamp_list} moves for {mac} on {ist_start_date}")
 
-    def checkin_thread(timestamp,attendance_id=None):
+    def checkin_thread(timestamp):
         # print("First checkin!")
-        odoo.checkin_employee(mac, timestamp - offset, attendance_id=attendance_id)
+        odoo.checkin_employee(mac, timestamp - offset)
         time.sleep(2)
 
     def checkout_thread(timestamp, idd):
@@ -161,6 +161,8 @@ def markinglogic(mac, ist_start_date, test=False):
                     check_out = odoo.get_epoch_timestamp(check_out_str)
                 if idd and check_in and not check_out and timestamp > check_in:
                     odoo.checkout(mac, timestamp_list[idx - 1], idd)
+                    time.sleep(3)
+                    checkin_thread(timestamp)
                 greater = True
                 less = False
             elif time_diff < tollarance and not less:
@@ -173,15 +175,9 @@ def markinglogic(mac, ist_start_date, test=False):
                 if check_out_str:
                     check_out = odoo.get_epoch_timestamp(check_out_str)
                 if idd and check_in and check_out and timestamp > check_out:
-                    checkin_thread(timestamp,attendance_id=idd+1)
+                    checkin_thread(timestamp)
                 greater = False
                 less = True
-
-
-
-                
-
-
 
 
 def markinglogicv03(mac, YYYY, MM, DD, HH, test=False):
