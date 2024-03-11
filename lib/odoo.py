@@ -295,7 +295,7 @@ def get_latest_attndance_time(identification_id):
         return {"id": False, "check_in": False, "check_out": False}
 
 # Function to check-in using employee ID
-def checkin_employee(identification_id, timestamp, attendance_id=None):
+def checkin_employee(identification_id, timestamp):
     # models_proxy = xmlrpc.client.ServerProxy(object_endpoint)
     # Check if authenticated
     models = server_proxy(object_endpoint, timeout=timeout)
@@ -304,6 +304,7 @@ def checkin_employee(identification_id, timestamp, attendance_id=None):
         if not employee_id:
             return False
         # Search for the employee based on employee ID
+        # employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[('employee_id', '=', employee_id)]])
         employee_ids = models.execute_kw(db, uid, password, 'hr.employee', 'search', [[['identification_id', '=', identification_id]]])
         
         if employee_ids:
@@ -312,15 +313,13 @@ def checkin_employee(identification_id, timestamp, attendance_id=None):
                 'employee_id': employee_ids[0],
                 'check_in': dateFormatOdoo(timestamp),
             }
+            attendance_id = models.execute_kw(db, uid, password, 'hr.attendance', 'create', [attendance_data])
             if attendance_id:
-                # Update existing attendance record
-                models.execute_kw(db, uid, password, 'hr.attendance', 'write', [[attendance_id], attendance_data])
-                print(f"Updated attendance record ID {attendance_id} for Employee ID {employee_id} at {timestamp}")
+                print(f"Checked in for Employee ID {employee_id} at {timestamp}")
+                return True
             else:
-                # Create new attendance record
-                attendance_id = models.execute_kw(db, uid, password, 'hr.attendance', 'create', [attendance_data])
-                print(f"Checked in for Employee ID {employee_id} at {timestamp}, attendance record ID: {attendance_id}")
-            return True
+                print(f"Failed to check in for Employee ID {employee_id}")
+                return False
         else:
             print(f"Employee with ID {employee_id} not found.")
             return False
