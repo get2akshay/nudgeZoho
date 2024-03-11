@@ -12,6 +12,8 @@ import threading
 # offset = (5 * 60 * 60) + (30 * 60)
 offset = 0
 
+off_floor = 30 * 60
+
 tdd = [1706779963, 1706780640, 1706790586, 1706792442, 1706792448, 1706792770, 1706793326, 1706795112, 1706795114, 1706799685, 1706801012, 1706802195, 1706802210, 1706802296, 1706802471, 1706802472, 1706803193, 1706803820, 1706804712, 1706806236, 1706806238, 1706806552, 1706806572, 1706806574, 1706806689, 1706806691, 1706806693, 1706806699, 1706806700, 1706807178, 1706807180, 1706807968, 1706807972, 1706808217, 1706808251, 1706808269, 1706808291, 1706808318, 1706808320, 1706809142, 1706809653, 1706809655, 1706812381, 1706812384, 1706812386, 1706812910]    
 
 def extract_datetime_components(date_string, offset_minutes=offset):
@@ -122,8 +124,6 @@ def markinglogic(mac, ist_start_date, test=False):
         pass
         # print(f"There were total {timestamp_list} moves for {mac} on {ist_start_date}")
 
-    idd = 0
-
     def checkin_thread(timestamp):
         # print("First checkin!")
         odoo.checkin_employee(mac, timestamp - offset)
@@ -133,18 +133,58 @@ def markinglogic(mac, ist_start_date, test=False):
         # print("Last checkout")
         odoo.checkout_employee(mac, timestamp - offset, idd)
         time.sleep(2)
-    dic = {}
+    dic = {"id": False, "check_in": False, "check_out": False}
     set_trace()
+    idd = 0
+    check_in = 0
+    check_out = 0
+    less = False
+    greater = False
     for idx, timestamp in enumerate(sorted(timestamp_list)):
         if idx == 0:
             # First timestamp, mark as check-in
             checkin_thread(timestamp)
-            dic = odoo.get_latest_attndance_time(mac)
-            idd = dic.get('id')
             continue
         elif idx == len(timestamp_list) - 1:
             # Last timestamp, mark as check-out
             checkout_thread(timestamp, idd)
+            break
+        else:
+            time_diff = timestamp - timestamp_list[idx - 1]
+            if time_diff > tollarance and not greater:
+                dic = odoo.get_latest_attndance_time(mac)
+                idd = dic.get('id')
+                check_in_str = dic.get('check_in')
+                if check_in_str:
+                    check_in = odoo.get_epoch_timestamp(check_in_str)
+                check_out_str = dic.get('check_out')
+                if check_out_str:
+                    check_out = odoo.get_epoch_timestamp(check_out_str)
+                if idd and check_in and not check_out and timestamp > check_in:
+                    odoo.checkout(mac, timestamp_list[idx - 1], idd)
+                greater = True
+                less = False
+            elif time_diff > tollarance and not less:
+                dic = odoo.get_latest_attndance_time(mac)
+                idd = dic.get('id')
+                check_in_str = dic.get('check_in')
+                if check_in_str:
+                    check_in = odoo.get_epoch_timestamp(check_in_str)
+                check_out_str = dic.get('check_out')
+                if check_out_str:
+                    check_out = odoo.get_epoch_timestamp(check_out_str)
+                if idd and check_in and check_out and timestamp > check_out:
+                    checkin_thread(timestamp)
+                greater = False
+                less = True
+                continue
+
+
+
+                
+
+
+
 
 def markinglogicv03(mac, YYYY, MM, DD, HH, test=False):
     if not test:

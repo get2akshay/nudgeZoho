@@ -285,6 +285,10 @@ def get_latest_attndance_time(identification_id):
         if attendance_id:
             # Get the check-in and check-out times for a specific attendance ID
             attendance_data = models.execute_kw(db, uid, password, 'hr.attendance', 'read', [attendance_id], {'fields': ['check_in', 'check_out']})
+            # Convert check_in and check_out timestamps to IST
+            for key, value in attendance_data[-1].items():
+                if key in ['check_in', 'check_out'] and value:
+                    attendance_data[-1][key] = convert_utc_to_ist(value)
 
         return attendance_data[-1]
     else:
