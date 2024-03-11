@@ -169,7 +169,7 @@ while ist_start_date.date() <= current_date.date():
     print(ist_start_date.strftime("%Y-%m-%d %H:%M:%S"))
 
     print(f"Will run marking logic for date {ist_start_date}")
-    # for mac in employees.values():
-        # markinglogic(mac, ist_start_date, test=test)
+    for mac in employees.values():
+        markinglogic(mac, ist_start_date, test=test)
     
     ist_start_date += datetime.timedelta(days=1)
