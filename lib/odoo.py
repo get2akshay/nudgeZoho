@@ -5,9 +5,9 @@ from time import sleep
 from pdb import set_trace
 from urllib.parse import urlparse
 import pytz
-# IST = pytz.timezone('Asia/Kolkata')  # Define the IST timezone
+IST = pytz.timezone('Asia/Kolkata')  # Define the IST timezone
 # Define the UTC timezone
-UTC = pytz.utc
+# UTC = pytz.utc
 
 # Specify your Odoo server information
 # url = 'https://byplayit2.odoo.com/'
@@ -38,12 +38,12 @@ uid = authenticate_with_odoo(timeout)
 
 def dateFormatOdoo(timestamp):
     """
-    Convert the timestamp to UTC format.
+    Convert the timestamp to {IST} format.
     """
     # Convert the timestamp to a datetime object
     dt = datetime.fromtimestamp(timestamp)
     # Convert the datetime object to IST timezone
-    dt_ist = dt.astimezone(UTC)
+    dt_ist = dt.astimezone(IST)
     # Format the datetime in the required format (assuming 'YYYY-MM-DD HH:mm:ss')
     return dt_ist.strftime('%Y-%m-%d %H:%M:%S')
 
@@ -261,11 +261,24 @@ def get_attandanceids(employee_id):
             sleep(10)
     return None
 
+# Function to convert string timestamp to IST format
+def format_timestamp_to_ist(timestamp_str):
+    """
+    Convert the string timestamp to IST format.
+    """
+    # Parse the string timestamp into a datetime object
+    dt = datetime.strptime(timestamp_str, '%Y-%m-%d %H:%M:%S')
+    # Convert the datetime object to IST timezone
+    dt_ist = dt.astimezone(IST)
+    # Format the datetime with timezone information
+    return dt_ist.strftime('%Y-%m-%d %H:%M:%S')
+
+# Function to get the latest attendance record with timestamps in IST
 def get_latest_attndance_time(identification_id):
     models = server_proxy(object_endpoint, timeout=timeout)
     employee_id = get_employee_id(identification_id)
     if not employee_id:
-            return False
+        return False
     ids = get_attandanceids(employee_id)
     if ids:
         attendance_id = max(ids)
@@ -273,10 +286,12 @@ def get_latest_attndance_time(identification_id):
         if attendance_id:
             # Get the check-in and check-out times for a specific attendance ID
             attendance_data = models.execute_kw(db, uid, password, 'hr.attendance', 'read', [attendance_id], {'fields': ['check_in', 'check_out']})
+            
+            # Convert check_in and check_out timestamps to IST
+            for key, value in attendance_data[-1].items():
+                if key in ['check_in', 'check_out'] and value:
+                    attendance_data[-1][key] = format_timestamp_to_ist(value)
 
-        # for val in attendance_data[-1].values():
-            # if not val:
-                # return False
         return attendance_data[-1]
     else:
         return {"id": False, "check_in": False, "check_out": False}
