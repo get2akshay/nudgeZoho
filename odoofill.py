@@ -100,12 +100,11 @@ def markinglogic(mac, ist_start_date, test=False):
     def checkin_thread(timestamp):
         # print("First checkin!")
         odoo.checkin_employee(mac, timestamp - offset)
-        time.sleep(2)
-
+        time.sleep(1)
     def checkout_thread(timestamp, idd):
         # print("Last checkout")
         odoo.checkout_employee(mac, timestamp - offset, idd)
-        time.sleep(2)
+        time.sleep(1)
     dic = {"id": False, "check_in": False, "check_out": False}
     idd = 0
     check_in = 0
