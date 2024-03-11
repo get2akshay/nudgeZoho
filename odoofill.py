@@ -163,7 +163,7 @@ def markinglogic(mac, ist_start_date, test=False):
                     odoo.checkout(mac, timestamp_list[idx - 1], idd)
                 greater = True
                 less = False
-            elif time_diff > tollarance and not less:
+            elif time_diff < tollarance and not less:
                 dic = odoo.get_latest_attndance_time(mac)
                 idd = dic.get('id')
                 check_in_str = dic.get('check_in')
