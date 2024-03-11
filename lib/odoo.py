@@ -1,5 +1,5 @@
 import xmlrpc.client
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import http.client
 from time import sleep
 from pdb import set_trace
@@ -46,6 +46,16 @@ def dateFormatOdoo(timestamp):
     dt_ist = dt.astimezone(UTC)
     # Format the datetime in the required format (assuming 'YYYY-MM-DD HH:mm:ss')
     return dt_ist.strftime('%Y-%m-%d %H:%M:%S')
+
+def convert_utc_to_ist(utc_timestamp_str):
+    # Parse the input UTC timestamp string
+    utc_time = datetime.strptime(utc_timestamp_str, "%Y-%m-%d %H:%M:%S")
+
+    # Set the timezone to IST (UTC+05:30)
+    ist_timezone = timezone(timedelta(hours=5, minutes=30))
+    ist_time = utc_time.replace(tzinfo=timezone.utc).astimezone(ist_timezone)
+
+    return ist_time.strftime("%Y-%m-%d %H:%M:%S")
 
 def get_epoch_timestamp(date_string):
     dt = datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
@@ -261,17 +271,6 @@ def get_attandanceids(employee_id):
             sleep(10)
     return None
 
-# Function to convert string timestamp to IST format
-def format_timestamp_to_ist(timestamp_str):
-    """
-    Convert the string timestamp to IST format.
-    """
-    # Parse the string timestamp into a datetime object
-    dt = datetime.strptime(timestamp_str, '%Y-%m-%d %H:%M:%S')
-    # Convert the datetime object to IST timezone
-    dt_ist = dt.astimezone(IST)
-    # Format the datetime with timezone information
-    return dt_ist.strftime('%Y-%m-%d %H:%M:%S')
 
 # Function to get the latest attendance record with timestamps in IST
 def get_latest_attndance_time(identification_id):
