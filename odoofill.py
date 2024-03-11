@@ -125,7 +125,9 @@ def markinglogic(mac, ist_start_date, test=False):
             time_diff = timestamp - timestamp_list[idx - 1]
             if time_diff > tollarance and not greater:
                 dic = odoo.get_latest_attndance_time(mac)
-                idd = dic.get('id')
+                idd = False
+                if type(dic) is dict:
+                    idd = dic.get('id')
                 check_in_str = dic.get('check_in')
                 if check_in_str:
                     check_in = odoo.get_epoch_timestamp(check_in_str)
@@ -140,7 +142,9 @@ def markinglogic(mac, ist_start_date, test=False):
                 less = False
             elif time_diff < tollarance and not less:
                 dic = odoo.get_latest_attndance_time(mac)
-                idd = dic.get('id')
+                idd = False
+                if type(dic) is dict:
+                    idd = dic.get('id')
                 check_in_str = dic.get('check_in')
                 if check_in_str:
                     check_in = odoo.get_epoch_timestamp(check_in_str)
