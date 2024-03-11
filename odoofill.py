@@ -134,7 +134,6 @@ def markinglogic(mac, ist_start_date, test=False):
         odoo.checkout_employee(mac, timestamp - offset, idd)
         time.sleep(2)
     dic = {"id": False, "check_in": False, "check_out": False}
-    set_trace()
     idd = 0
     check_in = 0
     check_out = 0
