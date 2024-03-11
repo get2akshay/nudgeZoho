@@ -160,7 +160,7 @@ with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
 
 # Given IST start date string
-ist_start_date_str = "2024-03-01 07:00:00"
+ist_start_date_str = "2024-03-02 07:00:00"
 ist_start_date = datetime.datetime.strptime(ist_start_date_str, "%Y-%m-%d %H:%M:%S")
 # Get the current date
 current_date = datetime.datetime.now()
