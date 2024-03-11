@@ -161,9 +161,9 @@ with open('staff.yaml', 'r') as file:
 
 # Given IST start date string
 ist_start_date_str = "2024-03-01 07:00:00"
-ist_start_date = datetime.strptime(ist_start_date_str, "%Y-%m-%d %H:%M:%S")
+ist_start_date = datetime.datetime.strptime(ist_start_date_str, "%Y-%m-%d %H:%M:%S")
 # Get the current date
-current_date = datetime.now()
+current_date = datetime.datetime.now()
 # Increment the date until the current day
 while ist_start_date.date() <= current_date.date():
     print(ist_start_date.strftime("%Y-%m-%d %H:%M:%S"))
