@@ -128,10 +128,10 @@ def markinglogic(mac, ist_start_date, test=False):
                 idd = False
                 if type(dic) is dict:
                     idd = dic.get('id')
-                check_in_str = dic.get('check_in')
+                    check_in_str = dic.get('check_in')
                 if check_in_str:
                     check_in = odoo.get_epoch_timestamp(check_in_str)
-                check_out_str = dic.get('check_out')
+                    check_out_str = dic.get('check_out')
                 if check_out_str:
                     check_out = odoo.get_epoch_timestamp(check_out_str)
                 if idd and check_in and not check_out and timestamp > check_in:
@@ -144,10 +144,10 @@ def markinglogic(mac, ist_start_date, test=False):
                 idd = False
                 if type(dic) is dict:
                     idd = dic.get('id')
-                check_in_str = dic.get('check_in')
+                    check_in_str = dic.get('check_in')
                 if check_in_str:
                     check_in = odoo.get_epoch_timestamp(check_in_str)
-                check_out_str = dic.get('check_out')
+                    check_out_str = dic.get('check_out')
                 if check_out_str:
                     check_out = odoo.get_epoch_timestamp(check_out_str)
                 if idd and check_in and check_out and timestamp > check_out:
