@@ -135,8 +135,7 @@ def markinglogic(mac, ist_start_date, test=False):
                 if check_out_str:
                     check_out = odoo.get_epoch_timestamp(check_out_str)
                 if idd and check_in and not check_out and timestamp > check_in:
-                    odoo.checkout(mac, timestamp_list[idx - 1], idd)
-                    time.sleep(3)
+                    checkout_thread(mac, timestamp_list[idx - 1], idd)
                     checkin_thread(timestamp)
                 greater = True
                 less = False
