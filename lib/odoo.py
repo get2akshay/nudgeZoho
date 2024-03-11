@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 import pytz
 IST = pytz.timezone('Asia/Kolkata')  # Define the IST timezone
 # Define the UTC timezone
-# UTC = pytz.utc
+UTC = pytz.utc
 
 # Specify your Odoo server information
 # url = 'https://byplayit2.odoo.com/'
@@ -43,7 +43,7 @@ def dateFormatOdoo(timestamp):
     # Convert the timestamp to a datetime object
     dt = datetime.fromtimestamp(timestamp)
     # Convert the datetime object to IST timezone
-    dt_ist = dt.astimezone(IST)
+    dt_ist = dt.astimezone(UTC)
     # Format the datetime in the required format (assuming 'YYYY-MM-DD HH:mm:ss')
     return dt_ist.strftime('%Y-%m-%d %H:%M:%S')
 
@@ -286,11 +286,6 @@ def get_latest_attndance_time(identification_id):
         if attendance_id:
             # Get the check-in and check-out times for a specific attendance ID
             attendance_data = models.execute_kw(db, uid, password, 'hr.attendance', 'read', [attendance_id], {'fields': ['check_in', 'check_out']})
-            
-            # Convert check_in and check_out timestamps to IST
-            for key, value in attendance_data[-1].items():
-                if key in ['check_in', 'check_out'] and value:
-                    attendance_data[-1][key] = format_timestamp_to_ist(value)
 
         return attendance_data[-1]
     else:
