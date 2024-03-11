@@ -1,4 +1,5 @@
 import datetime
+import datetime
 from lib import odoo
 import numpy as np
 test = False
@@ -158,6 +159,17 @@ def markinglogic(mac, ist_start_date, test=False):
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
 
-ist_start_date = "2024-03-01 07:00:00"
-for mac in employees.values():
-    markinglogic(mac, ist_start_date, test=test)
+# Given IST start date string
+ist_start_date_str = "2024-03-01 07:00:00"
+ist_start_date = datetime.strptime(ist_start_date_str, "%Y-%m-%d %H:%M:%S")
+# Get the current date
+current_date = datetime.now()
+# Increment the date until the current day
+while ist_start_date.date() <= current_date.date():
+    print(ist_start_date.strftime("%Y-%m-%d %H:%M:%S"))
+
+    print(f"Will run marking logic for date {ist_start_date}")
+    # for mac in employees.values():
+        # markinglogic(mac, ist_start_date, test=test)
+    
+    ist_start_date += datetime.timedelta(days=1)
