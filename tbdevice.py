@@ -28,15 +28,15 @@ anchors = ["Entry", "InsideKitchin", "EastWall", "Kitchen Entry"]
 def job(anchors):
     for d in anchors:
         s = deviceStatus(d)
-        # print(f"Anchor {d} is {s}")
-        if not s:
+        print(f"Anchor {d} is {s}")
+        """ if not s:
             if d in "Entry" or d in "EastWall" or d == "Kitchen Entry":
                 output, error = command.ssh_command("192.168.0.1", "admin", "admin@123", "ls -lrt")
                 print('Output from SSH:', output)
                 if error:
                     print('Error:', error)
             else:
-                print("Kitchen Anchor down!")
+                print("Kitchen Anchor down!") """
 
 def run_job_every_5_min(anchors):
     schedule.every(5).minutes.do(job, anchors)
