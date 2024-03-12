@@ -9,7 +9,9 @@ from pdb import set_trace
 import time
 import yaml
 import threading
-from logging import Logger
+import logging
+# Configure the logging system
+logging.basicConfig(level=logging.DEBUG)
 
 # offset = (5 * 60 * 60) + (30 * 60)
 offset = 0
@@ -182,7 +184,7 @@ ist_start_date = datetime.datetime.strptime(ist_start_date_str, "%Y-%m-%d %H:%M:
 end_date_str = "2024-03-1 02:00:00"
 ist_end_date = format_end_dates(end_date_str)
 # Increment the date until the current day
-Logger.info(Logger, "Starting DB parsing")
+logging.info("Starting DB Parsing")
 while ist_start_date.date() <= ist_end_date.date():
     for mac in employees.values():
         markinglogic(mac, ist_start_date, test=test)
