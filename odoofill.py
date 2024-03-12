@@ -183,8 +183,8 @@ end_date_str = "2024-03-1 02:00:00"
 ist_end_date = format_end_dates(end_date_str)
 # Increment the date until the current day
 while ist_start_date.date() <= ist_end_date.date():
-    Logger.info(ist_start_date.strftime("%Y-%m-%d %H:%M:%S"))
-    Logger.info(f"Will run marking logic for date {ist_start_date}")
+    Logger.info("Start Date", ist_start_date.strftime("%Y-%m-%d %H:%M:%S"))
+    Logger.info(f"Will run marking logic till date", {ist_end_date})
     for mac in employees.values():
         markinglogic(mac, ist_start_date, test=test)
     
