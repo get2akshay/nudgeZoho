@@ -31,7 +31,7 @@ def job(anchors):
         # print(f"Anchor {d} is {s}")
         if not s:
             if d in "Entry" or d in "EastWall" or d == "Kitchen Entry":
-                output, error = command.ssh_command("admin", "tiddly@1234567", "ls -lrt")
+                output, error = command.ssh_command("192.168.0.1", "admin", "admin@123", "ls -lrt")
                 print('Output from SSH:', output)
                 if error:
                     print('Error:', error)
