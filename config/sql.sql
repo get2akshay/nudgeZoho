@@ -12,9 +12,19 @@
             LIMIT 1 */
 
 SELECT
-    entity_id
-FROM
-    ts_kv
-WHERE
-    key = 53
+    most_common_entity_id
+    FROM (
+        SELECT
+            entity_id AS most_common_entity_id,
+            ROW_NUMBER() OVER (PARTITION BY str_v ORDER BY COUNT(*) DESC) AS rn
+        FROM
+            ts_kv
+        WHERE
+            str_v SIMILAR TO '00:8c:10:30:01:4c'
+        GROUP BY
+            str_v, entity_id
+    ) AS subquery
+    WHERE
+        rn = 1
+    LIMIT 2
 
