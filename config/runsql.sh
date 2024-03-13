@@ -1,1 +1,1 @@
-psql -h 127.0.0.1 -U postgres -W -d tiddly -f ~/nudgeZoho/config/sql.query
+psql -h 127.0.0.1 -U postgres -W -d tiddly -f ~/nudgeZoho/config/sql.sql
