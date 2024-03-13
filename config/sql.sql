@@ -1,4 +1,4 @@
-/SELECT
+SELECT
                 ts/1000 AS time,
                 str_v,
                 (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
