@@ -12,7 +12,6 @@
             LIMIT 1 */
 
 SELECT
-    str_v,
     entity_id
 FROM
     ts_kv
