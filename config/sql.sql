@@ -20,7 +20,7 @@ SELECT
         FROM
             ts_kv
         WHERE
-            str_v SIMILAR TO '00:8c:10:30:01:4c'
+            str_v SIMILAR TO '00:8c:10:30:01:56'
         GROUP BY
             str_v, entity_id
     ) AS subquery
