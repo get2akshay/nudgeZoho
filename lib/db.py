@@ -2,6 +2,8 @@ import psycopg2
 from decimal import Decimal
 import datetime
 import time
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 # connect to the PostgreSQL database
 # connect to the PostgreSQL database server
@@ -161,15 +163,12 @@ def getuuid(mac):
     data = query_db(get_mac_uuid(mac))
     try:
         for row in data:
-        #print(next(iter(set(row))))
             uuid = next(iter(set(row)))
         if not uuid:
-            print("MAC to UUID could not be fetched")
-        # fetch the result set as a list of tuples
-        # close the cursor and the connection
+            logging.debug(f"MAC {mac} to UUID could not be fetched")
         return uuid
     except TypeError as t:
-        print("DB dod not give any data!")
+        logging.debug(f"DB did not return any data")
         pass
 
 def getxyz(mac):
