@@ -187,7 +187,7 @@ ist_end_date = format_end_dates(end_date_str)
 logging.info("Starting DB Parsing")
 while ist_start_date.date() <= ist_end_date.date():
     for mac in employees.values():
-        logging.info(f"Getting Data for {mac} from {ist_start_date_str} To {end_date_str} !")
+        logging.info(f"Getting Data for {mac} from {ist_start_date.date()} To {ist_end_date.date()} !")
         markinglogic(mac, ist_start_date, test=test)
     ist_start_date += datetime.timedelta(days=1)
 
