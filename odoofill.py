@@ -104,14 +104,14 @@ def markinglogic(mac, ist_start_date, test=False):
         timestamp_list = workHourRecord(mac, ist_start_date, test=test)
     else:
         timestamp_list = tdd
-    if timestamp_list is not None:
+    if timestamp_list is not None and len(timestamp_list) > 0:
         sorted(timestamp_list)
         if len(timestamp_list) < 2:
             # print(f"Very few movements for the day ! {len(timestamp_list)}")
             return True
-        else:
-            pass
-            # print(f"There were total {timestamp_list} moves for {mac} on {ist_start_date}")
+        elif len(timestamp_list) == 2:
+            logging.debug(f"No movement data for {mac}")
+            return True
 
     def checkin_thread(timestamp):
         # print("First checkin!")
