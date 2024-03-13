@@ -107,10 +107,10 @@ def markinglogic(mac, ist_start_date, test=False):
     if timestamp_list is not None and len(timestamp_list) > 0:
         sorted(timestamp_list)
         if len(timestamp_list) < 2:
-            # print(f"Very few movements for the day ! {len(timestamp_list)}")
+            logging.info(f"Very less movement for {mac} on {ist_start_date}")
             return True
         elif len(timestamp_list) == 2:
-            logging.debug(f"No movement data for {mac}")
+            logging.debug(f"No movement data for {mac} on {ist_start_date}")
             return True
 
     def checkin_thread(timestamp):
