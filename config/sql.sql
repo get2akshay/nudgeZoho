@@ -1,4 +1,4 @@
-/* SELECT
+/SELECT
                 ts/1000 AS time,
                 str_v,
                 (('x' || REPLACE(LEFT(str_v, 8), '-', ''))::bit(32)::integer * 9.8 * 0.00390625) AS x_axis,
@@ -7,11 +7,14 @@
             FROM
                 ts_kv
             WHERE
-                entity_id = '58a03740-7caf-11ee-9304-e17cb189e218'
+                entity_id = '41227120-935a-11ee-b069-ab9ada5c9719'
+                --entity_id = '203cf7b0-95c0-11ee-b36c-814c09633654'
             AND key = 53
-            LIMIT 1 */
+            LIMIT 1 
 
-SELECT
+
+
+/* SELECT
     most_common_entity_id
     FROM (
         SELECT
@@ -26,5 +29,5 @@ SELECT
     ) AS subquery
     WHERE
         rn = 1
-    LIMIT 2
+    LIMIT 50 */
 
