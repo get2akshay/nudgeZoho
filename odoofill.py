@@ -106,12 +106,12 @@ def markinglogic(mac, ist_start_date, test=False):
         timestamp_list = tdd
     if timestamp_list is not None:
         sorted(timestamp_list)
-    if len(timestamp_list) < 2:
-        # print(f"Very few movements for the day ! {len(timestamp_list)}")
-        return True
-    else:
-        pass
-        # print(f"There were total {timestamp_list} moves for {mac} on {ist_start_date}")
+        if len(timestamp_list) < 2:
+            # print(f"Very few movements for the day ! {len(timestamp_list)}")
+            return True
+        else:
+            pass
+            # print(f"There were total {timestamp_list} moves for {mac} on {ist_start_date}")
 
     def checkin_thread(timestamp):
         # print("First checkin!")
