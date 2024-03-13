@@ -102,10 +102,10 @@ tollarance = 30 * 60
 def markinglogic(mac, ist_start_date, test=False):
     if not test:
         timestamp_list = workHourRecord(mac, ist_start_date, test=test)
+        sorted(timestamp_list)
     else:
         timestamp_list = tdd
     if timestamp_list is not None and len(timestamp_list) > 0:
-        sorted(timestamp_list)
         if len(timestamp_list) < 2:
             logging.info(f"Very less movement for {mac} on {ist_start_date}")
             return True
