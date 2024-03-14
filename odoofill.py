@@ -190,4 +190,3 @@ while ist_start_date.date() <= ist_end_date.date():
         logging.info(f"Getting Data for {mac} from {ist_start_date.date()} To {ist_end_date.date()} !")
         markinglogic(mac, ist_start_date, test=test)
     ist_start_date += datetime.timedelta(days=1)
-

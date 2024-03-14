@@ -1,8 +1,11 @@
 from lib import tb, command
-import schedule
 import time
 from datetime import datetime
+from lib import sendmail
 
+def messgprep(msg):
+    # Set your Gmail credentials and email details
+    return {'subject': "Tiddly Zone Sensors Down!", 'body': f"These anchors are down: {msg}", 'sender_email': 'bot@gmail.com', 'recipient_email': 'akshayy2k@gmail.com', 'password': 'nl@1234567'}
 
 
 def deviceStatus(device):
@@ -26,32 +29,31 @@ def deviceStatus(device):
 anchors = ["Entry", "InsideKitchin", "EastWall", "Kitchen Entry"]
 
 def job(anchors):
+    down = "Test"
     for d in anchors:
         s = deviceStatus(d)
         print(f"Anchor {d} is {s}")
-        """ if not s:
+        # Call the function to send the email
+        down = "Anchors down"
+        if not s:
             if d in "Entry" or d in "EastWall" or d == "Kitchen Entry":
-                output, error = command.ssh_command("192.168.0.1", "admin", "admin@123", "ls -lrt")
-                print('Output from SSH:', output)
-                if error:
-                    print('Error:', error)
+                down += f" {d} "
             else:
-                print("Kitchen Anchor down!") """
-
-def run_job_every_5_min(anchors):
-    schedule.every(5).minutes.do(job, anchors)
-
-def run_job_every_30_min(anchors):
-    my_list = ['item1', 'item2', 'item3']  # replace with your list
-    schedule.every(30).minutes.do(job, anchors)
-
+                down += f" {d} "
+                print("Kitchen Anchor down!")
+    if down:
+        sendmail(down)
+        return False
+    else:
+        return True
+prevmin = 0
+happychcek = 30
 while True:
-    job(anchors)
-    # current_time = datetime.now().hour
-    # if current_time >= 8 and current_time <= 23:
-    #     run_job_every_5_min(anchors)
-    # else:
-    #     run_job_every_30_min(anchors)
-    # schedule.run_pending()
-    # time.sleep(5)
-
+    curmin = datetime.now().minute
+    if (curmin - prevmin) > happychcek:
+        out = job(anchors)
+        if out:
+            continue
+        else:
+            happychcek = 10
+    prevmin = curmin
