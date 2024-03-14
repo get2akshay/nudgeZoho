@@ -41,19 +41,16 @@ def job(anchors):
             else:
                 down += f" {d} "
                 print("Kitchen Anchor down!")
+        else:
+            print("Anchors are up!")
     if down:
         sendmail.send_email(messgprep(down))
         return False
     else:
         return True
-prevmin = 0
-happychcek = 30
-while True:
-    curmin = datetime.now().minute
-    if (curmin - prevmin) > happychcek:
-        out = job(anchors)
-        if out:
-            continue
-        else:
-            happychcek = 10
-    prevmin = curmin
+
+
+out = job(anchors)
+
+
+    
