@@ -2,6 +2,7 @@ from lib import tb, command
 import time
 from datetime import datetime
 from lib import sendmail
+import schedule
 
 def messgprep(msg):
     # Set your Gmail credentials and email details
@@ -29,7 +30,7 @@ def deviceStatus(device):
 anchors = ["Entry", "InsideKitchin", "EastWall", "Kitchen Entry"]
 
 def job(anchors):
-    down = "Test"
+    down = ""
     for d in anchors:
         s = deviceStatus(d)
         print(f"Anchor {d} is {s}")
@@ -50,7 +51,17 @@ def job(anchors):
         return True
 
 
-out = job(anchors)
+def run_function():
+    result = job(anchors)
+    if result:
+        print("Function returned True. Waiting for 5 minutes...")
+        schedule.every(5).minutes.do(run_function)
+    else:
+        print("Function returned False. Waiting for 30 minutes...")
+        schedule.every(30).minutes.do(run_function)
 
+while True:
+    schedule.run_pending()
+    time.sleep(1)
 
     
