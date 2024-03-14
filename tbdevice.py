@@ -5,7 +5,7 @@ from lib import sendmail
 
 def messgprep(msg):
     # Set your Gmail credentials and email details
-    return {'subject': "Tiddly Zone Sensors Down!", 'body': f"These anchors are down: {msg}", 'sender_email': 'bot@gmail.com', 'recipient_email': 'akshayy2k@gmail.com', 'password': 'nl@1234567'}
+    return {'subject': "Tiddly Zone Sensors Down!", 'body': f"These anchors are down: {msg}", 'sender_email': 'bot@byplayit.com', 'recipient_email': 'akshayy2k@gmail.com', 'password': 'NlIsMySaviour46'}
 
 
 def deviceStatus(device):
