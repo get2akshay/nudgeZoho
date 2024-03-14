@@ -42,7 +42,7 @@ def job(anchors):
                 down += f" {d} "
                 print("Kitchen Anchor down!")
     if down:
-        sendmail.send_email(down)
+        sendmail.send_email(messgprep(down))
         return False
     else:
         return True
