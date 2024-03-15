@@ -1,13 +1,9 @@
-from lib import tb, command
-import time
-from datetime import datetime
+from lib import tb
 from lib import sendmail
-import schedule
 
 def messgprep(msg):
     # Set your Gmail credentials and email details
     return {'subject': "Tiddly Zone Sensors Down!", 'body': f"These anchors are down: {msg}", 'sender_email': 'bot@byplayit.com', 'recipient_email': 'akshayy2k@gmail.com', 'password': 'NlIsMySaviour46'}
-
 
 def deviceStatus(device):
     api = f"api/tenant/devices"
@@ -51,17 +47,6 @@ def job(anchors):
         return True
 
 
-def run_function():
-    result = job(anchors)
-    if result:
-        print("Function returned True. Waiting for 5 minutes...")
-        schedule.every(5).minutes.do(run_function)
-    else:
-        print("Function returned False. Waiting for 30 minutes...")
-        schedule.every(30).minutes.do(run_function)
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
 
     
