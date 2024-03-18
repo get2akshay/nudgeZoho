@@ -6,7 +6,7 @@ import time
 import random
 # Initialize the scheduler
 scheduler = sched.scheduler(time.time, time.sleep)
-test = True
+test = False
 email_body = ''
 
 def messgprep(msg):
