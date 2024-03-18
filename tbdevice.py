@@ -1,11 +1,15 @@
 from lib import tb
 from lib import sendmail
+import random
+test = False
 
 def messgprep(msg):
     # Set your Gmail credentials and email details
     return {'subject': "Tiddly Zone Sensors Down!", 'body': f"These anchors are down: {msg}", 'sender_email': 'bot@byplayit.com', 'recipient_email': 'akshayy2k@gmail.com', 'password': 'NlIsMySaviour46'}
 
 def deviceStatus(device):
+    if test:
+        return random.choice([True, False])
     api = f"api/tenant/devices"
     params = {}
     params["deviceName"] = device

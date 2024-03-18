@@ -7,8 +7,11 @@ SELECT
             FROM
                 ts_kv
             WHERE
-                entity_id = '41227120-935a-11ee-b069-ab9ada5c9719'
+                -- entity_id = '41227120-935a-11ee-b069-ab9ada5c9719'
                 --entity_id = '203cf7b0-95c0-11ee-b36c-814c09633654'
+                -- entity_id = '203cf7b0-95c0-11ee-b36c-814c09633654'
+                -- entity_id = '460ec090-943a-11ee-b069-ab9ada5c9719'
+                entity_id = 'a364c100-9439-11ee-b069-ab9ada5c9719'
             AND key = 53
             LIMIT 1 
 
@@ -23,7 +26,7 @@ SELECT
         FROM
             ts_kv
         WHERE
-            str_v SIMILAR TO '00:8c:10:30:01:56'
+            str_v SIMILAR TO '00:8c:10:30:01:49'
         GROUP BY
             str_v, entity_id
     ) AS subquery
