@@ -177,11 +177,11 @@ with open('staff.yaml', 'r') as file:
 
 
 # Given IST start date string
-ist_start_date_str = "2024-03-11 07:00:00"
+ist_start_date_str = "2024-03-13 07:00:00"
 ist_start_date = datetime.datetime.strptime(ist_start_date_str, "%Y-%m-%d %H:%M:%S")
 # Get the current date
 # Example usage:
-end_date_str = "2024-03-15 02:00:00"
+end_date_str = "2024-03-19 02:00:00"
 ist_end_date = format_end_dates(end_date_str)
 # Increment the date until the current day
 logging.info("Starting DB Parsing")
