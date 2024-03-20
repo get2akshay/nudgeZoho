@@ -1,15 +1,23 @@
-import os
-import json
+
+
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import datetime
-from lib import db
+test = True
+if not test:
+    from lib import db
 import numpy as np
 import yaml
 from time import sleep
 from collections import defaultdict
 import pdb
+import logging
+offset = 0
+tollarance = 1800
+
+tdd = [1706779963, 1706780640, 1706790586, 1706792442, 1706792448, 1706792770, 1706793326, 1706795112, 1706795114, 1706799685, 1706801012, 1706802195, 1706802210, 1706802296, 1706802471, 1706802472, 1706803193, 1706803820, 1706804712, 1706806236, 1706806238, 1706806552, 1706806572, 1706806574, 1706806689, 1706806691, 1706806693, 1706806699, 1706806700, 1706807178, 1706807180, 1706807968, 1706807972, 1706808217, 1706808251, 1706808269, 1706808291, 1706808318, 1706808320, 1706809142, 1706809653, 1706809655, 1706812381, 1706812384, 1706812386, 1706812910]    
+
 
 #Sheet to update
 #https://docs.google.com/spreadsheets/d/1Upm2saIcs3A6Cij5YdHA1KgIwj6yEfHW90lfA8aavnQ/edit#gid=903908714
@@ -20,6 +28,17 @@ credentials_file = 'service_account.json'
 credentials = service_account.Credentials.from_service_account_file(credentials_file, scopes=['https://www.googleapis.com/auth/spreadsheets'])
 # Create a service object for Google Sheets API
 service = build('sheets', 'v4', credentials=credentials)
+
+def format_end_dates(manual_date_str=None):
+    # Get the current date and time
+    current_date = datetime.datetime.now()
+
+    if manual_date_str:
+        # Parse the manually passed date
+        return datetime.datetime.strptime(manual_date_str, "%Y-%m-%d %H:%M:%S")
+    else:
+        # Use the current date if no manual date is provided
+        return current_date
 
 def monthReturn(number):
     months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -129,7 +148,7 @@ def dateFormat(timestamp):
     # Create a datetime object from the epoch time stamp
     date_time = datetime.datetime.fromtimestamp(timestamp)
     # Format the datetime object as a string
-    return date_time.strftime("%m/%d/%Y %H:%M:%S")
+    return date_time.strftime("%d/%m/%Y %H:%M:%S")
 
 def remove_duplicates_dict(input_list):
     my_dict = defaultdict(int)
@@ -140,7 +159,7 @@ def remove_duplicates_dict(input_list):
             input_list.remove(num)
     return input_list
 
-def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
+def workHourRecordold(name, mac, YYYY, MM, DD, HH, shift_hours):
     unique = []
     # Define the start date as a datetime object
     start_time = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
@@ -167,81 +186,136 @@ def workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours):
             print(f"Time stamp empty for {name} with {mac} in the period {start_time} to {end_time} !")
             return unique
 
-def prepRecords(name, mac, YYYY, MM, DD, HH, shift_hours, missingSeconds):
+
+def extract_datetime_components(date_obj, offset_minutes=offset):
+    try:
+        # Parse the input date string
+        # dt_nooffset = datetime.datetime.strptime(date_obj, "%Y-%m-%d %H:%M:%S")
+
+        # Add the offset to the datetime
+        dt = date_obj + datetime.timedelta(minutes=offset_minutes)
+
+        # Extract individual components
+        YYYY = dt.year
+        MM = dt.month
+        DD = dt.day
+        HH = dt.hour
+        mm = dt.minute
+        ss = dt.second
+
+        return YYYY, MM, DD, HH, mm, ss
+    except ValueError:
+        # Handle invalid date string format
+        return None
+
+
+def workHourRecord(mac, ist_start_date, test=False):
+    YYYY, MM, DD, HH, mm, ss = extract_datetime_components(ist_start_date)
+    if test:
+        from lib import helper
+        return helper.generate_timestamps(YYYY, MM, DD, HH)
+    unique = []
+    # Define the start date as a datetime object
+    start_time = datetime.datetime(YYYY, MM, DD, HH, mm, ss).strftime("%Y-%m-%d %H:%M:%S")
+    # Define the end date as a datetime object by adding 30 days to the start date
+    DD = DD + 1
+    try:
+        end_time = datetime.datetime(YYYY, MM, DD, 2, mm, ss).strftime("%Y-%m-%d %H:%M:%S")
+        # print(f"Getting Old Movement data from {start_time} to {end_time} Badge {mac} !")
+        data = db.motionInSpecifiedTimePeriod(mac, start_time, end_time)
+    except ValueError as v:
+        # print(f"All Month days done, caught error {v}")
+        return unique
+    if data is not None:
+        # Use list comprehension to filter out the tuples that have at least two non zero values in the last three elements
+        filtered_list = [t for t in data if np.count_nonzero(t[-3:]) >= 1]
+        # Use another list comprehension to extract the timestamp values (index 0) from the filtered list
+        timestamp_list = [t[0] for t in filtered_list]
+        # Print the timestamp list
+        try:
+            unique = list(set(timestamp_list))
+            # print("The list after removing duplicates:", unique)
+            return unique
+        except TypeError as t:
+            # print(f"Time stamp empty for {mac} in the period {start_time} to {end_time} !")
+            return unique
+
+
+def prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds):
+    YYYY, MM, DD, HH, mm, ss = extract_datetime_components(ist_start_date)
     records = {}
     records.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})
-    record = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours))
-    if len(record) == 0:
-        datetime_str = datetime.datetime(YYYY, MM, DD, HH, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
-        records.update({"FirstMoveOfTheDay": datetime_to_epoch(datetime_str)})
-        datetime_str = datetime.datetime(YYYY, MM, DD+1, 3, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
-        records.update({"LastMoveOfTheDay": datetime_to_epoch(datetime_str)})
-        return records
-    else:
-        c = 0
-        k = 0
-        while c < len(record) - 1:
-            delta = record[c + 1] - record[c]
-            if delta > missingSeconds:
-                records.update({"From": record[c], "To": record[c + 1]}) 
-            elif delta < missingSeconds and records.get("FirstMoveOfTheDay") is None:
-                records.update({"FirstMoveOfTheDay": record[c]})
-                print("Got first checkin time!")
+    timestamp_list = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours))
+    offfloor = 0
+    if timestamp_list is not None and len(timestamp_list) > 0:
+        if len(timestamp_list) < 2:
+            logging.info(f"Very less movement for {mac} on {ist_start_date}")
+            return True
+        elif len(timestamp_list) == 2:
+            logging.debug(f"Two movement data for {mac} on {ist_start_date}")
+            return True
+        for idx, timestamp in enumerate(sorted(timestamp_list)):
+            if idx == 0:
+                # First timestamp, mark as check-in
+                records.update({"FirstMoveOfTheDay": timestamp_list[0]})
+                continue
+            elif idx == len(timestamp_list) - 1:
+                # Last timestamp, mark as check-out
+                records.update({"LastMoveOfTheDay": timestamp_list[-1]})
+                break
             else:
-                records[f"Move{k}"] = record[c]
-                k += 1
-            
-            if c >= (len(record) - 1):
-                records = {"LastMoveOfTheDay": record[c]}  # Initialize the key
-            c += 1
-        if records.get("FirstMoveOfTheDay") is None:
-            records.update({"FirstMoveOfTheDay": record[0]})
-        if records.get("LastMoveOfTheDay") is None:
-            records.update({"LastMoveOfTheDay": record[-1]})
-        return records
+                time_diff = timestamp - timestamp_list[idx - 1]
+                if time_diff > tollarance:
+                    offfloor += time_diff
+                    records.update({"OffFloor": offfloor })
+    return records
 
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
 
-def processData(YYYY=2023, MM=12, DD=1, HH=9, shift_hours=12, missingSeconds=1800, days_in_month=30):
-    start_day = DD
-    while start_day <= days_in_month:
-        for name, mac in employees.items():
-            day_move = {}
-            day_move.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})  # Initialize the key
-            # Get Data filled date
-            last_day_number = get_last_row_date_day(name)
-            if last_day_number:
-                print(f"Last row date day number: {last_day_number}")
-            else:
-                print("Error retrieving data.")
-            day_move.update(prepRecords(name, mac, YYYY, MM, start_day, HH, shift_hours, missingSeconds))
-            # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
-            # Month
-            month = monthReturn(MM)
-            # Example usage
-            checkin = day_move.get("FirstMoveOfTheDay")
-            checkout = day_move.get("LastMoveOfTheDay")
-            hours = 0
-            if checkin is None or checkout is None:
-                hours = 0
-            else:
-                hours = (checkout - checkin) / 3600
-            status = "OFF"
-            if hours == 0:
-                status = "OFF"
-            elif 0 < hours < 3:
-                status = "UH"
-            elif 3 < hours < 6:
-                status = "HD"
-            elif 6 < hours < 9:
-                status = "FD"
-            elif 9 < hours < 12:
-                status = "FDP"
-            elif 12 < hours < 14:
-                status = "OT"
-            data_to_add = [name, mac, month, dateFormat(checkin), dateFormat(checkout), hours, status]  # Provide the data to be added to each column
-            addData(data_to_add)
-        start_day += 1 #Increment for each day work calc
+def processData(ist_start_date, shift_hours=12, missingSeconds=1800):
+    YYYY, MM, DD, HH, mm, ss = extract_datetime_components(ist_start_date)
+    for name, mac in employees.items():
+        day_move = {}
+        day_move.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})  # Initialize the key
+        # Get Data filled date
+        day_move.update(prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds))
+        # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
+        # Month
+        month = monthReturn(MM)
+        # Example usage
+        checkin = day_move.get("FirstMoveOfTheDay")
+        date_time_obj = datetime.strptime(dateFormat(checkin), "%m/%d/%Y %H:%M:%S")
+        # Extract date and time components
+        in_date = date_time_obj.date()
+        in_time = date_time_obj.time()
+        checkout = day_move.get("LastMoveOfTheDay")
+        date_time_obj = datetime.strptime(dateFormat(checkout), "%m/%d/%Y %H:%M:%S")
+        # Extract date and time components
+        out_date = date_time_obj.date()
+        out_time = date_time_obj.time()
+        offfloor = day_move.get("OffFloor")
+        if checkin is None or checkout is None:
+            total_hours = 0
+        else:
+            total_hours = (checkout - checkin) / 3600
+        activehours = total_hours - offfloor
+        data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, total_hours, activehours]  # Provide the data to be added to each column
+        addData(data_to_add)
 
-processData(YYYY=2024, MM=3, DD=1, HH=8, shift_hours=12, missingSeconds=1800, days_in_month=31)
+# processData(YYYY=2024, MM=3, DD=1, HH=8, shift_hours=12, missingSeconds=1800, days_in_month=31)
+        
+# Given IST start date string
+ist_start_date_str = "2024-02-1 07:00:00"
+ist_start_date = datetime.datetime.strptime(ist_start_date_str, "%Y-%m-%d %H:%M:%S")
+# Get the current date
+# Example usage:
+end_date_str = "2024-03-21 02:00:00"
+ist_end_date = format_end_dates(end_date_str)
+# Increment the date until the current day
+logging.info("Starting DB Parsing")
+while ist_start_date.date() <= ist_end_date.date():
+    for mac in employees.values():
+        logging.info(f"Getting Data for {mac} from {ist_start_date.date()} To {ist_end_date.date()} !")
+        processData(ist_start_date, shift_hours=12, missingSeconds=tollarance)
+    ist_start_date += datetime.timedelta(days=1)
