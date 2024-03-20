@@ -247,6 +247,7 @@ def prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds):
     records.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})
     timestamp_list = sorted(workHourRecord(mac, ist_start_date, test))
     offfloor = 0
+    pdb.set_trace()
     if timestamp_list is not None and len(timestamp_list) > 0:
         if len(timestamp_list) < 2:
             logging.info(f"Very less movement for {mac} on {ist_start_date}")
