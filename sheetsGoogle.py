@@ -4,7 +4,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import datetime
-test = True
+test = False
 if not test:
     from lib import db
 import numpy as np
@@ -245,7 +245,7 @@ def prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds):
     YYYY, MM, DD, HH, mm, ss = extract_datetime_components(ist_start_date)
     records = {}
     records.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})
-    timestamp_list = sorted(workHourRecord(name, mac, YYYY, MM, DD, HH, shift_hours))
+    timestamp_list = sorted(workHourRecord(mac, ist_start_date, test))
     offfloor = 0
     if timestamp_list is not None and len(timestamp_list) > 0:
         if len(timestamp_list) < 2:
