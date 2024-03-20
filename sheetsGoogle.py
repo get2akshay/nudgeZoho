@@ -285,12 +285,12 @@ def processData(ist_start_date, shift_hours=12, missingSeconds=1800):
         month = monthReturn(MM)
         # Example usage
         checkin = day_move.get("FirstMoveOfTheDay")
-        date_time_obj = datetime.strptime(dateFormat(checkin), "%m/%d/%Y %H:%M:%S")
+        date_time_obj = datetime.datetime.strptime(dateFormat(checkin), "%m/%d/%Y %H:%M:%S")
         # Extract date and time components
         in_date = date_time_obj.date()
         in_time = date_time_obj.time()
         checkout = day_move.get("LastMoveOfTheDay")
-        date_time_obj = datetime.strptime(dateFormat(checkout), "%m/%d/%Y %H:%M:%S")
+        date_time_obj = datetime.datetime.strptime(dateFormat(checkout), "%m/%d/%Y %H:%M:%S")
         # Extract date and time components
         out_date = date_time_obj.date()
         out_time = date_time_obj.time()
