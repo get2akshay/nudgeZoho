@@ -12,8 +12,9 @@ from collections import defaultdict
 import pdb
 
 #Sheet to update
-spreadsheet_id = '1ipzQMruFXD0RMp2enGecLraYxDSIVxQXg1Pa4TPMxno'
-NEW_SHEET_NAME = "tid"
+#https://docs.google.com/spreadsheets/d/1Upm2saIcs3A6Cij5YdHA1KgIwj6yEfHW90lfA8aavnQ/edit#gid=903908714
+spreadsheet_id = '1Upm2saIcs3A6Cij5YdHA1KgIwj6yEfHW90lfA8aavnQ'
+NEW_SHEET_NAME = "Automatic"
 # Load your service account credentials from the JSON file
 credentials_file = 'service_account.json'
 credentials = service_account.Credentials.from_service_account_file(credentials_file, scopes=['https://www.googleapis.com/auth/spreadsheets'])
@@ -243,4 +244,4 @@ def processData(YYYY=2023, MM=12, DD=1, HH=9, shift_hours=12, missingSeconds=180
             addData(data_to_add)
         start_day += 1 #Increment for each day work calc
 
-processData(YYYY=2024, MM=1, DD=1, HH=8, shift_hours=12, missingSeconds=1800, days_in_month=31)
+processData(YYYY=2024, MM=3, DD=1, HH=8, shift_hours=12, missingSeconds=1800, days_in_month=31)
