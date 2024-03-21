@@ -1,20 +1,20 @@
 # Employees
 # Partiban : 00:8c:10:30:01:5f  #issue
-# ChandiSharma : 00:8c:10:30:01:62
-# DibyenduGhosh : 00:8c:10:30:02:30
-# NirmalGiri : 00:8c:10:30:01:57
+ChandiSharma : 00:8c:10:30:01:62
+DibyenduGhosh : 00:8c:10:30:02:30
+NirmalGiri : 00:8c:10:30:01:57
 # DesikaKiho : 00:8c:10:30:02:af #issue
 ShohagChakma : 00:8c:10:30:01:86
 # LuckyChorei : 00:8c:10:30:01:4c #issue
-# ManojSingh : 00:8c:10:30:02:76
-# GopalMondal : 00:8c:10:30:01:5c
-# AkashSunar : 00:8c:10:30:01:76 #No Data , issue
-# SanjibJana : 00:8c:10:30:02:59 # very less movement
-# SumanBar : 00:8c:10:30:01:78 # movement check
-# SujitGantayat : 00:8c:10:30:01:72
-# SujanMandal : 00:8c:10:30:01:49 #card in db but No movement entity a364c100-9439-11ee-b069-ab9ada5c9719
+ManojSingh : 00:8c:10:30:02:76
+GopalMondal : 00:8c:10:30:01:5c
+AkashSunar : 00:8c:10:30:01:76 #No Data , issue
+SanjibJana : 00:8c:10:30:02:59 # very less movement
+SumanBar : 00:8c:10:30:01:78 # movement check
+SujitGantayat : 00:8c:10:30:01:72
+SujanMandal : 00:8c:10:30:01:49 #card in db but No movement entity a364c100-9439-11ee-b069-ab9ada5c9719
 # AnoopSinghRana : 00:8c:10:30:01:63 #card in db but No movement entity 460ec090-943a-11ee-b069-ab9ada5c9719 since 06/12/23
 # Manigandan : 00:8C:10:30:02:7a # Mac not found Device 44 on the DB issue , no data , no entity
-# Basanti : 00:8c:10:30:02:76 #Check
+Basanti : 00:8c:10:30:02:76 #Check
 # Manigandan : 00:8c:10:30:01:56 #Check #issue has entity 203cf7b0-95c0-11ee-b36c-814c09633654 #No recent movement
-# Rajesh : 00:8c:10:30:02:6f
+Rajesh : 00:8c:10:30:02:6f
