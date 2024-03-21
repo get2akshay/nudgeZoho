@@ -278,6 +278,11 @@ with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
 
 def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
+    in_time = ""
+    out_time = ""
+    in_date = ""
+    out_date = ""
+
     YYYY, MM, DD, HH, mm, ss = extract_datetime_components(ist_start_date)
     day_move = {}
     # Get Data filled date
