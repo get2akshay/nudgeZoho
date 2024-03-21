@@ -285,7 +285,7 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     checkin = day_move.get("FirstMoveOfTheDay")
     checkout = day_move.get("LastMoveOfTheDay")
     offfloor = day_move.get("OffFloor")
-    if checkin is None or checkout is not None:
+    if checkin is None or checkout is None:
         return False
     # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
     # Month
