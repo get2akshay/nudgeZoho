@@ -306,7 +306,7 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     else:
         total_hours = (checkout - checkin) / 3600
     offfloor_min = 0
-    if offfloor is not None:
+    if offfloor is not None and offfloor > 0:
         offfloor_min = offfloor / 60
     if checkin is not None and checkout is not None:
         data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, total_hours, offfloor_min]  # Provide the data to be added to each column
