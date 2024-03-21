@@ -107,7 +107,7 @@ def checkSheet(sheet_name):
     return False
 
 def addData(data):
-    sheet_name = data[0]
+    sheet_name = "Attandance"
     # Find the sheet ID
     sheet_info = service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
     sheet_properties = sheet_info.get('sheets', [])
@@ -277,49 +277,47 @@ def prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds):
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
 
-def processData(ist_start_date, shift_hours=12, missingSeconds=1800):
+def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     YYYY, MM, DD, HH, mm, ss = extract_datetime_components(ist_start_date)
-    for name, mac in employees.items():
-        day_move = {}
-        day_move.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})  # Initialize the key
-        # Get Data filled date
-        day_move = prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds)
-        # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
-        # Month
-        month = monthReturn(MM)
-        # Example usage
-        checkin = day_move.get("FirstMoveOfTheDay")
-        date_time_obj = datetime.datetime.strptime(dateFormat(checkin), "%m/%d/%Y %H:%M:%S")
-        # Extract date and time components
-        in_date = date_time_obj.date()
-        in_time = date_time_obj.time()
-        checkout = day_move.get("LastMoveOfTheDay")
-        date_time_obj = datetime.datetime.strptime(dateFormat(checkout), "%m/%d/%Y %H:%M:%S")
-        # Extract date and time components
-        out_date = date_time_obj.date()
-        out_time = date_time_obj.time()
-        offfloor = day_move.get("OffFloor")
-        if checkin is None or checkout is None:
-            total_hours = 0
-        else:
-            total_hours = (checkout - checkin) / 3600
-        activehours = total_hours - offfloor
-        data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, total_hours, activehours]  # Provide the data to be added to each column
-        addData(data_to_add)
+    day_move = {}
+    # Get Data filled date
+    day_move = prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds)
+    # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
+    # Month
+    month = monthReturn(MM)
+    # Example usage
+    checkin = day_move.get("FirstMoveOfTheDay")
+    date_time_obj = datetime.datetime.strptime(dateFormat(checkin), "%m/%d/%Y %H:%M:%S")
+    # Extract date and time components as strings
+    in_date = date_time_obj.strftime("%Y-%m-%d")
+    in_time = date_time_obj.strftime("%H:%M:%S")
+    checkout = day_move.get("LastMoveOfTheDay")
+    date_time_obj = datetime.datetime.strptime(dateFormat(checkout), "%m/%d/%Y %H:%M:%S")
+    # Extract date and time components as strings
+    out_date = date_time_obj.strftime("%Y-%m-%d")
+    out_time = date_time_obj.strftime("%H:%M:%S")
+    offfloor = day_move.get("OffFloor")
+    if checkin is None or checkout is None:
+        total_hours = 0
+    else:
+        total_hours = (checkout - checkin) / 3600
+    offfloor_min = offfloor / 60
+    data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, total_hours, offfloor_min]  # Provide the data to be added to each column
+    addData(data_to_add)
 
 # processData(YYYY=2024, MM=3, DD=1, HH=8, shift_hours=12, missingSeconds=1800, days_in_month=31)
         
 # Given IST start date string
-ist_start_date_str = "2024-02-1 07:00:00"
+ist_start_date_str = "2024-01-1 07:00:00"
 ist_start_date = datetime.datetime.strptime(ist_start_date_str, "%Y-%m-%d %H:%M:%S")
 # Get the current date
 # Example usage:
 end_date_str = "2024-03-21 02:00:00"
-ist_end_date = format_end_dates(end_date_str)
+ist_end_date = format_end_dates(manual_date_str=None)
 # Increment the date until the current day
 logging.info("Starting DB Parsing")
 while ist_start_date.date() <= ist_end_date.date():
-    for mac in employees.values():
-        logging.info(f"Getting Data for {mac} from {ist_start_date.date()} To {ist_end_date.date()} !")
-        processData(ist_start_date, shift_hours=12, missingSeconds=tollarance)
+    for name, mac in employees.items():
+        logging.info(f"Getting Data for {name } with {mac} from {ist_start_date.date()} To {ist_end_date.date()} !")
+        processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=tollarance)
     ist_start_date += datetime.timedelta(days=1)
