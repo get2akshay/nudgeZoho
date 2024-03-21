@@ -276,6 +276,9 @@ def prepRecords(mac, ist_start_date):
         elif len(timestamp_list) == 2:
             logging.debug(f"Two movement data for {mac} on {ist_start_date}")
             return records
+        previous_timestamp = None
+        # Initialize variables
+        active_time = datetime.timedelta()
         for idx, timestamp in enumerate(sorted(timestamp_list)):
             if idx == 0:
                 # First timestamp, mark as check-in
@@ -286,12 +289,15 @@ def prepRecords(mac, ist_start_date):
                 records.update({"LastMoveOfTheDay": timestamp})
                 break
             else:
-                time_diff = timestamp - timestamp_list[idx - 1]
-                if time_diff > tollarance:
-                    offfloor += time_diff
-    if offfloor > 0:
-        records.update({"OffFloor": offfloor})
-    return records
+                # Calculate active time
+                if previous_timestamp:
+                    time_difference = timestamp - previous_timestamp
+                    if time_difference <= datetime.timedelta(minutes=30):
+                        active_time += time_difference
+                previous_timestamp = timestamp   
+            if active_time > 0:
+                records.update({"OnFloor": active_time})
+            return records
 
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
@@ -307,7 +313,7 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     day_move = prepRecords(mac, ist_start_date)
     checkin = day_move.get("FirstMoveOfTheDay")
     checkout = day_move.get("LastMoveOfTheDay")
-    offfloor = day_move.get("OffFloor")
+    OnFloor = day_move.get("OnFloor")
     # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
     # Month
     month = monthReturn(MM)
@@ -329,10 +335,10 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     else:
         total_hours = (checkout - checkin) / 3600
     offfloor_min = 0
-    if offfloor is not None and offfloor > 0:
-        offfloor_min = offfloor / 3600
+    if OnFloor is not None and OnFloor > 0:
+        OnFloor_min = OnFloor / 3600
     if in_time and out_time:
-        data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, round(total_hours), round(offfloor_min,2)]  # Provide the data to be added to each column
+        data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, round(total_hours), round(OnFloor_min,2)]  # Provide the data to be added to each column
         addData(data_to_add)
         return True
     else:
