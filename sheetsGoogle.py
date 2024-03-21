@@ -337,7 +337,7 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     if OnFloor is not None and OnFloor > 0:
         OnFloor_min = OnFloor
     if in_time and out_time:
-        data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, round(total_hours), round(OnFloor_min,2)]  # Provide the data to be added to each column
+        data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, round(total_hours,2), round(OnFloor_min,2)]  # Provide the data to be added to each column
         addData(data_to_add)
         return True
     else:
