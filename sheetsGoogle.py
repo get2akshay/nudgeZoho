@@ -303,7 +303,7 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     YYYY, MM, DD, HH, mm, ss = extract_datetime_components(ist_start_date)
     day_move = {}
     # Get Data filled date
-    day_move = prepRecords(mac, ist_start_date, shift_hours)
+    day_move = prepRecords(mac, ist_start_date)
     checkin = day_move.get("FirstMoveOfTheDay")
     checkout = day_move.get("LastMoveOfTheDay")
     offfloor = day_move.get("OffFloor")
