@@ -289,7 +289,8 @@ def prepRecords(mac, ist_start_date):
                 time_diff = timestamp - timestamp_list[idx - 1]
                 if time_diff > tollarance:
                     offfloor += time_diff
-                    records.update({"OffFloor": offfloor })
+    if offfloor > 0:
+        records.update({"OffFloor": offfloor})
     return records
 
 with open('staff.yaml', 'r') as file:
@@ -329,7 +330,7 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
         total_hours = (checkout - checkin) / 3600
     offfloor_min = 0
     if offfloor is not None and offfloor > 0:
-        offfloor_min = offfloor / 60
+        offfloor_min = offfloor / 3600
     if in_time and out_time:
         data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, total_hours, offfloor_min]  # Provide the data to be added to each column
         addData(data_to_add)
