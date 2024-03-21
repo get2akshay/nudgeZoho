@@ -13,8 +13,14 @@ from time import sleep
 from collections import defaultdict
 import pdb
 import logging
+import pytz
+IST = pytz.timezone('Asia/Kolkata')  # Define the IST timezone
+# Define the UTC timezone
+UTC = pytz.utc
+
 offset = 0
 tollarance = 1800
+
 
 tdd = [1706779963, 1706780640, 1706790586, 1706792442, 1706792448, 1706792770, 1706793326, 1706795112, 1706795114, 1706799685, 1706801012, 1706802195, 1706802210, 1706802296, 1706802471, 1706802472, 1706803193, 1706803820, 1706804712, 1706806236, 1706806238, 1706806552, 1706806572, 1706806574, 1706806689, 1706806691, 1706806693, 1706806699, 1706806700, 1706807178, 1706807180, 1706807968, 1706807972, 1706808217, 1706808251, 1706808269, 1706808291, 1706808318, 1706808320, 1706809142, 1706809653, 1706809655, 1706812381, 1706812384, 1706812386, 1706812910]    
 
@@ -39,6 +45,19 @@ def format_end_dates(manual_date_str=None):
     else:
         # Use the current date if no manual date is provided
         return current_date
+
+
+def dateFormatIST(timestamp):
+    """
+    Convert the timestamp to {IST} format.
+    """
+    # Convert the timestamp to a datetime object
+    dt = datetime.fromtimestamp(timestamp)
+    # Convert the datetime object to IST timezone
+    dt_ist = dt.astimezone(UTC)
+    # Format the datetime in the required format (assuming 'YYYY-MM-DD HH:mm:ss')
+    return dt_ist.strftime('%Y-%m-%d %H:%M:%S')
+
 
 def monthReturn(number):
     months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -148,7 +167,7 @@ def dateFormat(timestamp):
     # Create a datetime object from the epoch time stamp
     date_time = datetime.datetime.fromtimestamp(timestamp)
     # Format the datetime object as a string
-    return date_time.strftime("%d/%m/%Y %H:%M:%S")
+    return date_time.strftime("%m/%d/%Y %H:%M:%S")
 
 def remove_duplicates_dict(input_list):
     my_dict = defaultdict(int)
@@ -294,14 +313,15 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     month = monthReturn(MM)
     # Example usage
     if checkin is not None:
+        # Convert the string to a datetime object
         date_time_obj = datetime.datetime.strptime(dateFormat(checkin), "%m/%d/%Y %H:%M:%S")
-        # Extract date and time components as strings
-        in_date = date_time_obj.strftime("%Y-%m-%d")
+        # Extract date components as strings in the desired format
+        in_date = date_time_obj.strftime("%m-%d-%Y")  # Example: "15-01-2023"
         in_time = date_time_obj.strftime("%H:%M:%S")
     if checkout is not None:
         date_time_obj = datetime.datetime.strptime(dateFormat(checkout), "%m/%d/%Y %H:%M:%S")
         # Extract date and time components as strings
-        out_date = date_time_obj.strftime("%Y-%m-%d")
+        out_date = date_time_obj.strftime("%m-%d-%Y")  # Example: "15-01-2023"
         out_time = date_time_obj.strftime("%H:%M:%S")
    
     if checkin is None or checkout is None:
