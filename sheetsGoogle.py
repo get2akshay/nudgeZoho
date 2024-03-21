@@ -334,7 +334,7 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
             return False
         else:
             total_hours = (checkout - checkin) / 3600
-        offfloor_min = 0
+        OnFloor_min = 0
         if OnFloor is not None and OnFloor > 0:
             OnFloor_min = OnFloor
         if in_time and out_time:
