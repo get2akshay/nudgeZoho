@@ -282,6 +282,8 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     day_move = {}
     # Get Data filled date
     day_move = prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds)
+    if checkin is None or checkout is not None:
+        return False
     # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
     # Month
     month = monthReturn(MM)
@@ -309,6 +311,7 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     if checkin is not None and checkout is not None:
         data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, total_hours, offfloor_min]  # Provide the data to be added to each column
         addData(data_to_add)
+    return True
 
 # processData(YYYY=2024, MM=3, DD=1, HH=8, shift_hours=12, missingSeconds=1800, days_in_month=31)
         
