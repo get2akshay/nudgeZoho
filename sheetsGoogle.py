@@ -260,8 +260,7 @@ def workHourRecord(mac, ist_start_date, test=False):
             return unique
 
 
-def prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds):
-    YYYY, MM, DD, HH, mm, ss = extract_datetime_components(ist_start_date)
+def prepRecords(mac, ist_start_date):
     records = {}
     records.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})
     if test:
@@ -280,11 +279,11 @@ def prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds):
         for idx, timestamp in enumerate(sorted(timestamp_list)):
             if idx == 0:
                 # First timestamp, mark as check-in
-                records.update({"FirstMoveOfTheDay": timestamp_list[0]})
+                records.update({"FirstMoveOfTheDay": timestamp})
                 continue
             elif idx == len(timestamp_list) - 1:
                 # Last timestamp, mark as check-out
-                records.update({"LastMoveOfTheDay": timestamp_list[-1]})
+                records.update({"LastMoveOfTheDay": timestamp})
                 break
             else:
                 time_diff = timestamp - timestamp_list[idx - 1]
@@ -304,7 +303,7 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     YYYY, MM, DD, HH, mm, ss = extract_datetime_components(ist_start_date)
     day_move = {}
     # Get Data filled date
-    day_move = prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds)
+    day_move = prepRecords(mac, ist_start_date, shift_hours)
     checkin = day_move.get("FirstMoveOfTheDay")
     checkout = day_move.get("LastMoveOfTheDay")
     offfloor = day_move.get("OffFloor")
