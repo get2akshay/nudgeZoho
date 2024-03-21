@@ -285,8 +285,6 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     checkin = day_move.get("FirstMoveOfTheDay")
     checkout = day_move.get("LastMoveOfTheDay")
     offfloor = day_move.get("OffFloor")
-    if checkin is None or checkout is None:
-        return False
     # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
     # Month
     month = monthReturn(MM)
@@ -296,7 +294,6 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
         # Extract date and time components as strings
         in_date = date_time_obj.strftime("%Y-%m-%d")
         in_time = date_time_obj.strftime("%H:%M:%S")
-    
     if checkout is not None:
         date_time_obj = datetime.datetime.strptime(dateFormat(checkout), "%m/%d/%Y %H:%M:%S")
         # Extract date and time components as strings
@@ -310,9 +307,8 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     offfloor_min = 0
     if offfloor is not None and offfloor > 0:
         offfloor_min = offfloor / 60
-    if checkin is not None and checkout is not None:
-        data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, total_hours, offfloor_min]  # Provide the data to be added to each column
-        addData(data_to_add)
+    data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, total_hours, offfloor_min]  # Provide the data to be added to each column
+    addData(data_to_add)
     return True
 
 # processData(YYYY=2024, MM=3, DD=1, HH=8, shift_hours=12, missingSeconds=1800, days_in_month=31)
