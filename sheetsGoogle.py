@@ -287,15 +287,17 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     month = monthReturn(MM)
     # Example usage
     checkin = day_move.get("FirstMoveOfTheDay")
-    date_time_obj = datetime.datetime.strptime(dateFormat(checkin), "%m/%d/%Y %H:%M:%S")
-    # Extract date and time components as strings
-    in_date = date_time_obj.strftime("%Y-%m-%d")
-    in_time = date_time_obj.strftime("%H:%M:%S")
+    if checkin is not None:
+        date_time_obj = datetime.datetime.strptime(dateFormat(checkin), "%m/%d/%Y %H:%M:%S")
+        # Extract date and time components as strings
+        in_date = date_time_obj.strftime("%Y-%m-%d")
+        in_time = date_time_obj.strftime("%H:%M:%S")
     checkout = day_move.get("LastMoveOfTheDay")
-    date_time_obj = datetime.datetime.strptime(dateFormat(checkout), "%m/%d/%Y %H:%M:%S")
-    # Extract date and time components as strings
-    out_date = date_time_obj.strftime("%Y-%m-%d")
-    out_time = date_time_obj.strftime("%H:%M:%S")
+    if checkout is not None:
+        date_time_obj = datetime.datetime.strptime(dateFormat(checkout), "%m/%d/%Y %H:%M:%S")
+        # Extract date and time components as strings
+        out_date = date_time_obj.strftime("%Y-%m-%d")
+        out_time = date_time_obj.strftime("%H:%M:%S")
     offfloor = day_move.get("OffFloor")
     if checkin is None or checkout is None:
         total_hours = 0
@@ -304,8 +306,9 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     offfloor_min = 0
     if offfloor is not None:
         offfloor_min = offfloor / 60
-    data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, total_hours, offfloor_min]  # Provide the data to be added to each column
-    addData(data_to_add)
+    if checkin is not None and checkout is not None:
+        data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, total_hours, offfloor_min]  # Provide the data to be added to each column
+        addData(data_to_add)
 
 # processData(YYYY=2024, MM=3, DD=1, HH=8, shift_hours=12, missingSeconds=1800, days_in_month=31)
         
