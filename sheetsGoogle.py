@@ -254,10 +254,10 @@ def prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds):
     if timestamp_list is not None and len(timestamp_list) > 0:
         if len(timestamp_list) < 2:
             logging.info(f"Very less movement for {mac} on {ist_start_date}")
-            return True
+            return records
         elif len(timestamp_list) == 2:
             logging.debug(f"Two movement data for {mac} on {ist_start_date}")
-            return True
+            return records
         for idx, timestamp in enumerate(timestamp_list):
             if idx == 0:
                 # First timestamp, mark as check-in
