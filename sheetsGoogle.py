@@ -4,7 +4,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import datetime
-test = False
+test = True
 if not test:
     from lib import db
 import numpy as np
@@ -245,9 +245,12 @@ def prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds):
     YYYY, MM, DD, HH, mm, ss = extract_datetime_components(ist_start_date)
     records = {}
     records.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})
-    timestamp_list = sorted(workHourRecord(mac, ist_start_date, test))
+    if test:
+        timestamp_list = tdd
+    else:
+        timestamp_list = workHourRecord(mac, ist_start_date, test)
+        sorted(timestamp_list)
     offfloor = 0
-    pdb.set_trace()
     if timestamp_list is not None and len(timestamp_list) > 0:
         if len(timestamp_list) < 2:
             logging.info(f"Very less movement for {mac} on {ist_start_date}")
@@ -255,7 +258,7 @@ def prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds):
         elif len(timestamp_list) == 2:
             logging.debug(f"Two movement data for {mac} on {ist_start_date}")
             return True
-        for idx, timestamp in enumerate(sorted(timestamp_list)):
+        for idx, timestamp in enumerate(timestamp_list):
             if idx == 0:
                 # First timestamp, mark as check-in
                 records.update({"FirstMoveOfTheDay": timestamp_list[0]})
@@ -280,7 +283,7 @@ def processData(ist_start_date, shift_hours=12, missingSeconds=1800):
         day_move = {}
         day_move.update({"FirstMoveOfTheDay": None, "LastMoveOfTheDay": None})  # Initialize the key
         # Get Data filled date
-        day_move.update(prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds))
+        day_move = prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds)
         # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
         # Month
         month = monthReturn(MM)
