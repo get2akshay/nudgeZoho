@@ -295,7 +295,7 @@ def prepRecords(mac, ist_start_date):
                     if time_difference <= datetime.timedelta(minutes=30):
                         active_time += time_difference
                 previous_timestamp = timestamp
-        records.update({"OnFloor": active_time})
+        records.update({"OnFloor": int(active_time.total_seconds() // 3600)})
         return records
 
 with open('staff.yaml', 'r') as file:
