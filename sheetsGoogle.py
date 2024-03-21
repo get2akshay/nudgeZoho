@@ -329,7 +329,6 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
             # Extract date and time components as strings
             out_date = date_time_obj.strftime("%m-%d-%Y")  # Example: "15-01-2023"
             out_time = date_time_obj.strftime("%H:%M:%S")
-    
         if checkin is None or checkout is None:
             return False
         else:
