@@ -282,7 +282,6 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     out_time = ""
     in_date = ""
     out_date = ""
-
     YYYY, MM, DD, HH, mm, ss = extract_datetime_components(ist_start_date)
     day_move = {}
     # Get Data filled date
@@ -306,7 +305,7 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
         out_time = date_time_obj.strftime("%H:%M:%S")
    
     if checkin is None or checkout is None:
-        total_hours = 0
+        return False
     else:
         total_hours = (checkout - checkin) / 3600
     offfloor_min = 0
