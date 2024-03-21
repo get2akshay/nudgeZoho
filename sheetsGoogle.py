@@ -52,7 +52,7 @@ def dateFormatIST(timestamp):
     Convert the timestamp to {IST} format.
     """
     # Convert the timestamp to a datetime object
-    dt = datetime.fromtimestamp(timestamp)
+    dt = datetime.datetime.fromtimestamp(timestamp)
     # Convert the datetime object to IST timezone
     dt_ist = dt.astimezone(UTC)
     # Format the datetime in the required format (assuming 'YYYY-MM-DD HH:mm:ss')
