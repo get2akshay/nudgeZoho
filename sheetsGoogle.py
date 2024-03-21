@@ -318,12 +318,11 @@ ist_start_date_str = "2024-01-1 07:00:00"
 ist_start_date = datetime.datetime.strptime(ist_start_date_str, "%Y-%m-%d %H:%M:%S")
 # Get the current date
 # Example usage:
-end_date_str = "2024-03-21 02:00:00"
 ist_end_date = format_end_dates(manual_date_str=None)
 # Increment the date until the current day
 logging.info("Starting DB Parsing")
 while ist_start_date.date() <= ist_end_date.date():
     for name, mac in employees.items():
-        logging.info(f"Getting Data for {name } with {mac} from {ist_start_date.date()} To {ist_end_date.date()} !")
+        logging.info(f"Getting Data for {name } with {mac} From {ist_start_date.date()} To {ist_end_date.date()}!")
         processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=tollarance)
     ist_start_date += datetime.timedelta(days=1)
