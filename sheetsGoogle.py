@@ -56,7 +56,7 @@ def dateFormatIST(timestamp):
     # Convert the datetime object to IST timezone
     dt_ist = dt.astimezone(UTC)
     # Format the datetime in the required format (assuming 'YYYY-MM-DD HH:mm:ss')
-    return dt_ist.strftime('%Y-%m-%d %H:%M:%S')
+    return dt_ist
 
 
 def monthReturn(number):
@@ -291,7 +291,7 @@ def prepRecords(mac, ist_start_date):
             else:
                 # Calculate active time
                 if previous_timestamp:
-                    time_difference = timestamp - previous_timestamp
+                    time_difference = dateFormatIST(timestamp) - dateFormatIST(previous_timestamp)
                     if time_difference <= datetime.timedelta(minutes=30):
                         active_time += time_difference
                 previous_timestamp = timestamp   
