@@ -282,25 +282,27 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     day_move = {}
     # Get Data filled date
     day_move = prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds)
+    checkin = day_move.get("FirstMoveOfTheDay")
+    checkout = day_move.get("LastMoveOfTheDay")
+    offfloor = day_move.get("OffFloor")
     if checkin is None or checkout is not None:
         return False
     # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
     # Month
     month = monthReturn(MM)
     # Example usage
-    checkin = day_move.get("FirstMoveOfTheDay")
     if checkin is not None:
         date_time_obj = datetime.datetime.strptime(dateFormat(checkin), "%m/%d/%Y %H:%M:%S")
         # Extract date and time components as strings
         in_date = date_time_obj.strftime("%Y-%m-%d")
         in_time = date_time_obj.strftime("%H:%M:%S")
-    checkout = day_move.get("LastMoveOfTheDay")
+    
     if checkout is not None:
         date_time_obj = datetime.datetime.strptime(dateFormat(checkout), "%m/%d/%Y %H:%M:%S")
         # Extract date and time components as strings
         out_date = date_time_obj.strftime("%Y-%m-%d")
         out_time = date_time_obj.strftime("%H:%M:%S")
-    offfloor = day_move.get("OffFloor")
+   
     if checkin is None or checkout is None:
         total_hours = 0
     else:
