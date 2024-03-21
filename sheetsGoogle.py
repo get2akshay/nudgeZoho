@@ -310,36 +310,37 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
     day_move = {}
     # Get Data filled date
     day_move = prepRecords(mac, ist_start_date)
-    checkin = day_move.get("FirstMoveOfTheDay")
-    checkout = day_move.get("LastMoveOfTheDay")
-    OnFloor = day_move.get("OnFloor")
-    # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
-    # Month
-    month = monthReturn(MM)
-    # Example usage
-    if checkin is not None:
-        # Convert the string to a datetime object
-        date_time_obj = datetime.datetime.strptime(dateFormat(checkin), "%m/%d/%Y %H:%M:%S")
-        # Extract date components as strings in the desired format
-        in_date = date_time_obj.strftime("%m-%d-%Y")  # Example: "15-01-2023"
-        in_time = date_time_obj.strftime("%H:%M:%S")
-    if checkout is not None:
-        date_time_obj = datetime.datetime.strptime(dateFormat(checkout), "%m/%d/%Y %H:%M:%S")
-        # Extract date and time components as strings
-        out_date = date_time_obj.strftime("%m-%d-%Y")  # Example: "15-01-2023"
-        out_time = date_time_obj.strftime("%H:%M:%S")
-   
-    if checkin is None or checkout is None:
-        return False
-    else:
-        total_hours = (checkout - checkin) / 3600
-    offfloor_min = 0
-    if OnFloor is not None and OnFloor > 0:
-        OnFloor_min = OnFloor
-    if in_time and out_time:
-        data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, round(total_hours,2), round(OnFloor_min,2)]  # Provide the data to be added to each column
-        addData(data_to_add)
-        return True
+    if day_move is not None:
+        checkin = day_move.get("FirstMoveOfTheDay")
+        checkout = day_move.get("LastMoveOfTheDay")
+        OnFloor = day_move.get("OnFloor")
+        # name, mac, missingSeconds, YYYY, MM, DD, HH, MS
+        # Month
+        month = monthReturn(MM)
+        # Example usage
+        if checkin is not None:
+            # Convert the string to a datetime object
+            date_time_obj = datetime.datetime.strptime(dateFormat(checkin), "%m/%d/%Y %H:%M:%S")
+            # Extract date components as strings in the desired format
+            in_date = date_time_obj.strftime("%m-%d-%Y")  # Example: "15-01-2023"
+            in_time = date_time_obj.strftime("%H:%M:%S")
+        if checkout is not None:
+            date_time_obj = datetime.datetime.strptime(dateFormat(checkout), "%m/%d/%Y %H:%M:%S")
+            # Extract date and time components as strings
+            out_date = date_time_obj.strftime("%m-%d-%Y")  # Example: "15-01-2023"
+            out_time = date_time_obj.strftime("%H:%M:%S")
+    
+        if checkin is None or checkout is None:
+            return False
+        else:
+            total_hours = (checkout - checkin) / 3600
+        offfloor_min = 0
+        if OnFloor is not None and OnFloor > 0:
+            OnFloor_min = OnFloor
+        if in_time and out_time:
+            data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, round(total_hours,2), round(OnFloor_min,2)]  # Provide the data to be added to each column
+            addData(data_to_add)
+            return True
     else:
         return False
 
