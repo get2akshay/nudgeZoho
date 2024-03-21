@@ -277,7 +277,7 @@ def prepRecords(name, mac, ist_start_date, shift_hours, missingSeconds):
         elif len(timestamp_list) == 2:
             logging.debug(f"Two movement data for {mac} on {ist_start_date}")
             return records
-        for idx, timestamp in enumerate(timestamp_list):
+        for idx, timestamp in enumerate(sorted(timestamp_list)):
             if idx == 0:
                 # First timestamp, mark as check-in
                 records.update({"FirstMoveOfTheDay": timestamp_list[0]})
