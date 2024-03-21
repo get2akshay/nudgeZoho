@@ -295,8 +295,8 @@ def prepRecords(mac, ist_start_date):
                     if time_difference <= datetime.timedelta(minutes=30):
                         active_time += time_difference
                 previous_timestamp = timestamp
-            records.update({"OnFloor": active_time})
-            return records
+        records.update({"OnFloor": active_time})
+        return records
 
 with open('staff.yaml', 'r') as file:
     employees = yaml.safe_load(file)
@@ -335,7 +335,7 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
         total_hours = (checkout - checkin) / 3600
     offfloor_min = 0
     if OnFloor is not None and OnFloor > 0:
-        OnFloor_min = OnFloor / 3600
+        OnFloor_min = OnFloor
     if in_time and out_time:
         data_to_add = [name, mac, month, in_date, in_time, out_date, out_time, round(total_hours), round(OnFloor_min,2)]  # Provide the data to be added to each column
         addData(data_to_add)
