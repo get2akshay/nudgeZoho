@@ -344,7 +344,7 @@ def processData(name, mac, ist_start_date, shift_hours=12, missingSeconds=1800):
 # processData(YYYY=2024, MM=3, DD=1, HH=8, shift_hours=12, missingSeconds=1800, days_in_month=31)
         
 # Given IST start date string
-ist_start_date_str = "2024-02-1 07:00:00"
+ist_start_date_str = "2024-03-22 07:00:00"
 ist_start_date = datetime.datetime.strptime(ist_start_date_str, "%Y-%m-%d %H:%M:%S")
 # Get the current date
 # Example usage:
